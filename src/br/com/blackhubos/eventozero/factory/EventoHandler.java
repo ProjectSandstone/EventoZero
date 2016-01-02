@@ -19,6 +19,28 @@
  */
 package br.com.blackhubos.eventozero.factory;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang.NullArgumentException;
+
 public class EventoHandler {
+	
+	private final Set<Evento> events;
+	
+	public EventoHandler(){
+		this.events = new HashSet<>();
+	}
+	
+	public Set<Evento> getEventos(){
+		return this.events;
+		
+	}
+	
+	public void loadEvent(Evento event){
+		if(event != null)
+			throw new NullArgumentException("Event is null");
+		events.add(event);
+	}
 
 }

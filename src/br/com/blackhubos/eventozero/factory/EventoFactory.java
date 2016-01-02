@@ -20,11 +20,41 @@
 
 package br.com.blackhubos.eventozero.factory;
 
+import java.io.File;
+
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+
+import br.com.blackhubos.eventozero.util.Framework.Configuration;
+
 public class EventoFactory {
 	
 	public static Evento createMyEvent(String name){
 		return new Evento(name).
 				updateDescription("");
+	}
+	
+	public static void loadEvents(Plugin plugin){
+		File folder = new File(plugin.getDataFolder() + File.separator + "eventos" + File.separator);
+		for(File file : folder.listFiles()){
+			if(file.getName().endsWith(".yml")){
+				YamlConfiguration configuration = Configuration.loadConfiguration(file);
+				Evento event = new Evento(configuration.getString("name"))
+						.updateDescription(configuration.getString("description"));
+
+				event.geEventoData().updateData("options.signs.line.1", configuration.getString("signs.lines.1"));
+				event.geEventoData().updateData("options.signs.line.2", configuration.getString("signs.lines.2"));
+				event.geEventoData().updateData("options.signs.line.3", configuration.getString("signs.lines.3"));
+				event.geEventoData().updateData("options.signs.line.4", configuration.getString("signs.lines.4"));
+
+				event.geEventoData().updateData("options.message.opened", configuration.getString("options.message.opened"));
+				event.geEventoData().updateData("options.message.prestarted", configuration.getString("options.message.prestarted"));
+				event.geEventoData().updateData("options.message.occurring", configuration.getString("options.message.occurring"));
+				event.geEventoData().updateData("options.message.ending", configuration.getString("options.message.ending"));
+				event.geEventoData().updateData("options.message.closed", configuration.getString("options.message.closed"));
+			}
+		}
 	}
 
 }
