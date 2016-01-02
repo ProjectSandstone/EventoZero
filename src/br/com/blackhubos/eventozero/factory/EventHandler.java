@@ -26,18 +26,18 @@ import org.apache.commons.lang.NullArgumentException;
 
 public class EventHandler {
 	
-	private final Set<Evento> events;
+	private final Set<Event> events;
 	
 	public EventHandler(){
 		this.events = new HashSet<>();
 	}
 	
-	public Set<Evento> getEventos(){
+	public Set<Event> getEventos(){
 		return this.events;
 		
 	}
 	
-	public void loadEvent(Evento event){
+	public void loadEvent(Event event){
 		if(event != null)
 			throw new NullArgumentException("Event is null");
 		events.add(event);

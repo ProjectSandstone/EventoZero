@@ -29,9 +29,9 @@ import br.com.blackhubos.eventozero.util.Framework.Configuration;
 public final class EventFactory
 {
 
-	public static Evento createMyEvent(final String name)
+	public static Event createMyEvent(final String name)
 	{
-		return new Evento(name).updateDescription("");
+		return new Event(name).updateDescription("");
 	}
 
 	public static void loadEvents(final Plugin plugin)
@@ -42,7 +42,7 @@ public final class EventFactory
 			if (file.getName().endsWith(".yml"))
 			{
 				final Configuration configuration = new Configuration(file); // Já carrega automaticamente
-				final Evento event = new Evento(configuration.getString("name")).updateDescription(configuration.getString("description"));
+				final Event event = new Event(configuration.getString("name")).updateDescription(configuration.getString("description"));
 
 				event.geEventoData().updateData("options.signs.line.1", configuration.getString("signs.lines.1"));
 				event.geEventoData().updateData("options.signs.line.2", configuration.getString("signs.lines.2"));

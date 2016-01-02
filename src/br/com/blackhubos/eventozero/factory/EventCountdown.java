@@ -24,10 +24,10 @@ import org.bukkit.Bukkit;
 public class EventCountdown implements Runnable
 {
 
-	private final Evento event;
+	private final Event event;
 	private int seconds;
 
-	public EventCountdown(final Evento event, final int seconds)
+	public EventCountdown(final Event event, final int seconds)
 	{
 		this.event = event;
 		this.seconds = seconds;
