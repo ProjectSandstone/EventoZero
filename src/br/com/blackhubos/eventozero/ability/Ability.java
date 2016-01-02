@@ -20,7 +20,9 @@ public abstract class Ability {
 		return (getRemaingTime() >= 0? getRemaingTime() : 0);
 	}
 	
-	public abstract boolean canUse();
+	public boolean canUse(){
+		return (getRemaingTimePostive() == 0);
+	}
 	
 	public abstract boolean tryUse(Player player);
 	
