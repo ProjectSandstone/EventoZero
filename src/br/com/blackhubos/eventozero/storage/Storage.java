@@ -26,7 +26,7 @@ public abstract class Storage
 
 	/**
 	 * Isso é definido no onEnable(); 1 = mysql, 2 = flatfile (.yml)
-	 * Não precisam mexer nisso
+	 * Não precisam mexer nisso.
 	 */
 	protected static int id = 0;
 
