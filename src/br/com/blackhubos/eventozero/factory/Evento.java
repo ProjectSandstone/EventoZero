@@ -20,9 +20,8 @@
 
 package br.com.blackhubos.eventozero.factory;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.bukkit.Bukkit;
@@ -32,21 +31,25 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
+import br.com.blackhubos.eventozero.party.Party;
+
 public class Evento {
 	
 	private final String eventName;
 	private final EventoData eventData;
 	
-	private final Set<Player> joineds;
-	private final Set<Player> spectators;
+	private final Vector<Player> joineds;
+	private final Vector<Player> spectators;
+	private final Vector<Party> partys;
 	
 	private String eventDescription;
 	private EventoState eventoState;
 	
 	public Evento(String name){
 		this.eventName = name;
-		this.joineds = new HashSet<>();
-		this.spectators = new HashSet<>();
+		this.joineds = new Vector<>();
+		this.spectators = new Vector<>();
+		this.partys = new Vector<>();
 		this.eventData = new EventoData();
 	}
 	
@@ -71,11 +74,11 @@ public class Evento {
 		return this;
 	}
 	
-	public Set<Player> getPlayers(){
+	public Vector<Player> getPlayers(){
 		return joineds;
 	}
 	
-	public Set<Player> getSpectators(){
+	public Vector<Player> getSpectators(){
 		return spectators;
 	}
 	
@@ -84,6 +87,8 @@ public class Evento {
 			throw new NullArgumentException("Player is null");
 		if(!hasPlayerJoined(player)){
 			joineds.add(player);
+			playerBackup(player);
+			updateSigns();
 		}
 		return this;
 	}
@@ -93,6 +98,9 @@ public class Evento {
 			throw new NullArgumentException("Player is null");
 		if(hasPlayerJoined(player)){
 			joineds.remove(player);
+			spectatorQuit(player);
+			playerRestore(player);
+			updateSigns();
 		}
 		return this;
 	}
@@ -131,20 +139,44 @@ public class Evento {
 	}
 	
 	public void stop(){
-		
+		// STOP EVENT, GET WINNERS, ALIVES
+		updateSigns();
 	}
 	
 	public void start(){
-		
+		// START THE COUNTDOWN
+		new EventoCountdown(this, (Integer) geEventoData().getData("options.countdown.seconds"));
+		updateSigns();
 	}
 	
 	public void forceStop(){
-		
+		// STOP FORCE EVENT
+		for(Player player : joineds){
+			playerQuit(player);
+		}
+		updateSigns();
 	}
 	
 	public void forceStart(){
-		
+		// START EVENT
+		if(getPlayers().size() < (Integer) geEventoData().getData("event.min")){
+			// STOP
+			// MESSAGE CANCELED MIN PLAYER
+			forceStop();
+		}
+		// CODE START
+		updateSigns();
 	}
+	
+	public void playerBackup(Player player){
+		// BACKUP PLAYER
+	}
+	
+	public void playerRestore(Player player){
+		// RESTORE BACKUP PLAYER
+	}
+	
+
 	
 	public void updateSigns(){
 		if(geEventoData().containsKey("options.signs.locations") && (geEventoData().getData("options.signs.locations") != null)){
