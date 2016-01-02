@@ -1,4 +1,3 @@
-package br.com.blackhubos.eventozero.ability.abilitys;
 /**
 *
 * EventoZero - Advanced event factory and executor for Bukkit and Spigot.
@@ -18,6 +17,8 @@ package br.com.blackhubos.eventozero.ability.abilitys;
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 */
+package br.com.blackhubos.eventozero.ability.abilitys;
+
 import org.bukkit.entity.Player;
 
 import br.com.blackhubos.eventozero.ability.Ability;
