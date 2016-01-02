@@ -1,7 +1,7 @@
 /**
  *
- * EventoZero - .
- * Copyright © 2016 BlackHub OS.
+ * EventoZero - Advanced event factory and executor for Bukkit and Spigot.
+ * Copyright © 2016 BlackHub OS and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import java.io.File;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import br.com.blackhubos.eventozero.storage.Storage;
 import br.com.blackhubos.eventozero.util.Framework;
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
 import br.com.blackhubos.eventozero.util.Framework.LoggerManager;
@@ -32,6 +33,7 @@ public final class EventoZero extends JavaPlugin
 
 	private static Configuration config = null;
 	private static LoggerManager<EventoZero> logger = null;
+	private static Storage storage = null;
 
 	@Override
 	public void onEnable()
@@ -68,6 +70,14 @@ public final class EventoZero extends JavaPlugin
 		return EventoZero.config;
 	}
 
+	@SuppressWarnings("unused")
+	private void exemploRanking()
+	{
+		EventoZero.getStorage().depositPlayerRankingPoints("Atom", "Spleef", 1, 1);
+		EventoZero.getStorage().withdrawPlayerRankingPoints("atoM", "spleef", 1, 1);
+		// NOTA: spleef = Spleef, tal para Atom = atoM. Caso insensitive.
+	}
+
 	/**
 	 * Dentro da classe EventoZero há uma variável estática carregada no <code>onEnable()</code> que representa a configuração do plugin, aceitando e usando o formato/charset
 	 * utf8.
@@ -87,6 +97,16 @@ public final class EventoZero extends JavaPlugin
 	public static LoggerManager<EventoZero> getLoggerService()
 	{
 		return EventoZero.logger;
+	}
+
+	/**
+	 * Obtém a implementação da classe Storage, para armazenamento de dados.
+	 *
+	 * @return A implementação da {@link Storage}.
+	 */
+	public static Storage getStorage()
+	{
+		return EventoZero.storage;
 	}
 
 }
