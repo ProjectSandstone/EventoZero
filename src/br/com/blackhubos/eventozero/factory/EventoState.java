@@ -17,14 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package br.com.blackhubos.eventozero.factory;
 
-public class EventoFactory {
+public enum EventoState {
 	
-	public static Evento createMyEvent(String name){
-		return new Evento(name).
-				updateDescription("");
+	OPENED("state.open"),
+	PRESTARTED("state.prestarted"),
+	OCCURRING("state.occurring"),
+	ENDING("state.ending"),
+	CLOSED("state.closed");
+	
+	private String path;
+	
+	private EventoState(String path){
+		this.path = path;
 	}
-
+	
+	public String getPath(){
+		return this.path;
+	}
 }

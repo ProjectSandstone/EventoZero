@@ -17,14 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package br.com.blackhubos.eventozero.factory;
 
-public class EventoFactory {
-	
-	public static Evento createMyEvent(String name){
-		return new Evento(name).
-				updateDescription("");
-	}
+public class EventoHandler {
 
 }

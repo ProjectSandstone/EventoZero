@@ -35,11 +35,11 @@ public class EventoData {
 	 * @return Retorna {@link Object}.
 	 */
 	
-	public Object getData(String key){
+	public <T> T getData(String key){
 		if(!data.containsKey(key)){
 			throw new IllegalArgumentException("Key is not valid");
 		}
-		return this.data.get(key);
+		return (T) this.data.get(key);
 	}
 	
 	/**
