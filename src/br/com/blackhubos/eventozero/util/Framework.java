@@ -58,7 +58,6 @@ import com.google.common.base.Preconditions;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EmptyClipboardException;
-import com.sk89q.worldedit.FilenameException;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
@@ -66,7 +65,10 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
 import com.sk89q.worldedit.schematic.SchematicFormat;
+import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.util.io.file.FilenameException;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.StateFlag;
@@ -1440,7 +1442,9 @@ public final class Framework
 			saveFile = this.we.getSafeSaveFile(this.localPlayer, saveFile.getParentFile(), saveFile.getName(), Terrain.EXTENSION, new String[] { Terrain.EXTENSION });
 
 			this.editSession.enableQueue();
-			this.localSession.setClipboard(SchematicFormat.MCEDIT.load(saveFile));
+
+			this.localSession.setClipboard(new ClipboardHolder(MCEditSchematicFormat.MCEDIT.load(saveFile)));
+
 			this.localSession.getClipboard().place(this.editSession, this.getPastePosition(loc), false);
 			this.editSession.flushQueue();
 			this.we.flushBlockBag(this.localPlayer, this.editSession);
@@ -1455,7 +1459,7 @@ public final class Framework
 		{
 			if (loc == null)
 			{
-				return this.localSession.getClipboard().getOrigin();
+				return this.localSession.getClipboard().getClipboard().getOrigin();
 			}
 			else
 			{
