@@ -1,1 +1,22 @@
+#################################################################################################
+#                                                                                               #
+#          ####  #    # #####  ##   ##  ####### ######  ######  #####  #######  ######          #
+#          ##    #    # ##     # #  #     ###   #    #  #    #  ##     #    #   #    #          #
+#          ##    #    # ##     #  # #      #    #    #      #   ##     #   #    #    #          #
+#          ###   #    # ###    #  # #      #    #    #     #    ###    # ##     #    #          #
+#          ##    #    # ##     #  # #      #    #    #    #     ##     #  #     #    #          #
+#          ##    ##  ## ##     #  # #      #    #    #   #   #  ##     #   #    #    #          #
+#          #####   ##   #####  #   #       #    ######   #####  #####  #    ##  ######          #
+#                                                                                               #
+#################################################################################################
+
 SEM_PERMISSÃO: '&7Você não tem permissão para fazer isto.'
+
+JA_PARTICIPANDO: "&eVocê já está participando de um evento!"
+EVENTO_ESPECIAL: "&eEste é um evento especial, apenas certos jogadores podem participar."
+EVENTO_ENTROU:
+  - "&7Você entrou no evento {evento}:"
+  - "&7Jogadores até agora: &a{jogadores}"
+  - "&7Total de Partys: &a{partys}"
+  - "&7Tempo até o início: &a{timeleft}"
+  - "&9[ &b- &3INSTRUÇÕES: &9/{comando} tutorial &b- ]"
