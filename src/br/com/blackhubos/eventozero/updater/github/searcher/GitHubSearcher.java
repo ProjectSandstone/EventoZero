@@ -117,34 +117,39 @@ public class GitHubSearcher implements Searcher {
     }
 
     private Optional<Collection<Version>> connect(Optional<String> additionalUrl) throws IOException, ParseException, java.text.ParseException {
-
+        // Formatadores de valor a partir de textos e objetos
         MultiTypeFormatter multiFormatter = new MultiTypeFormatter();
         BooleanFormatter booleanFormatter = new BooleanFormatter();
         GitHubDateFormatter dateFormatter = new GitHubDateFormatter();
-
         multiFormatter.registerFormatter(booleanFormatter);
         multiFormatter.registerFormatter(dateFormatter);
 
+        // Coleção de todas as versões
         Collection<Version> versionList = new LinkedList<>();
 
+        // Conexão e abertura de stream para obter o JSON
         URL gitHubUrl = new URL(GITHUB_API_URL + RELEASES_PATH + (additionalUrl.isPresent() ? additionalUrl.get() : ""));
-
         URLConnection urlConnection = gitHubUrl.openConnection();
-
         InputStream inputStream = urlConnection.getInputStream();
 
+        // Parser do JSON
         JSONParser parser = new JSONParser();
         Object array = parser.parse(new InputStreamReader(inputStream));
 
+        // Verifica se é uma array (ou seja, se tem varias versoes)
         if (array instanceof JSONArray) {
             JSONArray jsonArray = (JSONArray) array;
 
+            // Faz loop em todos objetos da array
             for (Object jsonObj : jsonArray) {
+                // Verifica um objeto (para evitar problemas de ClassCannotCastException)
                 if (jsonObj instanceof JSONObject) {
+                    // Processa a versão
                     processJsonObject((JSONObject) jsonObj, multiFormatter, versionList);
                 }
             }
         } else {
+            // Caso não seja várias versões processa somente 1
             processJsonObject((JSONObject) array, multiFormatter, versionList);
         }
 
