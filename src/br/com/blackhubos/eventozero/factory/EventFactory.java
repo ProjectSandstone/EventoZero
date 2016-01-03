@@ -21,6 +21,7 @@
 package br.com.blackhubos.eventozero.factory;
 
 import java.io.File;
+import java.util.Vector;
 
 import org.bukkit.plugin.Plugin;
 
@@ -28,7 +29,9 @@ import br.com.blackhubos.eventozero.util.Framework.Configuration;
 
 public final class EventFactory
 {
-
+	
+	private static final Vector<Event> events = new Vector<>();
+	
 	public static Event createMyEvent(final String name)
 	{
 		return new Event(name).updateDescription("");
@@ -54,8 +57,10 @@ public final class EventFactory
 				event.getEventData().updateData("options.message.occurring", configuration.getString("options.message.occurring"));
 				event.getEventData().updateData("options.message.ending", configuration.getString("options.message.ending"));
 				event.getEventData().updateData("options.message.closed", configuration.getString("options.message.closed"));
+				events.add(event);
 			}
 		}
 	}
+	
 
 }

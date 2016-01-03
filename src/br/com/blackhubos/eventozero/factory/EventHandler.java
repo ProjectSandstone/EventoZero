@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.bukkit.entity.Player;
 
 public class EventHandler {
 	
@@ -32,12 +33,21 @@ public class EventHandler {
 		this.events = new HashSet<>();
 	}
 	
-	public Set<Event> getEventos(){
+	public Event getEventByPlayer(final Player player){
+		for(Event e : getEvents()){
+			if(e.hasPlayerJoined(player)){
+				return e;
+			}
+		}
+		return null;
+	}
+	
+	public Set<Event> getEvents(){
 		return this.events;
 		
 	}
 	
-	public void loadEvent(Event event){
+	public void loadEvent(final Event event){
 		if(event != null)
 			throw new NullArgumentException("Event is null");
 		events.add(event);

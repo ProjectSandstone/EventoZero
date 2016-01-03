@@ -24,6 +24,8 @@ import java.io.File;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import br.com.blackhubos.eventozero.kit.KitHandler;
+import br.com.blackhubos.eventozero.shop.ShopHandler;
 import br.com.blackhubos.eventozero.storage.Storage;
 import br.com.blackhubos.eventozero.util.Framework;
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
@@ -39,6 +41,9 @@ public final class EventoZero extends JavaPlugin
 	private static Configuration config_bans = null;
 	private static Configuration config_signs = null;
 	private static Storage storage = null;
+	
+	private static ShopHandler shopHandler;
+	private static KitHandler kitHandler;
 
 	@Override
 	public void onEnable()
@@ -58,6 +63,10 @@ public final class EventoZero extends JavaPlugin
 				this.getLogger().info(c.getFile() + " padrão copiada com sucesso..");
 			}
 		}
+		
+		shopHandler = new ShopHandler();
+		kitHandler = new KitHandler();
+		
 	}
 
 	@Override
@@ -88,6 +97,14 @@ public final class EventoZero extends JavaPlugin
 		EventoZero.getStorage().depositPlayerRankingPoints("Atom", "Spleef", 1, 1);
 		EventoZero.getStorage().withdrawPlayerRankingPoints("atoM", "spleef", 1, 1);
 		// NOTA: spleef = Spleef, tal para Atom = atoM. Caso insensitive.
+	}
+	
+	public static ShopHandler getShopHandler(){
+		return shopHandler;
+	}
+	
+	public static KitHandler getKitHandler(){
+		return kitHandler;
 	}
 
 	/**

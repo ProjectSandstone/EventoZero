@@ -21,21 +21,32 @@ package br.com.blackhubos.eventozero.ability;
 
 import org.bukkit.entity.Player;
 
-public abstract class Ability
+public abstract class Ability implements Cloneable
 {
 
+	private final String name;
 	private final long cooldown;
-	private final long lastTime;
+	
+	protected long lastTime;
 
-	public Ability(final long cooldown)
+	public Ability(String name, final long cooldown)
 	{
+		this.name = name;
 		this.cooldown = cooldown;
 		this.lastTime = 0;
+	}
+	
+	public String getName(){
+		return this.name;
+	}
+	
+	public long getCooldown(){
+		return this.cooldown;
 	}
 
 	public long getRemaingTime()
 	{
-		return (this.lastTime - (this.cooldown * 1000));
+		return (this.lastTime - (getCooldown() * 1000));
 	}
 
 	public long getRemaingTimePostive()
@@ -47,9 +58,19 @@ public abstract class Ability
 	{
 		return (this.getRemaingTimePostive() == 0);
 	}
+	
+	public abstract Ability clone();
 
-	public abstract boolean tryUse(Player player);
+	public abstract boolean tryUse(final Player player);
 
-	public abstract void foceUse(Player player);
-
+	public abstract void foceUse(final Player player);
+	
+	public Ability updateTime(){
+		this.lastTime = System.currentTimeMillis();
+		return this;
+	}
+	public Ability updateTime(final long lastTime){
+		this.lastTime = lastTime;
+		return this;
+	}
 }

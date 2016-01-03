@@ -32,6 +32,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import br.com.blackhubos.eventozero.ability.Ability;
 import br.com.blackhubos.eventozero.party.Party;
 
 /**
@@ -52,6 +53,7 @@ public class Event
 	private final Vector<Player> joineds;
 	private final Vector<Player> spectators;
 	private final Vector<Party> partys;
+	private final Vector<Ability> abilitys;
 
 	private String eventDescription;
 	private EventState eventoState;
@@ -62,6 +64,7 @@ public class Event
 		this.joineds = new Vector<>();
 		this.spectators = new Vector<>();
 		this.partys = new Vector<>();
+		this.abilitys = new Vector<>();
 		this.eventData = new EventData();
 	}
 
@@ -114,6 +117,10 @@ public class Event
 	public Vector<Player> getSpectators()
 	{
 		return this.spectators;
+	}
+	
+	public Vector<Ability> getAbilitys(){
+		return this.abilitys;
 	}
 
 	public Event playerJoin(final Player player)
@@ -273,10 +280,10 @@ public class Event
 					 */
 					final String string = String.valueOf(this.getEventData().getData("options.message." + this.getEventState().getPath()));
 					final Sign sign = (Sign) block.getState();
-					sign.setLine(0, String.valueOf(this.getEventData().getData("options.signs.line.1")).replace("{state]", string).replace("{size}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
-					sign.setLine(0, String.valueOf(this.getEventData().getData("options.signs.line.2")).replace("{state]", string).replace("{size}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
-					sign.setLine(0, String.valueOf(this.getEventData().getData("options.signs.line.3")).replace("{state]", string).replace("{size}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
-					sign.setLine(0, String.valueOf(this.getEventData().getData("options.signs.line.4")).replace("{state]", string).replace("{size}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
+					sign.setLine(1, String.valueOf(this.getEventData().getData("options.signs.line.1")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
+					sign.setLine(2, String.valueOf(this.getEventData().getData("options.signs.line.2")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
+					sign.setLine(3, String.valueOf(this.getEventData().getData("options.signs.line.3")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
+					sign.setLine(4, String.valueOf(this.getEventData().getData("options.signs.line.4")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
 					sign.update();
 				}
 			}
