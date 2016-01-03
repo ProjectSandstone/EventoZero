@@ -21,6 +21,7 @@ package br.com.blackhubos.eventozero;
 
 import java.io.File;
 
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.blackhubos.eventozero.storage.Storage;
@@ -56,6 +57,9 @@ public final class EventoZero extends JavaPlugin
 	{
 		// TODO: cancelar eventos ocorrendo
 		// TODO: salvar scores se em flatfile; pois é necessário fazer flush do(s) arquivo(s)
+
+		// Remove os listeners do plugin para ter melhor funcionamento com PluginManagers.
+		HandlerList.unregisterAll(this);
 	}
 
 	/**
