@@ -20,6 +20,8 @@
 package br.com.blackhubos.eventozero.storage;
 
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public abstract class Storage
 {
@@ -74,6 +76,14 @@ public abstract class Storage
 	 */
 	public abstract long getPlayerRankingPoints(String player, String evento, int tipo);
 
+	/**
+	 * Efetuar uma busca na database de eventos.
+	 *
+	 * @param query O código-mysql para a busca.
+	 * @return Uma {@link ResultSet} referente a busca.
+	 */
+	public abstract ResultSet search(String query) throws SQLException;
+
 	public static enum Module implements Serializable
 	{
 		// id | jogador | evento | vitorias | derrotas | dc | mortes
@@ -87,6 +97,9 @@ public abstract class Storage
 
 		// id | evento | mundo | localização (String revertida via Framework!!!)
 		SIGN("signs", "signs.yml"),
+
+		// id | jogador | evento| devolvido | vida | comida | xp | level | local | itens | armadura
+		BACKUP("backup", ""),
 
 		// id | key | valor
 		OTHER("others", "");
