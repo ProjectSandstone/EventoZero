@@ -19,14 +19,18 @@
  */
 package br.com.blackhubos.eventozero.updater.searcher;
 
+import com.google.common.base.Optional;
+
 import java.util.Collection;
 
-import br.com.blackhubos.eventozero.updater.versions.Version;
+import br.com.blackhubos.eventozero.updater.assets.versions.Version;
 
 public interface Searcher {
 
     Version getLastestVersion();
     Version getRollbackVersion();
     Collection<Version> getAllVersion();
+
+    Optional<Version> findVersion(String tag);
 
 }
