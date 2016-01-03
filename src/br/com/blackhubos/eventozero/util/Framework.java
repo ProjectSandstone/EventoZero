@@ -62,9 +62,13 @@ import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
 import com.sk89q.worldedit.schematic.SchematicFormat;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -1399,6 +1403,11 @@ public final class Framework
 		}
 	}
 
+	/**
+	 * @info O {@link CuboidClipboard} está sendo substituido aos poucos pelo {@link com.sk89q.worldedit.extent.clipboard.Clipboard}
+	 * O que faz com que as Clipboards sejam incompativeis com a CuboidClipboard, e os schematics retornam o {@link CuboidClipboard} que está
+	 * deprecated!
+	 */
 	public static class Terrain
 	{
 
@@ -1440,12 +1449,9 @@ public final class Framework
 		public void load(File saveFile, final Location loc) throws FilenameException, DataException, IOException, MaxChangedBlocksException, EmptyClipboardException
 		{
 			saveFile = this.we.getSafeSaveFile(this.localPlayer, saveFile.getParentFile(), saveFile.getName(), Terrain.EXTENSION, new String[] { Terrain.EXTENSION });
-
 			this.editSession.enableQueue();
-
-			this.localSession.setClipboard(new ClipboardHolder(MCEditSchematicFormat.MCEDIT.load(saveFile)));
-
-			this.localSession.getClipboard().place(this.editSession, this.getPastePosition(loc), false);
+			CuboidClipboard cuboidClipboard = SchematicFormat.MCEDIT.load(saveFile);
+			cuboidClipboard.place(this.editSession, getPastePosition(loc), false);
 			this.editSession.flushQueue();
 			this.we.flushBlockBag(this.localPlayer, this.editSession);
 		}
