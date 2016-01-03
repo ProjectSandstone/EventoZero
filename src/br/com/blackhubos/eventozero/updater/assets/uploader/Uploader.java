@@ -46,6 +46,7 @@ public class Uploader implements Parser<JSONObject, Uploader> {
         this.id = id;
     }
 
+    @SuppressWarnings("unchecked")
     public static Optional<Uploader> parseJsonObject(JSONObject parse, MultiTypeFormatter formatter) {
         long id = Long.MIN_VALUE;
         String name = null;

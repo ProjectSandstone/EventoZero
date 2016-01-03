@@ -64,6 +64,7 @@ public class Asset implements Parser<JSONObject, Asset> {
         this.uploader = uploader;
     }
 
+    @SuppressWarnings("unchecked")
     public static Optional<Asset> parseJsonObject(JSONObject jsonObject, MultiTypeFormatter formatter) {
 
         String url = null;

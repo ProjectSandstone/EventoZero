@@ -148,11 +148,11 @@ public class GitHubSearcher implements Searcher {
             processJsonObject((JSONObject) array, multiFormatter, versionList);
         }
 
-        return (versionList != null && !versionList.isEmpty() ? Optional.of(versionList) : Optional.<Collection<Version>>absent());
+        return (!versionList.isEmpty() ? Optional.of(versionList) : Optional.<Collection<Version>>absent());
     }
 
+    @SuppressWarnings("unchecked")
     private void processJsonObject(JSONObject jobject, MultiTypeFormatter formatter, Collection<Version> versionList) {
-        JSONObject jsonObject = jobject;
         /**
          * Variaveis do {@link Version}
          */
@@ -170,7 +170,7 @@ public class GitHubSearcher implements Searcher {
          * /Variaveis do {@link Version}
          */
 
-        for (Map.Entry object : (Set<Map.Entry>) jsonObject.entrySet()) {
+        for (Map.Entry object : (Set<Map.Entry>) jobject.entrySet()) {
 
             Object key = object.getKey();
             Object value = object.getValue();
