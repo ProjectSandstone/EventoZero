@@ -22,6 +22,7 @@ package br.com.blackhubos.eventozero.handlers;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Map.Entry;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.ChatColor;
@@ -74,7 +75,11 @@ public final class MessageHandler
 		public void sendMessage(final CommandSender player, final String... replacements)
 		{
 			this.replacements(replacements);
-			player.sendMessage(this.getText());
+			final Vector<String> prepared = this.getText();
+			for (final String line : prepared)
+			{
+				player.sendMessage(line);
+			}
 		}
 
 		/**
@@ -108,15 +113,40 @@ public final class MessageHandler
 		 *
 		 * @return Retorna uma {@link String} pronta para ser enviada.
 		 */
-		public String getText()
+		public Vector<String> getText()
 		{
-			String text = (((this.key != null) && !this.key.isEmpty() && (MessageHandler.flatfile != null) && MessageHandler.flatfile.contains(this.key)) ? MessageHandler.flatfile.getString(this.key) : this.string);
-			for (final Entry<String, String> kv : this.replacements.entrySet())
+			final boolean exists = (((this.key != null) && !this.key.isEmpty() && (MessageHandler.flatfile != null) && MessageHandler.flatfile.contains(this.key)));
+			final Vector<String> messages = new Vector<String>();
+			if (exists)
 			{
-				text = text.replace(kv.getKey(), kv.getValue());
+				if (MessageHandler.flatfile.isList(this.key))
+				{
+					for (final String line : MessageHandler.flatfile.getStringList(this.key))
+					{
+						messages.add(line);
+					}
+				}
+				else
+				{
+					messages.add(MessageHandler.flatfile.getString(this.key));
+				}
+			}
+			else
+			{
+				messages.add(this.string);
 			}
 
-			return ChatColor.translateAlternateColorCodes('&', text);
+			for (int i = 0; i < messages.size(); i++)
+			{
+				String text = messages.get(i);
+				for (final Entry<String, String> kv : this.replacements.entrySet())
+				{
+					text = text.replace(kv.getKey(), kv.getValue());
+				}
+				messages.set(i, ChatColor.translateAlternateColorCodes('&', text));
+			}
+
+			return messages;
 		}
 
 		/**
