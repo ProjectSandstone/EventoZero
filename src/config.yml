@@ -1,2 +1,31 @@
+#################################################################################################
+#                                                                                               #
+#          ####  #    # #####  ##   ##  ####### ######  ######  #####  #######  ######          #
+#          ##    #    # ##     # #  #     ###   #    #  #    #  ##     #    #   #    #          #
+#          ##    #    # ##     #  # #      #    #    #      #   ##     #   #    #    #          #
+#          ###   #    # ###    #  # #      #    #    #     #    ###    # ##     #    #          #
+#          ##    #    # ##     #  # #      #    #    #    #     ##     #  #     #    #          #
+#          ##    ##  ## ##     #  # #      #    #    #   #   #  ##     #   #    #    #          #
+#          #####   ##   #####  #   #       #    ######   #####  #####  #    ##  ######          #
+#                                                                                               #
+#################################################################################################
+
+# Configuração de timers/tasks
+# h = horas, m = minutos e s = segundos
+# Ex.: 1h30m55s = a cada 1 hora, 30 minutos e 55 segundos.
 tasks:
+  # Digite a quantia de tempo para fazer flush (=salvar em disco) os logs.
   savelogs: 5m
+
+# Configurações de mysql.
+mysql:
+  # Servidor do mysql (localhost = na própria máquina)
+  server: 'localhost'
+  # Nome da conta que tem acesso ao banco de dados
+  account: 'root'
+  # Senha da conta configurada acima
+  password: '12345@@'
+  # Nome do banco de dados
+  database: 'eventozero'
+  # Deseja algum prefixo nas tabelas? Opcional.
+  prefix: 'ez_'
