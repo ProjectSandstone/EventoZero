@@ -32,8 +32,12 @@ import br.com.blackhubos.eventozero.util.Framework.LoggerManager;
 public final class EventoZero extends JavaPlugin
 {
 
-	private static Configuration config = null;
 	private static LoggerManager<EventoZero> logger = null;
+	private static Configuration config = null;
+	private static Configuration config_rankings = null;
+	private static Configuration config_points = null;
+	private static Configuration config_bans = null;
+	private static Configuration config_signs = null;
 	private static Storage storage = null;
 
 	@Override
@@ -41,14 +45,18 @@ public final class EventoZero extends JavaPlugin
 	{
 		new Framework(); // Apenas carrega o WorldGuard e WorldEdit
 		EventoZero.config = new Configuration(this, new File(this.getDataFolder(), "config.yml"));
+		EventoZero.config_rankings = new Configuration(this, new File(this.getDataFolder(), "rankings.yml"));
+		EventoZero.config_points = new Configuration(this, new File(this.getDataFolder(), "points.yml"));
+		EventoZero.config_bans = new Configuration(this, new File(this.getDataFolder(), "bans.yml"));
+		EventoZero.config_signs = new Configuration(this, new File(this.getDataFolder(), "signs.yml"));
+		EventoZero.logger = new LoggerManager<EventoZero>(this, new File(this.getDataFolder(), "logs")).init(EventoZero.config.getString("tasks.savelogs"));
 
-		// TODO: atenção aqui, preciso mudar o '5m'. Os tempo dos tasks devem ser configuráveis!
-		EventoZero.logger = new LoggerManager<EventoZero>(this, new File(this.getDataFolder(), "logs")).init("5m");
-
-		// Isso verifica se a configuração não existia e foi copiada do jar para a pasta
-		if (EventoZero.config.copied())
+		for (final Configuration c : new Configuration[] { EventoZero.config, EventoZero.config_rankings, EventoZero.config_points, EventoZero.config_bans, EventoZero.config_signs })
 		{
-			this.getLogger().info("Configuração padrão copiada com sucesso!");
+			if (c.copied())
+			{
+				this.getLogger().info(c.getFile() + " padrão copiada com sucesso..");
+			}
 		}
 	}
 
@@ -91,6 +99,42 @@ public final class EventoZero extends JavaPlugin
 	public static Configuration getConfiguration()
 	{
 		return EventoZero.config;
+	}
+
+	/**
+	 * @see {@link #getConfiguration()}
+	 * @return Retorna uma {@link Configuration} vinda do arquivo points.yml
+	 */
+	public static Configuration getPointsConfiguration()
+	{
+		return EventoZero.config_points;
+	}
+
+	/**
+	 * @see {@link #getConfiguration()}
+	 * @return Retorna uma {@link Configuration} vinda do arquivo points.yml
+	 */
+	public static Configuration getRankingConfiguration()
+	{
+		return EventoZero.config_rankings;
+	}
+
+	/**
+	 * @see {@link #getConfiguration()}
+	 * @return Retorna uma {@link Configuration} vinda do arquivo signs.yml
+	 */
+	public static Configuration getSignConfiguration()
+	{
+		return EventoZero.config_signs;
+	}
+
+	/**
+	 * @see {@link #getConfiguration()}
+	 * @return Retorna uma {@link Configuration} vinda do arquivo bans.yml
+	 */
+	public static Configuration getBanConfiguration()
+	{
+		return EventoZero.config_bans;
 	}
 
 	/**
