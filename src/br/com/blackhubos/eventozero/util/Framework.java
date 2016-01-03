@@ -1300,6 +1300,7 @@ public final class Framework
 	{
 
 		private boolean copied;
+		private String filename;
 
 		public Configuration()
 		{
@@ -1310,6 +1311,7 @@ public final class Framework
 		{
 			try
 			{
+				this.filename = file.getName();
 				this.load(file);
 			}
 			catch (IOException | InvalidConfigurationException e)
@@ -1320,6 +1322,7 @@ public final class Framework
 
 		public Configuration(final Plugin plugin, final File file)
 		{
+			this.filename = file.getName();
 			if (!file.exists())
 			{
 				plugin.saveResource(file.getName(), false);
@@ -1368,10 +1371,16 @@ public final class Framework
 			this.loadFromString(builder.toString());
 		}
 
+		public String getFile()
+		{
+			return this.filename;
+		}
+
 		@Override
 		public void save(final File file) throws IOException
 		{
 			Validate.notNull(file, "File cannot be null");
+			this.filename = file.getName();
 			com.google.common.io.Files.createParentDirs(file);
 			final String data = this.saveToString();
 			final FileOutputStream stream = new FileOutputStream(file);
