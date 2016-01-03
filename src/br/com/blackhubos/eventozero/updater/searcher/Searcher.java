@@ -17,6 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package br.com.blackhubos.eventozero.updater;
+package br.com.blackhubos.eventozero.updater.searcher;
 
-public class Updater {}
+import java.util.Collection;
+
+import br.com.blackhubos.eventozero.updater.versions.Version;
+
+public interface Searcher {
+
+    Version getLastestVersion();
+    Version getRollbackVersion();
+    Collection<Version> getAllVersion();
+
+}
