@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.NullArgumentException;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -33,189 +34,253 @@ import org.bukkit.inventory.ItemStack;
 
 import br.com.blackhubos.eventozero.party.Party;
 
-public class Event {
-	
+/**
+ * TODO: arrumar index do setSign (todos 0)
+ * TODO: adicionar logs (getLoggerService()) nos backups e afins para deixar registrado
+ * TODO: adicionar as mensagens e seus replaces aos respectivos voids necessÃ¡rios
+ * TODO: documentar (javadoc) todos os mÃ©todos e construtores em PortuguÃªs BR.
+ * Falta algo? documente aqui com um TODO: mensagem
+ * TODO = To Do (a fazer)
+ *
+ */
+public class Event
+{
+
 	private final String eventName;
 	private final EventData eventData;
-	
+
 	private final Vector<Player> joineds;
 	private final Vector<Player> spectators;
 	private final Vector<Party> partys;
-	
+
 	private String eventDescription;
 	private EventState eventoState;
-	
-	public Event(String name){
+
+	public Event(final String name)
+	{
 		this.eventName = name;
 		this.joineds = new Vector<>();
 		this.spectators = new Vector<>();
 		this.partys = new Vector<>();
 		this.eventData = new EventData();
 	}
-	
-	public String getEventName(){
+
+	public String getEventName()
+	{
 		return this.eventName;
 	}
-	
-	public String getEventDescription(){
+
+	public String getEventDescription()
+	{
 		return this.eventDescription;
 	}
-	
-	public EventData geEventData(){
+
+	/**
+	 * O nome estava incorreto, estava geEventState() (faltava o t no get), renomeado por Atom
+	 *
+	 * @return
+	 */
+	public EventData getEventData()
+	{
 		return this.eventData;
 	}
-	
-	public EventState geEventState(){
+
+	/**
+	 * O nome estava incorreto, estava geEventState() (faltava o t no get), renomeado por Atom
+	 *
+	 * @return
+	 */
+	public EventState getEventState()
+	{
 		return this.eventoState;
 	}
-	
-	public Event updateDescription(String desc){
-		eventDescription = desc;
+
+	public Event updateDescription(final String desc)
+	{
+		this.eventDescription = desc;
 		return this;
 	}
-	
-	public Vector<Party> getPartys(){
+
+	public Vector<Party> getPartys()
+	{
 		return this.partys;
 	}
-	
-	public Vector<Player> getPlayers(){
-		return joineds;
+
+	public Vector<Player> getPlayers()
+	{
+		return this.joineds;
 	}
-	
-	public Vector<Player> getSpectators(){
-		return spectators;
+
+	public Vector<Player> getSpectators()
+	{
+		return this.spectators;
 	}
-	
-	public Event playerJoin(Player player){
-		if(player == null || (player != null && !player.isOnline()))
+
+	public Event playerJoin(final Player player)
+	{
+		if ((player == null) || ((player != null) && !player.isOnline()))
+		{
 			throw new NullArgumentException("Player is null");
-		if(!hasPlayerJoined(player)){
-			joineds.add(player);
-			playerBackup(player);
-			updateSigns();
+		}
+		if (!this.hasPlayerJoined(player))
+		{
+			this.joineds.add(player);
+			this.playerBackup(player);
+			this.updateSigns();
 		}
 		return this;
 	}
-	
-	public Event playerQuit(Player player){
-		if(player == null || (player != null && !player.isOnline()))
+
+	public Event playerQuit(final Player player)
+	{
+		if ((player == null) || ((player != null) && !player.isOnline()))
+		{
 			throw new NullArgumentException("Player is null");
-		if(hasPlayerJoined(player)){
-			joineds.remove(player);
-			spectatorQuit(player);
-			playerRestore(player);
-			updateSigns();
+		}
+		if (this.hasPlayerJoined(player))
+		{
+			this.joineds.remove(player);
+			this.spectatorQuit(player);
+			this.playerRestore(player);
+			this.updateSigns();
 		}
 		return this;
 	}
-	
-	public Event spectatorJoin(Player player){
-		if(player == null || (player != null && !player.isOnline()))
+
+	public Event spectatorJoin(final Player player)
+	{
+		if ((player == null) || ((player != null) && !player.isOnline()))
+		{
 			throw new NullArgumentException("Player is null");
-		if(!spectators.contains(player)){
-			for(Player obj : getPlayers()){
+		}
+		if (!this.spectators.contains(player))
+		{
+			for (final Player obj : this.getPlayers())
+			{
 				obj.hidePlayer(player);
 			}
 			player.setAllowFlight(true);
 			player.setFlying(true);
-			spectators.add(player);
+			this.spectators.add(player);
 		}
 		return this;
 	}
-	
-	public Event spectatorQuit(Player player){
-		if(player == null || (player != null && player.isOnline()))
+
+	public Event spectatorQuit(final Player player)
+	{
+		if ((player == null) || ((player != null) && player.isOnline()))
+		{
 			throw new NullArgumentException("Player is null");
-		if(spectators.contains(player)){
-			for(Player obj : getPlayers()){
+		}
+		if (this.spectators.contains(player))
+		{
+			for (final Player obj : this.getPlayers())
+			{
 				obj.showPlayer(player);
 			}
 			player.setAllowFlight(false);
 			player.setFlying(false);
-			spectators.remove(player);
+			this.spectators.remove(player);
 		}
 		return this;
-		
+
 	}
-	
-	public boolean hasPlayerJoined(Player player){
-		return joineds.contains(player);
+
+	public boolean hasPlayerJoined(final Player player)
+	{
+		return this.joineds.contains(player);
 	}
-	
-	public void stop(){
+
+	public void stop()
+	{
 		// STOP EVENT, GET WINNERS, ALIVES
-		updateSigns();
+		this.updateSigns();
 	}
-	
-	public void start(){
+
+	public void start()
+	{
 		// START THE COUNTDOWN
-		if(geEventState() == EventState.OPENED){
-			new EventCountdown(this, (Integer) geEventData().getData("options.countdown.seconds"));
-			updateSigns();
+		if (this.getEventState() == EventState.OPENED)
+		{
+			new EventCountdown(this, (Integer) this.getEventData().getData("options.countdown.seconds"));
+			this.updateSigns();
 		}
 	}
-	
-	public void forceStop(){
+
+	public void forceStop()
+	{
 		// STOP FORCE EVENT
-		for(Player player : joineds){
-			playerQuit(player);
+		for (final Player player : this.joineds)
+		{
+			this.playerQuit(player);
 		}
-		updateSigns();
+		this.updateSigns();
 	}
-	
-	public void forceStart(){
+
+	public void forceStart()
+	{
 		// START EVENT
-		if(getPlayers().size() < (Integer) geEventData().getData("event.min")){
+		if (this.getPlayers().size() < (Integer) this.getEventData().getData("event.min"))
+		{
 			// STOP
 			// MESSAGE CANCELED MIN PLAYER
-			forceStop();
+			this.forceStop();
 		}
 		// CODE START
-		updateSigns();
+		this.updateSigns();
 	}
-	
-	public void playerBackup(Player player){
-		// BACKUP PLAYER
-		geEventData().updateData(player.getName() + ".health", player.getHealth());
-		geEventData().updateData(player.getName() + ".food", player.getFoodLevel());
-		geEventData().updateData(player.getName() + ".exp", player.getExp());
-		geEventData().updateData(player.getName() + ".expLevel", player.getLevel());
-		geEventData().updateData(player.getName() + ".location", player.getLocation());
-		geEventData().updateData(player.getName() + ".inventory.contents", player.getInventory().getContents());
-		geEventData().updateData(player.getName() + ".inventory.armorContents", player.getInventory().getArmorContents());
-	}
-	
-	public void playerRestore(Player player){
-		// RESTORE BACKUP PLAYER
-		player.setHealth((Integer)geEventData().getData(player.getName() + 							 ".health"));
-		player.setFoodLevel((Integer)geEventData().getData(player.getName() + 						 ".food"));
-		player.setExp((Float)geEventData().getData(player.getName() + 								 ".exp"));
-		player.setLevel((Integer)geEventData().getData(player.getName() + 							 ".expLevel"));
-		player.teleport((Location)geEventData().getData(player.getName() + 							 ".location"));
-		player.getInventory().setContents((ItemStack[])geEventData().getData(player.getName() +      ".inventory.contents"));
-		player.getInventory().setArmorContents((ItemStack[])geEventData().getData(player.getName() + ".inventory.armorContents"));
-	}
-	
 
-	
-	public void updateSigns(){
-		if(geEventData().containsKey("options.signs.locations") && (geEventData().getData("options.signs.locations") != null)){
-			List<Location> locations = (List<Location>) geEventData().getData("options.signs.locations");
-			for(Location location : locations){
-				Block block = location.getWorld().getBlockAt(location);
-				if(block.getType() == Material.SIGN || block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN){
-					String string =  String.valueOf(geEventData().getData("options.message." + geEventState().getPath()));
-					Sign sign = (Sign) block.getState();
-					sign.setLine(0, String.valueOf(geEventData().getData("options.signs.line.1")).replace("{state]", string).replace("{size}", String.valueOf(getPlayers().size())).replace("{name}", getEventName()).replaceAll("&", "§"));
-					sign.setLine(0, String.valueOf(geEventData().getData("options.signs.line.2")).replace("{state]", string).replace("{size}", String.valueOf(getPlayers().size())).replace("{name}", getEventName()).replaceAll("&", "§"));
-					sign.setLine(0, String.valueOf(geEventData().getData("options.signs.line.3")).replace("{state]", string).replace("{size}", String.valueOf(getPlayers().size())).replace("{name}", getEventName()).replaceAll("&", "§"));
-					sign.setLine(0, String.valueOf(geEventData().getData("options.signs.line.4")).replace("{state]", string).replace("{size}", String.valueOf(getPlayers().size())).replace("{name}", getEventName()).replaceAll("&", "§"));
+	public void playerBackup(final Player player)
+	{
+		// BACKUP PLAYER
+		this.getEventData().updateData(player.getName() + ".health", player.getHealth());
+		this.getEventData().updateData(player.getName() + ".food", player.getFoodLevel());
+		this.getEventData().updateData(player.getName() + ".exp", player.getExp());
+		this.getEventData().updateData(player.getName() + ".expLevel", player.getLevel());
+		this.getEventData().updateData(player.getName() + ".location", player.getLocation());
+		this.getEventData().updateData(player.getName() + ".inventory.contents", player.getInventory().getContents());
+		this.getEventData().updateData(player.getName() + ".inventory.armorContents", player.getInventory().getArmorContents());
+	}
+
+	public void playerRestore(final Player player)
+	{
+		// RESTORE BACKUP PLAYER
+		player.setHealth((Integer) this.getEventData().getData(player.getName() + ".health"));
+		player.setFoodLevel((Integer) this.getEventData().getData(player.getName() + ".food"));
+		player.setExp((Float) this.getEventData().getData(player.getName() + ".exp"));
+		player.setLevel((Integer) this.getEventData().getData(player.getName() + ".expLevel"));
+		player.teleport((Location) this.getEventData().getData(player.getName() + ".location"));
+		player.getInventory().setContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.contents"));
+		player.getInventory().setArmorContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.armorContents"));
+	}
+
+	@SuppressWarnings("unchecked")
+	public void updateSigns()
+	{
+		if (this.getEventData().containsKey("options.signs.locations") && (this.getEventData().getData("options.signs.locations") != null))
+		{
+			/**
+			 * TODO: trocar List por Vector
+			 */
+			final List<Location> locations = (List<Location>) this.getEventData().getData("options.signs.locations");
+			for (final Location location : locations)
+			{
+				final Block block = location.getWorld().getBlockAt(location);
+				if ((block.getType() == Material.SIGN_POST) || (block.getType() == Material.WALL_SIGN))
+				{
+					/*
+					 * TODO: arrumar o sign.setLine(), note que todos indexes sÃ£o 0
+					 */
+					final String string = String.valueOf(this.getEventData().getData("options.message." + this.getEventState().getPath()));
+					final Sign sign = (Sign) block.getState();
+					sign.setLine(0, String.valueOf(this.getEventData().getData("options.signs.line.1")).replace("{state]", string).replace("{size}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "ï¿½"));
+					sign.setLine(0, String.valueOf(this.getEventData().getData("options.signs.line.2")).replace("{state]", string).replace("{size}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "ï¿½"));
+					sign.setLine(0, String.valueOf(this.getEventData().getData("options.signs.line.3")).replace("{state]", string).replace("{size}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "ï¿½"));
+					sign.setLine(0, String.valueOf(this.getEventData().getData("options.signs.line.4")).replace("{state]", string).replace("{size}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "ï¿½"));
 					sign.update();
 				}
 			}
 		}
 	}
-	
-
 
 }
