@@ -17,20 +17,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package br.com.blackhubos.eventozero.updater.searcher;
+package br.com.blackhubos.eventozero.updater.formater.exception;
 
-import com.google.common.base.Optional;
+public class CannotFormatTypeException extends RuntimeException {
 
-import java.util.Collection;
+    public CannotFormatTypeException() {
+        super();
+    }
 
-import br.com.blackhubos.eventozero.updater.assets.versions.Version;
+    public CannotFormatTypeException(String message) {
+        super(message);
+    }
 
-public interface Searcher {
+    public CannotFormatTypeException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-    Version getLastestVersion();
-    Version getRollbackVersion();
-    Collection<Version> getAllVersion();
-
-    Optional<Version> findVersion(String tag);
+    public CannotFormatTypeException(Throwable cause) {
+        super(cause);
+    }
 
 }

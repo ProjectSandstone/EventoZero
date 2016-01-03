@@ -17,28 +17,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package br.com.blackhubos.eventozero.updater.searcher;
+package br.com.blackhubos.eventozero.updater.parser;
 
-import java.util.Collection;
+import com.google.common.base.Optional;
 
-import br.com.blackhubos.eventozero.updater.versions.Version;
+import br.com.blackhubos.eventozero.updater.formater.MultiTypeFormatter;
 
-public class GithubSearcher implements Searcher {
+/**
+ *
+ * @param <T> Tipo para fazer "parse"
+ * @param <E> Tipo de retorno
+ */
+public interface Parser<T, E> {
 
-    @Override
-    public Version getLastestVersion() {
-        return null;
-    }
-
-    @Override
-    public Version getRollbackVersion() {
-        return null;
-    }
-
-    @Override
-    public Collection<Version> getAllVersion() {
-        return null;
-    }
-
+    Optional<E> parseObject(T object, MultiTypeFormatter typeFormatter);
 
 }
