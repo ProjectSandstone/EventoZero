@@ -55,7 +55,7 @@ public final class EventoZero extends JavaPlugin
 		{
 			if (c.copied())
 			{
-				this.getLogger().info(c.getFile() + " padrão copiada com sucesso!");
+				this.getLogger().info(c.getFile() + " padrão copiada com sucesso..");
 			}
 		}
 	}
