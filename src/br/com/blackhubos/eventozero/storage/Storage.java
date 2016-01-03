@@ -25,12 +25,6 @@ public abstract class Storage
 {
 
 	/**
-	 * Isso é definido no onEnable(); 1 = mysql, 2 = flatfile (.yml)
-	 * Não precisam mexer nisso.
-	 */
-	protected static int id = 0;
-
-	/**
 	 * Obter um valor que está linkado a um jogador em um serviço.
 	 *
 	 * @param service Em qual serviço isso está? bans? pontos? etc.
@@ -80,42 +74,13 @@ public abstract class Storage
 	 */
 	public abstract long getPlayerRankingPoints(String player, String evento, int tipo);
 
-	public static enum StorageType implements Serializable
-	{
-		MySQL(1), Flatfile(2);
-
-		private final int id;
-
-		private StorageType(final int id)
-		{
-			this.id = id;
-		}
-
-		public int getId()
-		{
-			return this.id;
-		}
-
-		public static StorageType getStorageMethod()
-		{
-			if (Storage.id == 1)
-			{
-				return StorageType.MySQL;
-			}
-			else
-			{
-				return StorageType.Flatfile;
-			}
-		}
-	}
-
 	public static enum Module implements Serializable
 	{
 		// id | jogador | evento | vitorias | derrotas | dc | mortes
 		RANKING("rankings", "rankings.yml"),
 
 		// id | jogador | evento | -OPCIONAL- motivo
-		BAN("bannedplayers", "banned-players.yml"),
+		BAN("bannedplayers", "bans.yml"),
 
 		// id | jogador | pontos
 		POINT("points", "points.yml"),
@@ -124,7 +89,7 @@ public abstract class Storage
 		SIGN("signs", "signs.yml"),
 
 		// id | key | valor
-		OTHER("others", "others.yml");
+		OTHER("others", "");
 
 		private final String table;
 		private final String flatfile;
