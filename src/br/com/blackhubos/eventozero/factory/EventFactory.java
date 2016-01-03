@@ -44,16 +44,16 @@ public final class EventFactory
 				final Configuration configuration = new Configuration(file); // Já carrega automaticamente
 				final Event event = new Event(configuration.getString("name")).updateDescription(configuration.getString("description"));
 
-				event.geEventoData().updateData("options.signs.line.1", configuration.getString("signs.lines.1"));
-				event.geEventoData().updateData("options.signs.line.2", configuration.getString("signs.lines.2"));
-				event.geEventoData().updateData("options.signs.line.3", configuration.getString("signs.lines.3"));
-				event.geEventoData().updateData("options.signs.line.4", configuration.getString("signs.lines.4"));
+				event.geEventData().updateData("options.signs.line.1", configuration.getString("signs.lines.1"));
+				event.geEventData().updateData("options.signs.line.2", configuration.getString("signs.lines.2"));
+				event.geEventData().updateData("options.signs.line.3", configuration.getString("signs.lines.3"));
+				event.geEventData().updateData("options.signs.line.4", configuration.getString("signs.lines.4"));
 
-				event.geEventoData().updateData("options.message.opened", configuration.getString("options.message.opened"));
-				event.geEventoData().updateData("options.message.prestarted", configuration.getString("options.message.prestarted"));
-				event.geEventoData().updateData("options.message.occurring", configuration.getString("options.message.occurring"));
-				event.geEventoData().updateData("options.message.ending", configuration.getString("options.message.ending"));
-				event.geEventoData().updateData("options.message.closed", configuration.getString("options.message.closed"));
+				event.geEventData().updateData("options.message.opened", configuration.getString("options.message.opened"));
+				event.geEventData().updateData("options.message.prestarted", configuration.getString("options.message.prestarted"));
+				event.geEventData().updateData("options.message.occurring", configuration.getString("options.message.occurring"));
+				event.geEventData().updateData("options.message.ending", configuration.getString("options.message.ending"));
+				event.geEventData().updateData("options.message.closed", configuration.getString("options.message.closed"));
 			}
 		}
 	}

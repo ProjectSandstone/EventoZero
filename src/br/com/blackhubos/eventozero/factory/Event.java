@@ -24,12 +24,12 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.NullArgumentException;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import br.com.blackhubos.eventozero.party.Party;
 
@@ -61,17 +61,21 @@ public class Event {
 		return this.eventDescription;
 	}
 	
-	public EventData geEventoData(){
+	public EventData geEventData(){
 		return this.eventData;
 	}
 	
-	public EventState geEventoState(){
+	public EventState geEventState(){
 		return this.eventoState;
 	}
 	
 	public Event updateDescription(String desc){
 		eventDescription = desc;
 		return this;
+	}
+	
+	public Vector<Party> getPartys(){
+		return this.partys;
 	}
 	
 	public Vector<Player> getPlayers(){
@@ -83,7 +87,7 @@ public class Event {
 	}
 	
 	public Event playerJoin(Player player){
-		if(player == null || (player != null && player.isOnline()))
+		if(player == null || (player != null && !player.isOnline()))
 			throw new NullArgumentException("Player is null");
 		if(!hasPlayerJoined(player)){
 			joineds.add(player);
@@ -94,7 +98,7 @@ public class Event {
 	}
 	
 	public Event playerQuit(Player player){
-		if(player == null || (player != null && player.isOnline()))
+		if(player == null || (player != null && !player.isOnline()))
 			throw new NullArgumentException("Player is null");
 		if(hasPlayerJoined(player)){
 			joineds.remove(player);
@@ -106,10 +110,10 @@ public class Event {
 	}
 	
 	public Event spectatorJoin(Player player){
-		if(player == null || (player != null && player.isOnline()))
+		if(player == null || (player != null && !player.isOnline()))
 			throw new NullArgumentException("Player is null");
 		if(!spectators.contains(player)){
-			for(Player obj : Bukkit.getOnlinePlayers()){
+			for(Player obj : getPlayers()){
 				obj.hidePlayer(player);
 			}
 			player.setAllowFlight(true);
@@ -123,8 +127,8 @@ public class Event {
 		if(player == null || (player != null && player.isOnline()))
 			throw new NullArgumentException("Player is null");
 		if(spectators.contains(player)){
-			for(Player obj : Bukkit.getOnlinePlayers()){
-				obj.hidePlayer(player);
+			for(Player obj : getPlayers()){
+				obj.showPlayer(player);
 			}
 			player.setAllowFlight(false);
 			player.setFlying(false);
@@ -145,8 +149,10 @@ public class Event {
 	
 	public void start(){
 		// START THE COUNTDOWN
-		new EventCountdown(this, (Integer) geEventoData().getData("options.countdown.seconds"));
-		updateSigns();
+		if(geEventState() == EventState.OPENED){
+			new EventCountdown(this, (Integer) geEventData().getData("options.countdown.seconds"));
+			updateSigns();
+		}
 	}
 	
 	public void forceStop(){
@@ -159,7 +165,7 @@ public class Event {
 	
 	public void forceStart(){
 		// START EVENT
-		if(getPlayers().size() < (Integer) geEventoData().getData("event.min")){
+		if(getPlayers().size() < (Integer) geEventData().getData("event.min")){
 			// STOP
 			// MESSAGE CANCELED MIN PLAYER
 			forceStop();
@@ -170,26 +176,40 @@ public class Event {
 	
 	public void playerBackup(Player player){
 		// BACKUP PLAYER
+		geEventData().updateData(player.getName() + ".health", player.getHealth());
+		geEventData().updateData(player.getName() + ".food", player.getFoodLevel());
+		geEventData().updateData(player.getName() + ".exp", player.getExp());
+		geEventData().updateData(player.getName() + ".expLevel", player.getLevel());
+		geEventData().updateData(player.getName() + ".location", player.getLocation());
+		geEventData().updateData(player.getName() + ".inventory.contents", player.getInventory().getContents());
+		geEventData().updateData(player.getName() + ".inventory.armorContents", player.getInventory().getArmorContents());
 	}
 	
 	public void playerRestore(Player player){
 		// RESTORE BACKUP PLAYER
+		player.setHealth((Integer)geEventData().getData(player.getName() + 							 ".health"));
+		player.setFoodLevel((Integer)geEventData().getData(player.getName() + 						 ".food"));
+		player.setExp((Float)geEventData().getData(player.getName() + 								 ".exp"));
+		player.setLevel((Integer)geEventData().getData(player.getName() + 							 ".expLevel"));
+		player.teleport((Location)geEventData().getData(player.getName() + 							 ".location"));
+		player.getInventory().setContents((ItemStack[])geEventData().getData(player.getName() +      ".inventory.contents"));
+		player.getInventory().setArmorContents((ItemStack[])geEventData().getData(player.getName() + ".inventory.armorContents"));
 	}
 	
 
 	
 	public void updateSigns(){
-		if(geEventoData().containsKey("options.signs.locations") && (geEventoData().getData("options.signs.locations") != null)){
-			List<Location> locations = (List<Location>) geEventoData().getData("options.signs.locations");
+		if(geEventData().containsKey("options.signs.locations") && (geEventData().getData("options.signs.locations") != null)){
+			List<Location> locations = (List<Location>) geEventData().getData("options.signs.locations");
 			for(Location location : locations){
 				Block block = location.getWorld().getBlockAt(location);
 				if(block.getType() == Material.SIGN || block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN){
-					String string =  String.valueOf(geEventoData().getData("options.message." + geEventoState().getPath()));
+					String string =  String.valueOf(geEventData().getData("options.message." + geEventState().getPath()));
 					Sign sign = (Sign) block.getState();
-					sign.setLine(0, String.valueOf(geEventoData().getData("options.signs.line.1")).replace("{state]", string).replace("{size}", String.valueOf(getPlayers().size())).replace("{name}", getEventName()).replaceAll("&", "ï¿½"));
-					sign.setLine(0, String.valueOf(geEventoData().getData("options.signs.line.2")).replace("{state]", string).replace("{size}", String.valueOf(getPlayers().size())).replace("{name}", getEventName()).replaceAll("&", "ï¿½"));
-					sign.setLine(0, String.valueOf(geEventoData().getData("options.signs.line.3")).replace("{state]", string).replace("{size}", String.valueOf(getPlayers().size())).replace("{name}", getEventName()).replaceAll("&", "ï¿½"));
-					sign.setLine(0, String.valueOf(geEventoData().getData("options.signs.line.4")).replace("{state]", string).replace("{size}", String.valueOf(getPlayers().size())).replace("{name}", getEventName()).replaceAll("&", "ï¿½"));
+					sign.setLine(0, String.valueOf(geEventData().getData("options.signs.line.1")).replace("{state]", string).replace("{size}", String.valueOf(getPlayers().size())).replace("{name}", getEventName()).replaceAll("&", "§"));
+					sign.setLine(0, String.valueOf(geEventData().getData("options.signs.line.2")).replace("{state]", string).replace("{size}", String.valueOf(getPlayers().size())).replace("{name}", getEventName()).replaceAll("&", "§"));
+					sign.setLine(0, String.valueOf(geEventData().getData("options.signs.line.3")).replace("{state]", string).replace("{size}", String.valueOf(getPlayers().size())).replace("{name}", getEventName()).replaceAll("&", "§"));
+					sign.setLine(0, String.valueOf(geEventData().getData("options.signs.line.4")).replace("{state]", string).replace("{size}", String.valueOf(getPlayers().size())).replace("{name}", getEventName()).replaceAll("&", "§"));
 					sign.update();
 				}
 			}
