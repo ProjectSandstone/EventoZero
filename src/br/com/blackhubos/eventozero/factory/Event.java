@@ -20,6 +20,8 @@
 
 package br.com.blackhubos.eventozero.factory;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
@@ -32,8 +34,11 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.ability.Ability;
 import br.com.blackhubos.eventozero.party.Party;
+import br.com.blackhubos.eventozero.storage.Storage;
+import br.com.blackhubos.eventozero.util.Framework;
 
 /**
  * TODO: arrumar index do setSign (todos 0)
@@ -42,6 +47,7 @@ import br.com.blackhubos.eventozero.party.Party;
  * TODO: documentar (javadoc) todos os métodos e construtores em Português BR.
  * Falta algo? documente aqui com um TODO: mensagem
  * TODO = To Do (a fazer)
+ * TODO: no modo espectador, desativar comandos exceto do eventozero
  *
  */
 public class Event
@@ -68,20 +74,27 @@ public class Event
 		this.eventData = new EventData();
 	}
 
+	/**
+	 *
+	 * @return Retorna o nome do evento de forma como configurado (em casos importantes use lower-case!)
+	 */
 	public String getEventName()
 	{
 		return this.eventName;
 	}
 
+	/**
+	 *
+	 * @return Retorna a descrição do evento.
+	 */
 	public String getEventDescription()
 	{
 		return this.eventDescription;
 	}
 
 	/**
-	 * O nome estava incorreto, estava geEventState() (faltava o t no get), renomeado por Atom
 	 *
-	 * @return
+	 * @return Retorna o {@link EventData} do evento, que contém várias informações.
 	 */
 	public EventData getEventData()
 	{
@@ -89,37 +102,60 @@ public class Event
 	}
 
 	/**
-	 * O nome estava incorreto, estava geEventState() (faltava o t no get), renomeado por Atom
+	 * Os eventos tem vários estados, com este método, é possível identificar o estado atual do evento. Leia mais na classe EventState.
 	 *
-	 * @return
+	 * @return Retorna o estado do evento.
 	 */
 	public EventState getEventState()
 	{
 		return this.eventoState;
 	}
 
+	/**
+	 * Atualiza a descrição do evento
+	 *
+	 * @param desc Nova descrição
+	 * @return Retorna a instância do {@link Event} modificada.
+	 */
 	public Event updateDescription(final String desc)
 	{
 		this.eventDescription = desc;
 		return this;
 	}
 
+	/**
+	 *
+	 * @return Retorna a lista de todas as partys em ação do evento.
+	 */
 	public Vector<Party> getPartys()
 	{
 		return this.partys;
 	}
 
+	/**
+	 *
+	 * @return Retorna a lista de todos os participantes do evento.
+	 */
 	public Vector<Player> getPlayers()
 	{
 		return this.joineds;
 	}
 
+	/**
+	 *
+	 * @return Retorna a lista de todos os es espectadores ativos no evento.
+	 */
 	public Vector<Player> getSpectators()
 	{
 		return this.spectators;
 	}
-	
-	public Vector<Ability> getAbilitys(){
+
+	/**
+	 *
+	 * @return Retorna as habilidades (Abilitys) do evento.
+	 */
+	public Vector<Ability> getAbilitys()
+	{
 		return this.abilitys;
 	}
 
@@ -154,6 +190,13 @@ public class Event
 		return this;
 	}
 
+	/**
+	 * Define um jogador como espectador.
+	 * TODO: (o jogador deveria ser teleportado para o lugar do evento por aqui ou pelo comando?)
+	 *
+	 * @param player Jogador em questão a virar espectador
+	 * @return Retorna a instância do {@link Event} modificada.
+	 */
 	public Event spectatorJoin(final Player player)
 	{
 		if ((player == null) || ((player != null) && !player.isOnline()))
@@ -173,6 +216,12 @@ public class Event
 		return this;
 	}
 
+	/**
+	 * Remove um jogador do modo espectador.
+	 *
+	 * @param player Jogador que será removido do modo espectador.
+	 * @return Retorna a instância do {@link Event} modificada.
+	 */
 	public Event spectatorQuit(final Player player)
 	{
 		if ((player == null) || ((player != null) && player.isOnline()))
@@ -200,13 +249,13 @@ public class Event
 
 	public void stop()
 	{
-		// STOP EVENT, GET WINNERS, ALIVES
+		// TODO: STOP EVENT, GET WINNERS, ALIVES
 		this.updateSigns();
 	}
 
 	public void start()
 	{
-		// START THE COUNTDOWN
+		// TODO: START THE COUNTDOWN
 		if (this.getEventState() == EventState.OPENED)
 		{
 			new EventCountdown(this, (Integer) this.getEventData().getData("options.countdown.seconds"));
@@ -216,7 +265,7 @@ public class Event
 
 	public void forceStop()
 	{
-		// STOP FORCE EVENT
+		// TODO: STOP FORCE EVENT
 		for (final Player player : this.joineds)
 		{
 			this.playerQuit(player);
@@ -226,39 +275,59 @@ public class Event
 
 	public void forceStart()
 	{
-		// START EVENT
+		// TODO: START EVENT
 		if (this.getPlayers().size() < (Integer) this.getEventData().getData("event.min"))
 		{
-			// STOP
-			// MESSAGE CANCELED MIN PLAYER
+			// TODO: STOP
+			// TODO: MESSAGE CANCELED MIN PLAYER
 			this.forceStop();
 		}
-		// CODE START
+		// TODO: CODE START
 		this.updateSigns();
 	}
 
+	/**
+	 * Este método irá criar um backup no banco de dados do EventoZero com dados importantes sobre o jogador, tais como, vida, comida, itens, xp, localização, armadura, etc.
+	 * Você poderá restaurar esse backup ao jogador quando quiser, pois fica salvo em backup. Note que os backups não são retirados do banco de dados após restaurar, são
+	 * apenas 'trancados' e não podem mais ser usados.
+	 *
+	 * @param player O jogador que deverá ter um novo backup criado para o evento em questão.
+	 */
 	public void playerBackup(final Player player)
 	{
-		// BACKUP PLAYER
-		this.getEventData().updateData(player.getName() + ".health", player.getHealth());
-		this.getEventData().updateData(player.getName() + ".food", player.getFoodLevel());
-		this.getEventData().updateData(player.getName() + ".exp", player.getExp());
-		this.getEventData().updateData(player.getName() + ".expLevel", player.getLevel());
-		this.getEventData().updateData(player.getName() + ".location", player.getLocation());
-		this.getEventData().updateData(player.getName() + ".inventory.contents", player.getInventory().getContents());
-		this.getEventData().updateData(player.getName() + ".inventory.armorContents", player.getInventory().getArmorContents());
+		/*
+		 * this.getEventData().updateData(player.getName() + ".health", player.getHealth());
+		 * this.getEventData().updateData(player.getName() + ".food", player.getFoodLevel());
+		 * this.getEventData().updateData(player.getName() + ".exp", player.getExp());
+		 * this.getEventData().updateData(player.getName() + ".expLevel", player.getLevel());
+		 * this.getEventData().updateData(player.getName() + ".location", player.getLocation());
+		 * this.getEventData().updateData(player.getName() + ".inventory.contents", player.getInventory().getContents());
+		 * this.getEventData().updateData(player.getName() + ".inventory.armorContents", player.getInventory().getArmorContents());
+		 */
+		EventoZero.getStorage().backupPlayer(player, this.eventName.toLowerCase());
 	}
 
 	public void playerRestore(final Player player)
 	{
-		// RESTORE BACKUP PLAYER
-		player.setHealth((Integer) this.getEventData().getData(player.getName() + ".health"));
-		player.setFoodLevel((Integer) this.getEventData().getData(player.getName() + ".food"));
-		player.setExp((Float) this.getEventData().getData(player.getName() + ".exp"));
-		player.setLevel((Integer) this.getEventData().getData(player.getName() + ".expLevel"));
-		player.teleport((Location) this.getEventData().getData(player.getName() + ".location"));
-		player.getInventory().setContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.contents"));
-		player.getInventory().setArmorContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.armorContents"));
+		final ResultSet rs = EventoZero.getStorage().search("SELECT * FROM `" + Storage.Module.BACKUP.getTable() + "` WHERE `jogador`='" + player.getName().toLowerCase() + "' AND `devolvido`='0' AND `evento`='" + this.eventName.toLowerCase() + "';");
+		try
+		{
+			if (rs.next())
+			{
+				player.setHealth(rs.getInt("vida"));
+				player.setFoodLevel(rs.getInt("comida"));
+				player.setExp(rs.getFloat("xp"));
+				player.setLevel(rs.getInt("level"));
+				player.teleport(Framework.toLocation(rs.getString("localizacao")));
+				// TODO: pensar como vai ser o sistema que salva e carrega itens via mysql..
+				player.getInventory().setContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.contents"));
+				player.getInventory().setArmorContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.armorContents"));
+			}
+		}
+		catch (IllegalArgumentException | SQLException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -275,15 +344,12 @@ public class Event
 				final Block block = location.getWorld().getBlockAt(location);
 				if ((block.getType() == Material.SIGN_POST) || (block.getType() == Material.WALL_SIGN))
 				{
-					/*
-					 * TODO: arrumar o sign.setLine(), note que todos indexes são 0
-					 */
 					final String string = String.valueOf(this.getEventData().getData("options.message." + this.getEventState().getPath()));
 					final Sign sign = (Sign) block.getState();
-					sign.setLine(1, String.valueOf(this.getEventData().getData("options.signs.line.1")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
-					sign.setLine(2, String.valueOf(this.getEventData().getData("options.signs.line.2")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
-					sign.setLine(3, String.valueOf(this.getEventData().getData("options.signs.line.3")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
-					sign.setLine(4, String.valueOf(this.getEventData().getData("options.signs.line.4")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
+					sign.setLine(0, String.valueOf(this.getEventData().getData("options.signs.line.1")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
+					sign.setLine(1, String.valueOf(this.getEventData().getData("options.signs.line.2")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
+					sign.setLine(2, String.valueOf(this.getEventData().getData("options.signs.line.3")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
+					sign.setLine(3, String.valueOf(this.getEventData().getData("options.signs.line.4")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
 					sign.update();
 				}
 			}
