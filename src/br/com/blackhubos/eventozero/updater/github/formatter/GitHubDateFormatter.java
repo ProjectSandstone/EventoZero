@@ -30,18 +30,30 @@ import br.com.blackhubos.eventozero.updater.formater.exception.CannotFormatTypeE
 
 public class GitHubDateFormatter implements TypeFormatter<Date> {
 
-    private static final String[] GITHUB_DATE_FORMATS = { "yyyy/MM/dd HH:mm:ss ZZZZ", "yyyy-MM-dd'T'HH:mm:ss'Z'" };
+    private static final String[] GITHUB_DATE_FORMATS = {"yyyy/MM/dd HH:mm:ss ZZZZ", "yyyy-MM-dd'T'HH:mm:ss'Z'"};
+
+    private static Date parseDate(String dateString) {
+        for (String format : GITHUB_DATE_FORMATS) {
+            try {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+                simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+                return simpleDateFormat.parse(dateString);
+            } catch (java.text.ParseException ignored) {
+            }
+        }
+        throw new IllegalStateException("Unable to parse github date timestamp: " + dateString);
+    }
 
     @Override
     public Date unsecuredFormatType(Object objectToFormat) {
-        if(objectToFormat instanceof Date) {
+        if (objectToFormat instanceof Date) {
             return (Date) objectToFormat;
         }
         String tryDate = String.valueOf(objectToFormat);
 
-        try{
+        try {
             return parseDate(tryDate);
-        }catch (IllegalStateException ignored) {
+        } catch (IllegalStateException ignored) {
             return null;
         }
     }
@@ -49,7 +61,7 @@ public class GitHubDateFormatter implements TypeFormatter<Date> {
     @Override
     public Date tryFormatType(Object objectToFormat) throws CannotFormatTypeException {
         Date result = unsecuredFormatType(objectToFormat);
-        if(result == null) {
+        if (result == null) {
             throw new CannotFormatTypeException(String.format("Cannot format type: 'Class[%s]'", objectToFormat.getClass().getCanonicalName()));
         }
         return result;
@@ -63,17 +75,6 @@ public class GitHubDateFormatter implements TypeFormatter<Date> {
     @Override
     public Class<? extends Date> getFormatClass() {
         return Date.class;
-    }
-
-    private static Date parseDate(String dateString) {
-        for (String format : GITHUB_DATE_FORMATS) {
-            try {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-                simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-                return simpleDateFormat.parse(dateString);
-            } catch (java.text.ParseException ignored) {}
-        }
-        throw new IllegalStateException("Unable to parse github date timestamp: "+dateString);
     }
 
 }

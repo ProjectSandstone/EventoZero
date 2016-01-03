@@ -30,12 +30,12 @@ public class BooleanFormatter implements TypeFormatter<Boolean> {
 
     @Override
     public Boolean unsecuredFormatType(Object objectToFormat) {
-        if(objectToFormat instanceof Boolean){
+        if (objectToFormat instanceof Boolean) {
             return (Boolean) objectToFormat;
-        }else{
-            if(objectToFormat.equals("true")){
+        } else {
+            if (objectToFormat.equals("true")) {
                 return true;
-            }else if(objectToFormat.equals("false")){
+            } else if (objectToFormat.equals("false")) {
                 return false;
             }
         }
@@ -45,7 +45,7 @@ public class BooleanFormatter implements TypeFormatter<Boolean> {
     @Override
     public Boolean tryFormatType(Object objectToFormat) throws CannotFormatTypeException {
         Boolean result = unsecuredFormatType(objectToFormat);
-        if(result == null){
+        if (result == null) {
             throw new CannotFormatTypeException(String.format("Cannot format type: 'Class[%s]'", objectToFormat.getClass().getCanonicalName()));
         }
         return result;

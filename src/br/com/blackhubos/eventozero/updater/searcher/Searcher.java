@@ -16,8 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- */
-package br.com.blackhubos.eventozero.updater.searcher;
+ */package br.com.blackhubos.eventozero.updater.searcher;
 
 import com.google.common.base.Optional;
 
@@ -27,8 +26,10 @@ import br.com.blackhubos.eventozero.updater.assets.versions.Version;
 
 public interface Searcher {
 
-    Version getLastestVersion();
-    Version getRollbackVersion();
+    Optional<Version> getLatestVersion();
+
+    Optional<Version> getRollbackVersion();
+
     Collection<Version> getAllVersion();
 
     Optional<Version> findVersion(String tag);

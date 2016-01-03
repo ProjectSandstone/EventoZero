@@ -33,33 +33,33 @@ public class MultiTypeFormatter {
 
     private Set<TypeFormatter<?>> formatterSet = new HashSet<>();
 
-    public void registerFormatter (TypeFormatter<?> formatter) {
+    public void registerFormatter(TypeFormatter<?> formatter) {
         formatterSet.add(formatter);
     }
 
-    public void unregisterFormatter (TypeFormatter<?> formatter) {
+    public void unregisterFormatter(TypeFormatter<?> formatter) {
         formatterSet.remove(formatter);
     }
 
-    public void unregisterFormatter (Class<? extends TypeFormatter> formatterClass) {
-        for(TypeFormatter<?> typeFormatter : formatterSet){
-            if(typeFormatter.getClass() == formatterClass){
+    public void unregisterFormatter(Class<? extends TypeFormatter> formatterClass) {
+        for (TypeFormatter<?> typeFormatter : formatterSet) {
+            if (typeFormatter.getClass() == formatterClass) {
                 formatterSet.remove(typeFormatter);
             }
         }
     }
 
-    public void unregisterFormatterType (Class<?> formatClass) {
-        for(TypeFormatter<?> typeFormatter : formatterSet){
-            if(typeFormatter.getFormatClass() == formatClass){
+    public void unregisterFormatterType(Class<?> formatClass) {
+        for (TypeFormatter<?> typeFormatter : formatterSet) {
+            if (typeFormatter.getFormatClass() == formatClass) {
                 formatterSet.remove(typeFormatter);
             }
         }
     }
 
-    public boolean canFormat (Class<?> classToFormat) {
-        for(TypeFormatter<?> typeFormatter : formatterSet) {
-            if(typeFormatter.getFormatClass() == classToFormat) {
+    public boolean canFormat(Class<?> classToFormat) {
+        for (TypeFormatter<?> typeFormatter : formatterSet) {
+            if (typeFormatter.getFormatClass() == classToFormat) {
                 return true;
             }
         }
@@ -76,9 +76,9 @@ public class MultiTypeFormatter {
      * @return Valor formatado
      */
     @SuppressWarnings("unchecked")
-    public <T> Optional<T> format (Object value, Class<? extends T> target) {
-        for(TypeFormatter<?> typeFormatter : formatterSet) {
-            if(typeFormatter.getFormatClass().isAssignableFrom(target)) {
+    public <T> Optional<T> format(Object value, Class<? extends T> target) {
+        for (TypeFormatter<?> typeFormatter : formatterSet) {
+            if (typeFormatter.getFormatClass().isAssignableFrom(target)) {
                 return (Optional<T>) typeFormatter.formatType(value);
             }
         }
@@ -95,9 +95,9 @@ public class MultiTypeFormatter {
      * @return Valor formatado
      */
     @SuppressWarnings("unchecked")
-    public <T> Optional<T> formatSpecific (Object value, Class<? extends T> target) {
-        for(TypeFormatter<?> typeFormatter : formatterSet) {
-            if(typeFormatter.getFormatClass() == target) {
+    public <T> Optional<T> formatSpecific(Object value, Class<? extends T> target) {
+        for (TypeFormatter<?> typeFormatter : formatterSet) {
+            if (typeFormatter.getFormatClass() == target) {
                 return (Optional<T>) typeFormatter.formatType(value);
             }
         }
@@ -113,11 +113,12 @@ public class MultiTypeFormatter {
      * @return Valor formatado
      */
     @SuppressWarnings("unchecked")
-    public <T> Optional<T> tryFormatAll (Object value) {
-        for(TypeFormatter<?> typeFormatter : formatterSet) {
-            try{
+    public <T> Optional<T> tryFormatAll(Object value) {
+        for (TypeFormatter<?> typeFormatter : formatterSet) {
+            try {
                 return (Optional<T>) typeFormatter.tryFormatType(value);
-            }catch(CannotFormatTypeException ignored){}
+            } catch (CannotFormatTypeException ignored) {
+            }
         }
         return Optional.absent();
     }
