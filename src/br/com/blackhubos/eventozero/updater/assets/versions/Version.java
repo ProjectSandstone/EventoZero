@@ -17,33 +17,37 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package br.com.blackhubos.eventozero.updater.versions;
+package br.com.blackhubos.eventozero.updater.assets.versions;
 
+import java.util.Collection;
 import java.util.Date;
+
+import br.com.blackhubos.eventozero.updater.assets.Asset;
 
 public class Version {
 
+    private final String name;
     private final String version;
-    private final String downloadUrl;
     private final String commitish;
     private final String changelog;
     private final Date creationDate;
     private final Date publishDate;
 
+    private final Collection<Asset> assets;
+
     private final long id;
-    private final long size;
     private final boolean criticalBug;
     private final boolean preRelease;
 
-    public Version(String version, String downloadUrl, String commitish, String changelog, Date creationDate, Date publishDate, long id, long size, boolean criticalBug, boolean preRelease) {
+    public Version(String name, String version, Collection<Asset> assets, String commitish, String changelog, Date creationDate, Date publishDate, long id, boolean criticalBug, boolean preRelease) {
+        this.name = name;
         this.version = version;
-        this.downloadUrl = downloadUrl;
+        this.assets = assets;
         this.commitish = commitish;
         this.changelog = changelog;
         this.creationDate = creationDate;
         this.publishDate = publishDate;
         this.id = id;
-        this.size = size;
         this.criticalBug = criticalBug;
         this.preRelease = preRelease;
     }
@@ -52,8 +56,8 @@ public class Version {
         return version;
     }
 
-    public String getDownloadUrl() {
-        return downloadUrl;
+    public Collection<Asset> getAssets() {
+        return assets;
     }
 
     public String getCommitish() {
@@ -76,15 +80,15 @@ public class Version {
         return id;
     }
 
-    public long getSize() {
-        return size;
-    }
-
     public boolean isCriticalBug() {
         return criticalBug;
     }
 
     public boolean isPreRelease() {
         return preRelease;
+    }
+
+    public String getName() {
+        return name;
     }
 }
