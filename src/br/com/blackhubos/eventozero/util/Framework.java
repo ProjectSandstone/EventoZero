@@ -1450,6 +1450,9 @@ public final class Framework
 		{
 			saveFile = this.we.getSafeSaveFile(this.localPlayer, saveFile.getParentFile(), saveFile.getName(), Terrain.EXTENSION, new String[] { Terrain.EXTENSION });
 			this.editSession.enableQueue();
+			/*
+				Salvamento da CuboidClipboard no Clipboard não é possivel e foi removido!
+			 */
 			CuboidClipboard cuboidClipboard = SchematicFormat.MCEDIT.load(saveFile);
 			cuboidClipboard.place(this.editSession, getPastePosition(loc), false);
 			this.editSession.flushQueue();
