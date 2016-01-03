@@ -22,6 +22,9 @@ package br.com.blackhubos.eventozero.storage;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map.Entry;
+
+import org.bukkit.entity.Player;
 
 public abstract class Storage
 {
@@ -83,6 +86,33 @@ public abstract class Storage
 	 * @return Uma {@link ResultSet} referente a busca.
 	 */
 	public abstract ResultSet search(String query) throws SQLException;
+
+	/**
+	 * Insere o backup de um jogador no banco de dados. Um backup, basicamente, guarda seu inventário, armadura, comida, xp, level, local, etc.
+	 *
+	 * @param player O jogador em questão.
+	 * @param evento O nome do evento.
+	 * @return Retorna uma {@link Entry} de Integer e Boolean apenas por segurança. O Integer é o ID único do backup (facilita em searchs) e o Boolean é se foi inserido
+	 *         corretamente na database.
+	 */
+	public abstract Entry<Integer, Boolean> backupPlayer(Player player, String evento);
+
+	/**
+	 * Verifica se um jogador possui backup sob um evento na database.
+	 *
+	 * @param player Nome do jogador
+	 * @param evento Nome do evento
+	 * @return Retorna true se ele tiver, false caso contrário.
+	 */
+	public abstract boolean hasBackup(String player, String evento);
+
+	/**
+	 * Verifica se existe um backup inserido corretamente e válido pelo id
+	 *
+	 * @param id O id do backup, é fornecido no método {@link #backupPlayer()}.
+	 * @return Retorna true se houver, false caso contrário.
+	 */
+	public abstract boolean hasBackup(int id);
 
 	public static enum Module implements Serializable
 	{
