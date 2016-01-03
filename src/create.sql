@@ -48,3 +48,20 @@ CREATE TABLE IF NOT EXISTS `{others}`
   `valor` OBJECT,
   PRIMARY KEY(`id`)
 )
+
+-- id | jogador | evento| devolvido | vida | comida | xp | level | localizacao | itens | armadura
+CREATE TABLE IF NOT EXISTS `{backup}`
+(
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `jogador` TEXT,
+  `evento` TEXT,
+  `devolvido` BOOLEAN NOT NULL DEFAULT FALSE,
+  `vida` INTEGER NOT NULL DEFAULT '20',
+  `comida` INTEGER NOT NULL DEFAULT '20',
+  `xp` LONG NOT NULL DEFAULT '0',
+  `level` LONG NOT NULL DEFAULT '0',
+  `localizacao` TEXT,
+  `itens` TEXT,
+  `armadura` TEXT,
+  PRIMARY KEY(`id`)
+)
