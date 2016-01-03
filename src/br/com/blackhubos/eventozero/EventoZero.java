@@ -32,12 +32,12 @@ import br.com.blackhubos.eventozero.util.Framework.LoggerManager;
 public final class EventoZero extends JavaPlugin
 {
 
+	private static LoggerManager<EventoZero> logger = null;
 	private static Configuration config = null;
 	private static Configuration config_rankings = null;
 	private static Configuration config_points = null;
 	private static Configuration config_bans = null;
 	private static Configuration config_signs = null;
-	private static LoggerManager<EventoZero> logger = null;
 	private static Storage storage = null;
 
 	@Override
