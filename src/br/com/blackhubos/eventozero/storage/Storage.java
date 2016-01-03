@@ -21,7 +21,6 @@ package br.com.blackhubos.eventozero.storage;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
@@ -85,7 +84,7 @@ public abstract class Storage
 	 * @param query O código-mysql para a busca.
 	 * @return Uma {@link ResultSet} referente a busca.
 	 */
-	public abstract ResultSet search(String query) throws SQLException;
+	public abstract ResultSet search(String query);
 
 	/**
 	 * Insere o backup de um jogador no banco de dados. Um backup, basicamente, guarda seu inventário, armadura, comida, xp, level, local, etc.
