@@ -26,12 +26,29 @@ import br.com.blackhubos.eventozero.updater.assets.versions.Version;
 
 public interface Searcher {
 
+    /**
+     * Buscar a ultima versão
+     * @return Versão ou {@link Optional#absent()} se não encontrar nenhuma
+     */
     Optional<Version> getLatestVersion();
 
-    Optional<Version> getRollbackVersion();
+    /**
+     * Buscar a ultima versão estável
+     * @return Versão ou {@link Optional#absent()} se não encontrar nenhuma
+     */
+    Optional<Version> getLatestStableVersion();
 
+    /**
+     * Buscar todas versões
+     * @return Coleção de versões, ou lista vazia se não encontrar nenhuma
+     */
     Collection<Version> getAllVersion();
 
+    /**
+     * Encontrar versão especifica
+     * @param tag Nome da versão (tag)
+     * @return Versão ou {@link Optional#absent()} se não encontrar nenhuma
+     */
     Optional<Version> findVersion(String tag);
 
 }
