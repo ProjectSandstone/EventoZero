@@ -19,12 +19,13 @@
  */
 package br.com.blackhubos.eventozero.factory;
 
-import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.bukkit.ChatColor;
@@ -38,27 +39,104 @@ import br.com.blackhubos.eventozero.util.Framework;
 public final class ItemFactory
 {
 
-	private static final Pattern pattern_name = Pattern.compile("(?:nome|name|nm|nm)\\s*(?:\\{)\\s*'+([^']+)'+\\s*(?:\\})", Pattern.CASE_INSENSITIVE);
-	private static final Pattern pattern_item = Pattern.compile("(?:item|id|data|itemstack|stack|is|slot)\\s*(?:\\{)\\s*([0-9]+)\\s*(?::\\s*([0-9]+))*\\s*(?:\\})", Pattern.CASE_INSENSITIVE);
-	private static final Pattern pattern_encantos_outside = Pattern.compile("(?:encantos|enchants|enchantments|encants|enc|ench|powers|power)\\s*(?:\\{)\\s*([a-zA-Z0-9\\s\\,_-]+)\\s*(?:\\})", Pattern.CASE_INSENSITIVE);
-	private static final Pattern pattern_encantos_inside = Pattern.compile("([a-zA-Z_-]+)\\s*(?:,|-)\\s*([0-9]+)", Pattern.CASE_INSENSITIVE);
-	private static final Pattern pattern_desc_outside = Pattern.compile("(?:desc|description|descricao|descrição|descr|d|lore|info|subinfo|subname)\\s*(?:\\{)\\s*([^\\)]+)\\}", Pattern.CASE_INSENSITIVE);
-	private static final Pattern pattern_desc_inside = Pattern.compile("'+\\s*([^']+)\\s*'+", Pattern.CASE_INSENSITIVE);
-	private static final Pattern pattern_amount = Pattern.compile("(?:quantia|amount|size|total|amnt|qnt)\\s*(?:\\{)\\s*([0-9]+)\\}", Pattern.CASE_INSENSITIVE);
-	private ItemStack item;
+	/**
+	 * Processa nome('&5nome'), porém, nome pode ser 'nome', 'name', 'nm' ou 'nme'.
+	 */
+	private static final Pattern pattern_name = Pattern.compile("(?:nome|name|nm|nme)\\s*(?:\\{)\\s*'+([^']+)'+\\s*(?:\\})", Pattern.CASE_INSENSITIVE);
 
-	public static void main(final String[] args)
+	/**
+	 * Processa item(1:0) ou apenas item(1), porém, item pode ser 'item', 'id' ou 'material'.
+	 */
+	private static final Pattern pattern_item = Pattern.compile("(?:item|id|material)\\s*(?:\\{)\\s*([0-9]+)\\s*(?::\\s*([0-9]+))*\\s*(?:\\})", Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Processa encantos(sharpness,5 unbreaking3 ..), porém, encantos pode ser 'encantos', 'enchants' ou 'enchantments'.
+	 */
+	private static final Pattern pattern_encantos_outside = Pattern.compile("(?:encantos|enchants|enchantments)\\s*(?:\\{)\\s*([a-zA-Z0-9\\s\\,_-]+)\\s*(?:\\})", Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Processa parte interna dos encantos ('sharpness,5, unbreaking3 ..') - ignore os parênteses e aspas.
+	 */
+	private static final Pattern pattern_encantos_inside = Pattern.compile("([a-zA-Z_-]+)\\s*(?:,|-)\\s*([0-9]+)", Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Processa desc('linha 1..', 'linha 2..', ...), porém, desc pode ser 'desc', 'description', 'descricao', 'descrição' ou 'lore'.
+	 */
+	private static final Pattern pattern_desc_outside = Pattern.compile("(?:desc|description|descricao|descrição|lore)\\s*(?:\\{)\\s*([^\\)]+)\\}", Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Processa parte interna dos encantos ('linha 1..', 'linha 2...') - ignore os parênteses.
+	 */
+	private static final Pattern pattern_desc_inside = Pattern.compile("'+\\s*([^']+)\\s*'+", Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Processa quantia(5), porém, quantia pode ser 'quantia', 'amount', 'total' ou 'qnt'.
+	 */
+	private static final Pattern pattern_amount = Pattern.compile("(?:quantia|amount|total|qnt)\\s*(?:\\{)\\s*([0-9]+)\\}", Pattern.CASE_INSENSITIVE);
+
+	private ItemStack item;
+	private String serial;
+
+	public ItemFactory(final ItemStack is)
 	{
-		final Matcher m = ItemFactory.pattern_desc_outside.matcher("desc('oi', 'tchau')");
-		System.out.println(m.find());
-		final String t = m.group(1);
-		final Matcher r = ItemFactory.pattern_desc_inside.matcher(t);
-		r.find();
-		System.out.println(r.group(1));
+		final StringBuffer buffer = new StringBuffer();
+		buffer.append("item{" + is.getTypeId() + ":" + is.getData().getData() + "}");
+		buffer.append(" ");
+		buffer.append("nome{'" + ChatColor.translateAlternateColorCodes('&', is.getItemMeta().getDisplayName()) + "'}");
+		buffer.append(" ");
+		buffer.append("amount{" + is.getAmount() + "}");
+		buffer.append(" ");
+
+		if (!is.getItemMeta().getLore().isEmpty())
+		{
+			buffer.append("desc{");
+			boolean first = true;
+			for (String line : is.getItemMeta().getLore())
+			{
+				if (!first)
+				{
+					buffer.append(", ");
+				}
+				line = ChatColor.translateAlternateColorCodes('&', line);
+				buffer.append("'" + line + "'");
+				first = false;
+			}
+			buffer.append("}");
+			buffer.append(" ");
+		}
+
+		if (!is.getEnchantments().isEmpty())
+		{
+			buffer.append("encantos{");
+			boolean first = true;
+			for (final Entry<Enchantment, Integer> encantos : is.getEnchantments().entrySet())
+			{
+				if (!first)
+				{
+					buffer.append(" ");
+				}
+
+				final String e = Framework.reverseEnchantment(encantos.getKey());
+				final int level = encantos.getValue();
+				buffer.append(e + "," + level);
+				first = false;
+			}
+			buffer.append("}");
+			buffer.append(" ");
+		}
+
+		this.serial = buffer.toString();
+		this.item = is;
 	}
 
-	public ItemFactory(final String script, final HashMap<String, String> replaces)
+	public ItemFactory(final String script, ConcurrentHashMap<String, String> replaces)
 	{
+		if (replaces == null)
+		{
+			replaces = new ConcurrentHashMap<String, String>();
+		}
+
+		this.serial = script;
 		final Matcher item = ItemFactory.pattern_item.matcher(script);
 		if (!item.find())
 		{
@@ -132,19 +210,25 @@ public final class ItemFactory
 		this.item = is;
 	}
 
+	@Nonnull
+	public String getSerial()
+	{
+		return this.serial;
+	}
+
 	@Nullable
 	public ItemStack getPreparedItem()
 	{
 		return this.item;
 	}
 
-	private String replaces(String old, final HashMap<String, String> replaces)
+	private String replaces(String old, final ConcurrentHashMap<String, String> replaces)
 	{
 		if (replaces != null)
 		{
 			for (final Entry<String, String> kv : replaces.entrySet())
 			{
-				old = old.replace("{" + kv.getKey() + "}", kv.getValue());
+				old = old.replaceAll("(?i)\\{\\s*" + kv.getKey() + "\\}", kv.getValue());
 			}
 		}
 
