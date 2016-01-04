@@ -238,7 +238,7 @@ public final class Framework
 
 	/**
 	 * Sistema eficaz para validação de números via strings.
-	 * 
+	 *
 	 * @param value O número inteiro via string.
 	 * @param min Pra retornar true, precisa ter no mínimo qual valor? -1 = não usar.
 	 * @param max Pra retornar true, deverá ter no máximo qual valor? -1 = não usar.
@@ -327,6 +327,106 @@ public final class Framework
 		}
 
 		return delay;
+	}
+
+	public static String reverseEnchantment(final Enchantment enchant)
+	{
+		switch (enchant.getName().toUpperCase())
+		{
+			case "PROTECTION_EXPLOSIONS":
+			{
+				return "blastprotection";
+			}
+			case "PROTECTION_FIRE":
+			{
+				return "fireprotection";
+			}
+			case "OXYGEN":
+			{
+				return "aquaaffinity";
+			}
+			case "PROTECTION_ENVIRONMENTAL":
+			{
+				return "protection";
+			}
+			case "DAMAGE_ALL":
+			{
+				return "sharpness";
+			}
+			case "THORNS":
+			{
+				return "thorns";
+			}
+			case "LOOT_BONUS_BLOCKS":
+			{
+				return "fortune";
+			}
+			case "FIRE_ASPECT":
+			{
+				return "fireaspect";
+			}
+			case "ARROW_FIRE":
+			{
+				return "flame";
+			}
+			case "ARROW_DAMAGE":
+			{
+				return "power";
+			}
+			case "ARROW_KNOCKBACK":
+			{
+				return "punch";
+			}
+			case "LOOT_BONUS_MOBS":
+			{
+				return "smite";
+			}
+			case "ARROW_INFINITE":
+			{
+				return "infinity";
+			}
+			case "PROTECTION_PROJECTILE":
+			{
+				return "projectileprotection";
+			}
+			case "DAMAGE_UNDEAD":
+			{
+				return "looting";
+			}
+			case "DAMAGE_ARTHROPODS":
+			{
+				return "baneofarthropods";
+			}
+			case "rWATER_WORKER":
+			{
+				return "espiration";
+			}
+			case "PROTECTION_FALL":
+			{
+				return "featherfalling";
+			}
+			case "DIG_SPEED":
+			{
+				return "efficiency";
+			}
+			case "unbreakingDURABILITY":
+			{
+				return "unbreaking";
+			}
+			case "SILK_TOUCH":
+			{
+				return "silktouch";
+			}
+			case "KNOCKBACK":
+			{
+				return "knockback";
+			}
+
+			default:
+			{
+				return null;
+			}
+		}
 	}
 
 	/**
