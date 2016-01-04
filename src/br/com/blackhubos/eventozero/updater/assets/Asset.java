@@ -32,6 +32,9 @@ import br.com.blackhubos.eventozero.updater.assets.uploader.Uploader;
 import br.com.blackhubos.eventozero.updater.formater.MultiTypeFormatter;
 import br.com.blackhubos.eventozero.updater.parser.Parser;
 
+/**
+ * Classe que representa os arquivos da versão
+ */
 public class Asset implements Parser<JSONObject, Asset> {
 
     private final String url;
@@ -50,6 +53,20 @@ public class Asset implements Parser<JSONObject, Asset> {
         this(null, null, null, null, null, Long.MIN_VALUE, Long.MIN_VALUE, Long.MIN_VALUE, null, null, null);
     }
 
+    /**
+     * Cria um novo Asset
+     * @param url Url do asset (não o de download)
+     * @param name Nome do asset
+     * @param downloadUrl Url de Download do Asset
+     * @param createdDate Data de criação do Asset
+     * @param updatedDate Data de atualização do Asset
+     * @param id Id do Asset
+     * @param size Tamanho do arquivo do Asset
+     * @param downloads Quantidade de Downloads
+     * @param state Estado do Asset
+     * @param label Rótulo do Asset
+     * @param uploader Quem enviou o Asset
+     */
     private Asset(String url, String name, String downloadUrl, Date createdDate, Date updatedDate, long id, long size, long downloads, AssetState state, Optional<String> label, Optional<Uploader> uploader) {
         this.url = url;
         this.name = name;
@@ -83,7 +100,7 @@ public class Asset implements Parser<JSONObject, Asset> {
         Optional<String> label = Optional.absent();
 
         Optional<Uploader> uploader = Optional.absent();
-
+        // Obtem todos valores do JSON
         for (Map.Entry entries : (Set<Map.Entry>) jsonObject.entrySet()) {
 
             Object key = entries.getKey();
@@ -92,18 +109,22 @@ public class Asset implements Parser<JSONObject, Asset> {
 
             switch (AssetInput.parseObject(key)) {
                 case URL: {
+                    // URL do Asset
                     url = valueString;
                     break;
                 }
                 case ID: {
+                    // Id do Asset
                     id = Long.parseLong(valueString);
                     break;
                 }
                 case BROWSER_DOWNLOAD_URL: {
+                    // Link de download
                     downloadUrl = valueString;
                     break;
                 }
                 case CREATED_AT: {
+                    // Data de criação
                     if (formatter.canFormat(Date.class)) {
                         Optional<Date> dateResult = formatter.format(valueString, Date.class);
                         if (dateResult.isPresent()) {
@@ -113,6 +134,7 @@ public class Asset implements Parser<JSONObject, Asset> {
                     break;
                 }
                 case UPDATED_AT: {
+                    // Data de atualização
                     if (formatter.canFormat(Date.class)) {
                         Optional<Date> dateResult = formatter.format(valueString, Date.class);
                         if (dateResult.isPresent()) {
@@ -122,15 +144,18 @@ public class Asset implements Parser<JSONObject, Asset> {
                     break;
                 }
                 case NAME: {
+                    // Nome
                     name = valueString;
                     break;
                 }
                 case DOWNLOAD_COUNT: {
+                    // Quantidade de downloads
                     downloads = Long.parseLong(valueString);
                     break;
                 }
 
                 case LABEL: {
+                    /** Rótulo (se houver, caso contrário, {@link Optional#absent()}  **/
                     if (value == null) {
                         label = Optional.absent();
                     } else {
@@ -140,16 +165,19 @@ public class Asset implements Parser<JSONObject, Asset> {
                 }
 
                 case STATE: {
+                    // Estado
                     state = AssetState.parseString(valueString);
                     break;
                 }
 
                 case SIZE: {
+                    // Tamanho do arquivo (em bytes)
                     size = Long.parseLong(valueString);
                     break;
                 }
 
                 case UPLOADER: {
+                    // Quem envou (traduzido externalmente)
                     uploader = Uploader.parseJsonObject((JSONObject) value, formatter);
                     break;
                 }
@@ -160,9 +188,11 @@ public class Asset implements Parser<JSONObject, Asset> {
         }
 
         if (id == Long.MIN_VALUE) {
+            // Retorna um optional de valor ausente se não for encontrado o Asset.
             return Optional.absent();
         }
 
+        // Cria um novo Asset
         return Optional.of(new Asset(url, name, downloadUrl, createdDate, updatedDate, id, size, downloads, state, label, uploader));
     }
 
@@ -171,50 +201,98 @@ public class Asset implements Parser<JSONObject, Asset> {
         return parseJsonObject(object, formatter);
     }
 
+    /**
+     * Obtem o URL do Asset
+     * @return O URL do Asset
+     */
     public String getUrl() {
         return url;
     }
 
+    /**
+     * Obtem o nome do Asset
+     * @return O nome do Asset
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Obtem o endereço de download
+     * @return O endereço de download
+     */
     public String getDownloadUrl() {
         return downloadUrl;
     }
 
+    /**
+     * Retorna a data de criação
+     * @return A data de criação
+     */
     public Date getCreatedDate() {
         return createdDate;
     }
 
+    /**
+     * Retorna a data de atualização
+     * @return A data de atualização
+     */
     public Date getUpdatedDate() {
         return updatedDate;
     }
 
+    /**
+     * Retorna o ID
+     * @return O ID
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * Retorna o tamanho do arquivo em bytes
+     * @return O tamanho do arquivo em bytes
+     */
     public long getSize() {
         return size;
     }
 
+    /**
+     * Retorna a quantidade de downloads
+     * @return A quantidade de downloads
+     */
     public long getDownloads() {
         return downloads;
     }
 
+    /**
+     * Retorna o Estado
+     * @return O Estado
+     */
     public AssetState getState() {
         return state;
     }
 
+    /**
+     * Retorna o rótulo, se existir, caso contrário {@link Optional#absent()}
+     * @return O rótulo, se existir, caso contrário {@link Optional#absent()}
+     */
     public Optional<String> getLabel() {
         return label;
     }
 
+    /**
+     * Retorna quem enviou, se existir, caso contrário {@link Optional#absent()}
+     * @return Quem enviou, se existir, caso contrário {@link Optional#absent()}
+     */
     public Optional<Uploader> getUploader() {
         return uploader;
     }
 
+    /**
+     * Retorna um texto representando o Objeto
+     * @return Um texto representando o Objeto
+     */
     @Override
     public String toString() {
         return Objects.toStringHelper(this)

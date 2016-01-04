@@ -33,14 +33,26 @@ public class MultiTypeFormatter {
 
     private Set<TypeFormatter<?>> formatterSet = new HashSet<>();
 
+    /**
+     * Registra um formatador
+     * @param formatter Formatador para registrar
+     */
     public void registerFormatter(TypeFormatter<?> formatter) {
         formatterSet.add(formatter);
     }
 
+    /**
+     * Desregistra um formatador
+     * @param formatter Formatador para desregistrar
+     */
     public void unregisterFormatter(TypeFormatter<?> formatter) {
         formatterSet.remove(formatter);
     }
 
+    /**
+     * Desregistra um formatador baseado na sua classe
+     * @param formatterClass Classe do formatador
+     */
     public void unregisterFormatter(Class<? extends TypeFormatter> formatterClass) {
         for (TypeFormatter<?> typeFormatter : formatterSet) {
             if (typeFormatter.getClass() == formatterClass) {
@@ -49,6 +61,10 @@ public class MultiTypeFormatter {
         }
     }
 
+    /**
+     * Desregistra um formatador baseado na classe que ele pode formatar
+     * @param formatClass Classe que o formatador pode formatar
+     */
     public void unregisterFormatterType(Class<?> formatClass) {
         for (TypeFormatter<?> typeFormatter : formatterSet) {
             if (typeFormatter.getFormatClass() == formatClass) {
@@ -57,6 +73,11 @@ public class MultiTypeFormatter {
         }
     }
 
+    /**
+     * Determina se o formatador pode formatar a classe
+     * @param classToFormat Classe para verificar se é possivel formatar a partir dos formatadores registrados
+     * @return True se puder formatar, ou false caso contrario.
+     */
     public boolean canFormat(Class<?> classToFormat) {
         for (TypeFormatter<?> typeFormatter : formatterSet) {
             if (typeFormatter.getFormatClass() == classToFormat) {

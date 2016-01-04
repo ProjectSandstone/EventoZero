@@ -28,10 +28,18 @@ import java.util.TimeZone;
 import br.com.blackhubos.eventozero.updater.formater.TypeFormatter;
 import br.com.blackhubos.eventozero.updater.formater.exception.CannotFormatTypeException;
 
+/**
+ * Formatador de datas do GitHub
+ */
 public class GitHubDateFormatter implements TypeFormatter<Date> {
 
     private static final String[] GITHUB_DATE_FORMATS = {"yyyy/MM/dd HH:mm:ss ZZZZ", "yyyy-MM-dd'T'HH:mm:ss'Z'"};
 
+    /**
+     * Formata a data
+     * @param dateString Representação em texto
+     * @return Data
+     */
     private static Date parseDate(String dateString) {
         for (String format : GITHUB_DATE_FORMATS) {
             try {

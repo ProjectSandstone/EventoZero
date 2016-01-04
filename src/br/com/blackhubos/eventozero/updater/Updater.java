@@ -19,4 +19,7 @@
  */
 package br.com.blackhubos.eventozero.updater;
 
+/**
+ * Classe que irá atualizar tudo
+ */
 public class Updater {}
