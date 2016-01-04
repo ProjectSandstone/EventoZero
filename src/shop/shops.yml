@@ -17,7 +17,17 @@ shops:
     # Tamanho do shop, cuidado é sempre multiplo 9, exemplo: 9, 18, 27, 36, 45, 54
     size: 9
     # Item que irá abrir o shop
-    icon: 266, 1, name:&6SHOP
-    # Items do shop, exemplo: {nome do kit}
+    icon: item(266) amount(1) name('&6&lSHOP')
+    # Items do shop, exemplo: caso for kit "kitNome: {kitNome}"
     items:
-    - '{jump}'
+      # Aqui irá pegar os items, e irá adicionar no shop
+      # Caso seja kit coloque {NOME DO KIT} exemplo: {jump}
+      items:
+      - {jump}
+      - {armor}
+      # Aqui está criando um item chamado armor e irá adicionar no shop
+      armor:
+          # Incone do item
+          icon: item(311) amount(1) name('&5Armor') enchantments(sharpness,5 unbreaking3) lore('linha 1', 'linha 2')
+          # Preço do item será 10 pontos.
+          price: 10
