@@ -55,18 +55,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 
-import com.sk89q.worldedit.CuboidClipboard;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.EmptyClipboardException;
-import com.sk89q.worldedit.FilenameException;
-import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bukkit.BukkitWorld;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.data.DataException;
-import com.sk89q.worldedit.schematic.SchematicFormat;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.StateFlag;
@@ -89,8 +77,6 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
@@ -117,12 +103,24 @@ public final class Framework
 		Framework.worldedit = Framework.getPlugin("WorldEdit");
 	}
 
-	public static boolean tryBoolean(final String string)
+	/**
+	 * Sistema eficiente para verificação de booleans.
+	 *
+	 * @param string Uma String ou Integer para ser processado. Ele permite os valores true, false, t, f, y, n, 1, 0 sim e não/nao
+	 * @return Retorna se de acordo com a string é um boolean válido.
+	 */
+	public static boolean tryBoolean(final Object string)
 	{
-		final String f = string.toLowerCase().replaceAll("\\s", "");
+		final String f = String.valueOf(string).replaceAll("\\s", "");
 		return f.equals("true") || f.equals("false") || f.equals("t") || f.equals("f") || f.equals("y") || f.equals("n") || f.equals("1") || f.equals("2");
 	}
 
+	/**
+	 * Sistema eficiente para pegar umb oolean por uma String ou número.
+	 *
+	 * @param string A string a ser processada. Se começar com t, y, s ou 1 é considerado true.
+	 * @return retorna se é true ou false o valor processado.
+	 */
 	public static boolean getBoolean(final String string)
 	{
 		final Pattern p = Pattern.compile("(t.*|y.*|1)", Pattern.CASE_INSENSITIVE);
@@ -136,11 +134,24 @@ public final class Framework
 		}
 	}
 
+	/**
+	 * Este método transforma uma localização em String para poder ser salva em configurações, bancos de dados e afins via texto. Pode ser facilmente revertido usando o método
+	 * toLocation(String).
+	 *
+	 * @param pos A localização a ser transformada em String.
+	 * @return Retorna a String transformada (chamaremos isso de 'serial').
+	 */
 	public static String fromLocation(final Location pos)
 	{
 		return String.format("World [%s] X [%s] Y [%s] Z [%s] Yaw [%s] Pitch [%s]", pos.getWorld().getName(), pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), pos.getYaw(), pos.getPitch());
 	}
 
+	/**
+	 * Converte a String feita do fromLocation(Location) devolta para uma localização.
+	 *
+	 * @param serial O serial obtido no método que transformou anteriormente a localização em String.
+	 * @return retorna a Localização convertida.
+	 */
 	public static Location toLocation(final String serial)
 	{
 		final Pattern pattern = Pattern.compile("^World\\s*\\[([a-zA-Z0-9_-]+)\\]\\s*X\\s*\\[([0-9]+)\\]\\s*Y\\s*\\[([0-9]+)\\]\\s*Z\\s*\\[([0-9]+)\\](\\s*Yaw\\s*\\[([0-9\\.]+)\\]\\s*Pitch\\s*\\[([0-9\\.]+)\\])?");
@@ -162,6 +173,14 @@ public final class Framework
 		}
 	}
 
+	/**
+	 * Permite enviar uma mensagem no broadcast. Ele carrega todas as mensagens de um arquivo, e a cada linha, ele faz a substituição de key e valor do 'replacements', se não
+	 * for null, é claro. As mensagens são coloridas automaticamente.
+	 *
+	 * @param file O arquivo txt que contém as mensagens.
+	 * @param replacements Pode ser null. É usado para substituições.
+	 * @return Retorna a lista de mensagens enviadas pelo broadcast.
+	 */
 	public static java.util.Vector<String> broadcast(@Nonnull final File file, @Nullable final HashMap<String, Object> replacements)
 	{
 		if ((file == null) || !file.exists())
@@ -181,6 +200,14 @@ public final class Framework
 		}
 	}
 
+	/**
+	 * Esse método é semelhante ao broadcast por file, o que muda, é que este é direto por uma lista definida por você e não via arquivo.
+	 * Veja {@link #broadcast(File, HashMap)}
+	 *
+	 * @param messages A lista de mensagens
+	 * @param replacements Pode ser null. HashMap contendo key e valores para substituições.
+	 * @return Retorna uma lista formatada das mensagens que foram enviadas.
+	 */
 	public static java.util.Vector<String> broadcast(final java.util.Vector<String> messages, @Nullable HashMap<String, Object> replacements)
 	{
 		if (replacements == null)
@@ -209,6 +236,14 @@ public final class Framework
 		return array;
 	}
 
+	/**
+	 * Sistema eficaz para validação de números via strings.
+	 * 
+	 * @param value O número inteiro via string.
+	 * @param min Pra retornar true, precisa ter no mínimo qual valor? -1 = não usar.
+	 * @param max Pra retornar true, deverá ter no máximo qual valor? -1 = não usar.
+	 * @return Retorna true se for número inteiro e se atender aos requisitos do min e max.
+	 */
 	public static boolean tryInt(final String value, final int min, final int max)
 	{
 		try
@@ -227,6 +262,12 @@ public final class Framework
 		}
 	}
 
+	/**
+	 * Transforma um long de scheduler em string no formato XhYmZs.
+	 *
+	 * @param delayed o long do bukkit scheduler.
+	 * @return retorna uma String legível representando o long.
+	 */
 	public static String reverseOf(final long delayed)
 	{
 		final StringBuilder literal = new StringBuilder();
@@ -251,6 +292,12 @@ public final class Framework
 		return literal.toString().trim();
 	}
 
+	/**
+	 * Transforma uma string no formato XhYmZs (ex: 15h30m55s) em um long para ser usado em bukkit schedulers.
+	 *
+	 * @param tempo A string em formato XhYmZs.
+	 * @return retorna o tempo convertido para long (*20L).
+	 */
 	public static long reverseOf(final String tempo)
 	{
 		if (tempo == null)
@@ -282,6 +329,12 @@ public final class Framework
 		return delay;
 	}
 
+	/**
+	 * Este método é útil para poder obter encantamentos por seus nomes familiares (como sharpness ao invés de damage_all).
+	 *
+	 * @param key O nome 'familiar' do encantamento (sharpness, looting, etc.)
+	 * @return Retorna o encantamento respectivo ou null se simplesmente não existir.
+	 */
 	@Nullable
 	public static Enchantment checkEnchantment(String key)
 	{
@@ -405,11 +458,23 @@ public final class Framework
 		}
 	}
 
+	/**
+	 * Veja {@link #isSign(Block)}.
+	 *
+	 * @param pos Localização para ver se o bloco dela é sign.
+	 * @return retorna <code>true</code> se for uma placa; <code>false</code> caso contrário.
+	 */
 	public static boolean isSign(final Location pos)
 	{
 		return Framework.isSign(pos.getBlock());
 	}
 
+	/**
+	 * Verifica se um bloco é uma string.
+	 *
+	 * @param block Bloco em questão a ser verificado
+	 * @return retorna <code>true</code> se for uma placa; <code>false</code> caso contrário.
+	 */
 	public static boolean isSign(final Block block)
 	{
 		return (block.getType() == Material.WALL_SIGN) || (block.getType() == Material.SIGN_POST);
@@ -439,6 +504,13 @@ public final class Framework
 		}
 	}
 
+	/**
+	 * Verifica igualdade do tamanho de duas strings.
+	 *
+	 * @param expected Primeira string
+	 * @param obtained Segunda string
+	 * @return Retorna 0 a 1, sendo = nada haver, 1 = total possivel igualdade
+	 */
 	public static float checkSameSize(final String expected, final String obtained)
 	{
 		if (expected.length() != obtained.length())
@@ -461,6 +533,16 @@ public final class Framework
 		return 1f - ((float) iDiffs / iLen);
 	}
 
+	/**
+	 * Verifica o tamanho da igualdade entre duas strings (comparação).
+	 *
+	 * @param expected A primeira string
+	 * @param obtained A segunda string
+	 * @param normalize Remover acentos durante o processamento?
+	 * @param lower Transformar em lower case para processar?
+	 * @param trim remover espaços para processar?
+	 * @return Retorna um float entre 0 e 1, sendo 0 = nada haver e 1 = igual, podendo ser por exemplo 0.5.. etc.
+	 */
 	public static float equals(String expected, String obtained, final boolean normalize, final boolean lower, final boolean trim)
 	{
 		if (normalize)
@@ -516,6 +598,12 @@ public final class Framework
 		}
 	}
 
+	/**
+	 * Remove acentos e afins.
+	 *
+	 * @param arg A string a ser convertida
+	 * @return A string processada
+	 */
 	public static String normalize(String arg)
 	{
 		arg = Normalizer.normalize(arg, Normalizer.Form.NFD);
@@ -523,6 +611,12 @@ public final class Framework
 		return arg;
 	}
 
+	/**
+	 * Reduz um float para #.## (Exemplo: de 0.29929F para 0.29F)
+	 *
+	 * @param value Valor a ser reduzido.
+	 * @return Retorna o valor reduzido
+	 */
 	public static float getFloatReduced(final float value)
 	{
 		String s = String.valueOf(value);
@@ -534,6 +628,16 @@ public final class Framework
 		return Float.valueOf(s);
 	}
 
+	/**
+	 * Cria uma cerca em volta de um jogador.
+	 *
+	 * @param player O jogador em questão
+	 * @param height A altura que é pra criar a 'parede'
+	 * @param size O tamanho da parede. Exemplo: 10x10, 30x35.. etc.
+	 * @param id O material a ser usado
+	 * @param data A data do material a ser usada
+	 * @return Retorna true se for criado e se o 'size' estiver no formato Número x Número.
+	 */
 	public static boolean aroundPlayer(final Player player, final int height, final String size, final int id, final byte data)
 	{
 		final Pattern sized = Pattern.compile("^([0-9]+)\\s*x\\s*([0-9]+)$");
@@ -564,52 +668,111 @@ public final class Framework
 		}
 	}
 
+	/**
+	 * As vezes os floats ficam gigantescos (0.0999192929F), e você precisa deles reduzidos (0.09F). Pra isso eu fiz esse método.
+	 *
+	 * @param value O valor grande a ser reduzido
+	 * @return O valor reduzido do flaot
+	 */
 	public static float getFloatReduced(final String value)
 	{
 		return Framework.getFloatReduced(Float.parseFloat(value));
 	}
 
+	/**
+	 * Converte um float que está em String para float em si.
+	 *
+	 * @param floatt O float que está em formato String.
+	 * @return O float convertido de String para float.
+	 */
 	public static float getFloat(final String floatt)
 	{
 		return Float.parseFloat(floatt);
 	}
 
+	/**
+	 * Converte string em número
+	 *
+	 * @param number O número inteiro em forma de string.
+	 * @return O número convertido.
+	 */
 	public static int getInt(final String number)
 	{
 		return Integer.parseInt(number);
 	}
 
+	/**
+	 * Obtém um mundo pelo seu nome.
+	 *
+	 * @param name O nome do mundo.
+	 * @return O mundo pelo nome.
+	 */
 	public static World getWorld(final String name)
 	{
 		return Bukkit.getWorld(name);
 	}
 
+	/**
+	 *
+	 * @return Retorna a implementação do Vault para Economia.
+	 */
 	public Economy getEconomy()
 	{
 		return Bukkit.getServicesManager().getRegistration(Economy.class).getProvider();
 	}
 
+	/**
+	 *
+	 * @return Retorna a implementação do Vault para Permissões e Grupos.
+	 */
 	public Permission getPermissions()
 	{
 		return Bukkit.getServicesManager().getRegistration(Permission.class).getProvider();
 	}
 
+	/**
+	 *
+	 * @return Retorna a implementação do Vault para Chat.
+	 */
 	public Chat getChat()
 	{
 		return Bukkit.getServicesManager().getRegistration(Chat.class).getProvider();
 	}
 
+	/**
+	 * Verifica se em uma localização ({@link Location}) é permitido uma certa flag via worldguard
+	 *
+	 * @param flag O {@link StateFlag} que você quer verificar.
+	 * @param around A localização a ser usada.
+	 * @return retorna <code>true</code> se for permitido; caso contrário, <code>false</code>.
+	 */
 	public static boolean can(final StateFlag flag, final Location around)
 	{
 		final WorldGuardPlugin plugin = (WorldGuardPlugin) Framework.worldguard;
 		return plugin.getRegionManager(around.getWorld()).getApplicableRegions(around).allows(flag);
 	}
 
+	/**
+	 * Verifica se em um lugar existe uma região.
+	 *
+	 * @param around O {@link Location} para checar.
+	 * @return Retorna <code>true</code> se existir; <code>false</code> se não existir.
+	 */
 	public static boolean isInsideRegion(final Location around)
 	{
 		return Framework.getRegion(around) != null;
 	}
 
+	/**
+	 * Criar uma nova região no WorldGuard
+	 *
+	 * @param name O nome da nova região
+	 * @param center O lugar central dela (para ser baseado o tamanho)
+	 * @param larg Um número inteiro para representar a largura
+	 * @param comp Um número inteiro para representar o comprimento
+	 * @param priority A prioridade da região
+	 * @return Retorna a região que foi criada se for criada com sucesso. Se já houver uma região com esse nome OU houver uma falha, retorna null.
+	 */
 	@Nullable
 	public static ProtectedRegion addRegion(final String name, final Location center, final int larg, final int comp, final int priority)
 	{
@@ -633,6 +796,12 @@ public final class Framework
 		}
 	}
 
+	/**
+	 * Transforma um {@link Location} em um WorldEdit {@link BlockVector}.
+	 *
+	 * @param location O lugar a ser convertido
+	 * @return Retorna o Location em {@link BlockVector}.
+	 */
 	public static com.sk89q.worldedit.BlockVector getWorldEditVector(final Location location)
 	{
 		return new com.sk89q.worldedit.BlockVector(location.getX(), location.getY(), location.getZ());
@@ -654,6 +823,12 @@ public final class Framework
 		return array;
 	}
 
+	/**
+	 * Verifica se existe uma região em um lugar.
+	 *
+	 * @param around Local para verificar
+	 * @return Retorna a primeira região encontrada se existirem, ou null se não houver.
+	 */
 	public static ProtectedRegion getRegion(final Location around)
 	{
 		final WorldGuardPlugin plugin = (WorldGuardPlugin) Framework.worldguard;
@@ -661,6 +836,12 @@ public final class Framework
 		return i.hasNext() ? i.next() : null;
 	}
 
+	/**
+	 * Método que obtém a região com maior prioridade em um certo local
+	 *
+	 * @param around Local onde existe as regiões
+	 * @return Retorna a região com maior prioridade
+	 */
 	public static ProtectedRegion getPrioritizedRegion(final Location around)
 	{
 		final WorldGuardPlugin plugin = (WorldGuardPlugin) Framework.worldguard;
@@ -679,11 +860,6 @@ public final class Framework
 		}
 
 		return prime;
-	}
-
-	public static Terrain getTerrainManager(final Player player)
-	{
-		return new Terrain(player);
 	}
 
 	public static Location getCenter(final Location pos1, final Location pos2, final int y)
@@ -1397,194 +1573,13 @@ public final class Framework
 		}
 	}
 
-	public static class Terrain
-	{
-
-		private static final String EXTENSION = "schematic";
-		private final WorldEdit we;
-		private final LocalSession localSession;
-		private final EditSession editSession;
-		private final LocalPlayer localPlayer;
-
-		public Terrain(final Player player)
-		{
-			final WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-			this.we = wep.getWorldEdit();
-			this.localPlayer = wep.wrapPlayer(player);
-			this.localSession = this.we.getSession(this.localPlayer);
-			this.editSession = this.localSession.createEditSession(this.localPlayer);
-		}
-
-		public Terrain(final WorldEditPlugin wep, final World world)
-		{
-			this.we = wep.getWorldEdit();
-			this.localPlayer = null;
-			this.localSession = new LocalSession(this.we.getConfiguration());
-			this.editSession = new EditSession(new BukkitWorld(world), this.we.getConfiguration().maxChangeLimit);
-		}
-
-		public void save(File saveFile, final Location l1, final Location l2) throws FilenameException, DataException, IOException
-		{
-			final com.sk89q.worldedit.Vector min = this.getMin(l1, l2);
-			final com.sk89q.worldedit.Vector max = this.getMax(l1, l2);
-			saveFile = this.we.getSafeSaveFile(this.localPlayer, saveFile.getParentFile(), saveFile.getName(), Terrain.EXTENSION, new String[] { Terrain.EXTENSION });
-			this.editSession.enableQueue();
-			final CuboidClipboard clipboard = new CuboidClipboard(max.subtract(min).add(new com.sk89q.worldedit.Vector(1, 1, 1)), min);
-			clipboard.copy(this.editSession);
-			SchematicFormat.MCEDIT.save(clipboard, saveFile);
-			this.editSession.flushQueue();
-		}
-
-		public void load(File saveFile, final Location loc) throws FilenameException, DataException, IOException, MaxChangedBlocksException, EmptyClipboardException
-		{
-			saveFile = this.we.getSafeSaveFile(this.localPlayer, saveFile.getParentFile(), saveFile.getName(), Terrain.EXTENSION, new String[] { Terrain.EXTENSION });
-
-			this.editSession.enableQueue();
-			this.localSession.setClipboard(SchematicFormat.MCEDIT.load(saveFile));
-			this.localSession.getClipboard().place(this.editSession, this.getPastePosition(loc), false);
-			this.editSession.flushQueue();
-			this.we.flushBlockBag(this.localPlayer, this.editSession);
-		}
-
-		public void load(final File saveFile) throws FilenameException, DataException, IOException, MaxChangedBlocksException, EmptyClipboardException
-		{
-			this.load(saveFile, null);
-		}
-
-		private com.sk89q.worldedit.Vector getPastePosition(final Location loc) throws EmptyClipboardException
-		{
-			if (loc == null)
-			{
-				return this.localSession.getClipboard().getOrigin();
-			}
-			else
-			{
-				return new com.sk89q.worldedit.Vector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-			}
-		}
-
-		private com.sk89q.worldedit.Vector getMin(final Location l1, final Location l2)
-		{
-			return new com.sk89q.worldedit.Vector(Math.min(l1.getBlockX(), l2.getBlockX()), Math.min(l1.getBlockY(), l2.getBlockY()), Math.min(l1.getBlockZ(), l2.getBlockZ()));
-		}
-
-		private com.sk89q.worldedit.Vector getMax(final Location l1, final Location l2)
-		{
-			return new com.sk89q.worldedit.Vector(Math.max(l1.getBlockX(), l2.getBlockX()), Math.max(l1.getBlockY(), l2.getBlockY()), Math.max(l1.getBlockZ(), l2.getBlockZ()));
-		}
-	}
-
-	public static final class ItemInfo
-	{
-
-		public final Material material;
-		public short subTypeId;
-		public final String name;
-		public final String[][] search;
-
-		public ItemInfo(final String name, final String[][] search, final Material material)
-		{
-			this.material = material;
-			this.name = name;
-			this.subTypeId = 0;
-			this.search = search.clone();
-		}
-
-		public ItemInfo(final String name, final String[][] search, final Material material, final short subTypeId)
-		{
-			this.name = name;
-			this.material = material;
-			this.subTypeId = subTypeId;
-			this.search = search.clone();
-		}
-
-		public Material getType()
-		{
-			return this.material;
-		}
-
-		public short getSubTypeId()
-		{
-			return this.subTypeId;
-		}
-
-		public void setSubTypeId(final short id)
-		{
-			this.subTypeId = id;
-		}
-
-		public int getStackSize()
-		{
-			return this.material.getMaxStackSize();
-		}
-
-		public int getId()
-		{
-			return this.material.getId();
-		}
-
-		public boolean isEdible()
-		{
-			return this.material.isEdible();
-		}
-
-		public boolean isBlock()
-		{
-			return this.material.isBlock();
-		}
-
-		public String getName()
-		{
-			return this.name;
-		}
-
-		@Override
-		public int hashCode()
-		{
-			int hash = 7;
-			hash = (17 * hash) + this.getId();
-			hash = (17 * hash) + this.subTypeId;
-			return hash;
-		}
-
-		public boolean isDurable()
-		{
-			return (this.material.getMaxDurability() > 0);
-		}
-
-		public ItemStack toStack()
-		{
-			return new ItemStack(this.material, 1, this.subTypeId);
-		}
-
-		@Override
-		public String toString()
-		{
-			return String.format("%s[%d:%d]", this.name, this.material.getId(), this.subTypeId);
-		}
-
-		@Override
-		public boolean equals(final Object obj)
-		{
-			if (obj == null)
-			{
-				return false;
-			}
-			else if (this == obj)
-			{
-				return true;
-			}
-			else if (!(obj instanceof ItemInfo))
-			{
-				return false;
-			}
-			else
-			{
-				return (((ItemInfo) obj).material == this.material) && (((ItemInfo) obj).subTypeId == this.subTypeId);
-			}
-		}
-	}
-
+	/**
+	 * Uma classe simples que permite a criação de uma instância com dois tipos de objetos que podem ser tradados via Tipo <T>.
+	 * O objeto em si era criar tipo uma Map Entry, mas não com objetivo de ser Key e Value, e sim, apenas dois objetos que tem um mesmo objetivo ou referência.
+	 *
+	 * @param <F> O primeiro tipo de objeto.
+	 * @param <S> O segundo tipo de objeto.
+	 */
 	public static class Handler<F, S>
 	{
 
@@ -1827,147 +1822,132 @@ public final class Framework
 
 	}
 
-	public static final class ItemFactory
-	{
-		private final String itemscript;
-
-		public ItemFactory(final String itemscript)
-		{
-			this.itemscript = itemscript;
-		}
-
-		public ItemStack getItem()
-		{
-			return this.getItem(null);
-		}
-
-		public ItemStack getItem(final HashMap<String, Object> replacements0)
-		{
-			ItemStack is = null;
-			HashMap<String, Object> replacements = new HashMap<String, Object>();
-			if (replacements0 != null)
-			{
-				replacements = replacements0;
-			}
-
-			String nome = "?";
-			String ident = "";
-			final java.util.Vector<String> lore = new java.util.Vector<String>();
-			final HashMap<Enchantment, Integer> enchants = new HashMap<Enchantment, Integer>();
-			int material;
-			byte data = -1;
-			final int flags = Pattern.CASE_INSENSITIVE;
-
-			final Matcher mident = Pattern.compile("((display)\\s*:\\s*\"\\s*([^\"]+)\\s*\")").matcher(ItemFactory.this.itemscript);
-			if (mident.find())
-			{
-				ident = mident.group(3).trim();
-				for (final Entry<String, Object> e : replacements.entrySet())
-				{
-					ident = ident.replace(e.getKey(), String.valueOf(e.getValue()));
-				} ;
-				ident = ChatColor.translateAlternateColorCodes('&', ident);
-			}
-			else
-			{
-				return null;
-			}
-
-			final Matcher mii = Pattern.compile("((item|i)\\s*:\\s*\"\\s*([0-9]+)\\s*\")").matcher(ItemFactory.this.itemscript);
-			if (mii.find())
-			{
-				material = Integer.parseInt(mii.group(3).split("\\s*:\\s*")[0]);
-				if (mii.group(3).split(":").length >= 2)
-				{
-					data = Byte.parseByte(mii.group(3).split("\\s*:\\s*")[1]);
-				}
-			}
-			else
-			{
-				System.out.println("Failed to parse itemstack with Quiz/Factory: Item ID not found.");
-				return null;
-			}
-
-			final Matcher min = Pattern.compile("((nome|name|nm)\\s*:\\s*\"(.+)\")", flags).matcher(ItemFactory.this.itemscript);
-			if (min.find())
-			{
-				nome = ChatColor.translateAlternateColorCodes('&', min.group(3).trim());
-			}
-
-			final Matcher mil = Pattern.compile("((d\\+|desc\\+|description\\+)\\s*:\\s*\"([^\"]+)\")", flags).matcher(ItemFactory.this.itemscript);
-			while (mil.find())
-			{
-				String ll = mil.group(3).trim();
-				for (final Entry<String, Object> e : replacements.entrySet())
-				{
-					ll = ll.replaceAll("(?i)" + Pattern.quote(e.getKey()), String.valueOf(e.getValue()));
-				}
-				lore.add(ChatColor.translateAlternateColorCodes('&', ll));
-			}
-
-			final Matcher milam = Pattern.compile("((d|desc|description)\\s*\\[\\s*([^\\[\\]]+)\\s*\\])", flags).matcher(ItemFactory.this.itemscript);
-			while (milam.find())
-			{
-				final Matcher dv = Pattern.compile("\"([^\"]+)\"").matcher(milam.group(3).trim());
-				while (dv.find())
-				{
-					String ll = dv.group(1).trim();
-					for (final Entry<String, Object> e : replacements.entrySet())
-					{
-						ll = ll.replaceAll("(?i)" + Pattern.quote(e.getKey()), String.valueOf(e.getValue()));
-					}
-					lore.add(ChatColor.translateAlternateColorCodes('&', ll));
-				}
-			}
-
-			final Matcher mie = Pattern.compile("((e\\+|ench\\+|enchantment\\+)\\s*:\\s*\"(.+)\")", flags).matcher(ItemFactory.this.itemscript);
-			while (mie.find())
-			{
-				final Matcher mk = Pattern.compile("((e|ench|enchantment)\\s*=\\s*\\'([a-zA-Z_-]+)\\')").matcher(mie.group(3).trim());
-				if (mk.find())
-				{
-					final String k = mk.group(3).trim();
-					if (Framework.checkEnchantment(k) != null)
-					{
-						final Matcher ml = Pattern.compile("((l|lev|level)\\s*=\\s*\\'([0-9]+)\\')").matcher(mie.group(3).trim());
-						if (ml.find())
-						{
-							enchants.put(Framework.checkEnchantment(k), Integer.parseInt(ml.group(3)));
-						}
-						else
-						{
-							enchants.put(Framework.checkEnchantment(k), 1);
-						}
-					}
-				}
-			}
-
-			is = new ItemStack(Material.getMaterial(material));
-
-			if (data != -1)
-			{
-				final MaterialData mdata = is.getData();
-				mdata.setData(data);
-				is.setData(mdata);
-			}
-
-			final ItemMeta meta = is.getItemMeta();
-			meta.setLore(lore);
-
-			if (!nome.matches("\\?"))
-			{
-				meta.setDisplayName(nome);
-			}
-
-			is.setItemMeta(meta);
-
-			for (final Entry<Enchantment, Integer> enchant : enchants.entrySet())
-			{
-				is.addUnsafeEnchantment(enchant.getKey(), enchant.getValue());
-			}
-
-			return is;
-		}
-	}
+	/*
+	 * public static final class ItemFactory
+	 * {
+	 * private final String itemscript;
+	 * public ItemFactory(final String itemscript)
+	 * {
+	 * this.itemscript = itemscript;
+	 * }
+	 * public ItemStack getItem()
+	 * {
+	 * return this.getItem(null);
+	 * }
+	 * public ItemStack getItem(final HashMap<String, Object> replacements0)
+	 * {
+	 * ItemStack is = null;
+	 * HashMap<String, Object> replacements = new HashMap<String, Object>();
+	 * if (replacements0 != null)
+	 * {
+	 * replacements = replacements0;
+	 * }
+	 * String nome = "?";
+	 * String ident = "";
+	 * final java.util.Vector<String> lore = new java.util.Vector<String>();
+	 * final HashMap<Enchantment, Integer> enchants = new HashMap<Enchantment, Integer>();
+	 * int material;
+	 * byte data = -1;
+	 * final int flags = Pattern.CASE_INSENSITIVE;
+	 * final Matcher mident = Pattern.compile("((display)\\s*:\\s*\"\\s*([^\"]+)\\s*\")").matcher(ItemFactory.this.itemscript);
+	 * if (mident.find())
+	 * {
+	 * ident = mident.group(3).trim();
+	 * for (final Entry<String, Object> e : replacements.entrySet())
+	 * {
+	 * ident = ident.replace(e.getKey(), String.valueOf(e.getValue()));
+	 * } ;
+	 * ident = ChatColor.translateAlternateColorCodes('&', ident);
+	 * }
+	 * else
+	 * {
+	 * return null;
+	 * }
+	 * final Matcher mii = Pattern.compile("((item|i)\\s*:\\s*\"\\s*([0-9]+)\\s*\")").matcher(ItemFactory.this.itemscript);
+	 * if (mii.find())
+	 * {
+	 * material = Integer.parseInt(mii.group(3).split("\\s*:\\s*")[0]);
+	 * if (mii.group(3).split(":").length >= 2)
+	 * {
+	 * data = Byte.parseByte(mii.group(3).split("\\s*:\\s*")[1]);
+	 * }
+	 * }
+	 * else
+	 * {
+	 * System.out.println("Failed to parse itemstack with Quiz/Factory: Item ID not found.");
+	 * return null;
+	 * }
+	 * final Matcher min = Pattern.compile("((nome|name|nm)\\s*:\\s*\"(.+)\")", flags).matcher(ItemFactory.this.itemscript);
+	 * if (min.find())
+	 * {
+	 * nome = ChatColor.translateAlternateColorCodes('&', min.group(3).trim());
+	 * }
+	 * final Matcher mil = Pattern.compile("((d\\+|desc\\+|description\\+)\\s*:\\s*\"([^\"]+)\")", flags).matcher(ItemFactory.this.itemscript);
+	 * while (mil.find())
+	 * {
+	 * String ll = mil.group(3).trim();
+	 * for (final Entry<String, Object> e : replacements.entrySet())
+	 * {
+	 * ll = ll.replaceAll("(?i)" + Pattern.quote(e.getKey()), String.valueOf(e.getValue()));
+	 * }
+	 * lore.add(ChatColor.translateAlternateColorCodes('&', ll));
+	 * }
+	 * final Matcher milam = Pattern.compile("((d|desc|description)\\s*\\[\\s*([^\\[\\]]+)\\s*\\])", flags).matcher(ItemFactory.this.itemscript);
+	 * while (milam.find())
+	 * {
+	 * final Matcher dv = Pattern.compile("\"([^\"]+)\"").matcher(milam.group(3).trim());
+	 * while (dv.find())
+	 * {
+	 * String ll = dv.group(1).trim();
+	 * for (final Entry<String, Object> e : replacements.entrySet())
+	 * {
+	 * ll = ll.replaceAll("(?i)" + Pattern.quote(e.getKey()), String.valueOf(e.getValue()));
+	 * }
+	 * lore.add(ChatColor.translateAlternateColorCodes('&', ll));
+	 * }
+	 * }
+	 * final Matcher mie = Pattern.compile("((e\\+|ench\\+|enchantment\\+)\\s*:\\s*\"(.+)\")", flags).matcher(ItemFactory.this.itemscript);
+	 * while (mie.find())
+	 * {
+	 * final Matcher mk = Pattern.compile("((e|ench|enchantment)\\s*=\\s*\\'([a-zA-Z_-]+)\\')").matcher(mie.group(3).trim());
+	 * if (mk.find())
+	 * {
+	 * final String k = mk.group(3).trim();
+	 * if (Framework.checkEnchantment(k) != null)
+	 * {
+	 * final Matcher ml = Pattern.compile("((l|lev|level)\\s*=\\s*\\'([0-9]+)\\')").matcher(mie.group(3).trim());
+	 * if (ml.find())
+	 * {
+	 * enchants.put(Framework.checkEnchantment(k), Integer.parseInt(ml.group(3)));
+	 * }
+	 * else
+	 * {
+	 * enchants.put(Framework.checkEnchantment(k), 1);
+	 * }
+	 * }
+	 * }
+	 * }
+	 * is = new ItemStack(Material.getMaterial(material));
+	 * if (data != -1)
+	 * {
+	 * final MaterialData mdata = is.getData();
+	 * mdata.setData(data);
+	 * is.setData(mdata);
+	 * }
+	 * final ItemMeta meta = is.getItemMeta();
+	 * meta.setLore(lore);
+	 * if (!nome.matches("\\?"))
+	 * {
+	 * meta.setDisplayName(nome);
+	 * }
+	 * is.setItemMeta(meta);
+	 * for (final Entry<Enchantment, Integer> enchant : enchants.entrySet())
+	 * {
+	 * is.addUnsafeEnchantment(enchant.getKey(), enchant.getValue());
+	 * }
+	 * return is;
+	 * }
+	 * }
+	 */
 
 }
