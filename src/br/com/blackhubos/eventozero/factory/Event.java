@@ -58,6 +58,7 @@ public class Event {
     private final Vector<Party> partys;
     private final Vector<Ability> abilitys;
 
+    private String eventDisplayname;
     private String eventDescription;
     private EventState eventoState;
 
@@ -89,6 +90,14 @@ public class Event {
 
     /**
      *
+     * @return Retorna o nome customizado do evento.
+     */
+    public String getEventDisplayName() {
+        return this.eventDisplayname;
+    }
+
+    /**
+     *
      * @return Retorna o {@link EventData} do evento, que contém várias
      * informações.
      */
@@ -114,6 +123,16 @@ public class Event {
      */
     public Event updateDescription(final String desc) {
         this.eventDescription = desc;
+        return this;
+    }
+
+    /**
+     * 
+     * @param displayname
+     * @return Retorna a instância do {@link Event} modificada.
+     */
+    public Event updateDisplayName(final String displayname) {
+        this.eventDisplayname = displayname;
         return this;
     }
 
@@ -299,10 +318,7 @@ public class Event {
     @SuppressWarnings("unchecked")
     public void updateSigns() {
         if (this.getEventData().containsKey("options.signs.locations") && (this.getEventData().getData("options.signs.locations") != null)) {
-            /**
-             * TODO: trocar List por Vector
-             */
-            final List<Location> locations = (List<Location>) this.getEventData().getData("options.signs.locations");
+            final Vector<Location> locations = (Vector<Location>) this.getEventData().getData("options.signs.locations");
             for (final Location location : locations) {
                 final Block block = location.getWorld().getBlockAt(location);
                 if ((block.getType() == Material.SIGN_POST) || (block.getType() == Material.WALL_SIGN)) {
