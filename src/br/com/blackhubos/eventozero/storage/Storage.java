@@ -36,7 +36,7 @@ public abstract class Storage
 	 * @param key A key que você deseja obter o valor
 	 * @return Retorna null se não existir a key ou o valor para o jogador; ou um objeto caso exista.
 	 */
-	public abstract <T> T getPlayerData(Module service, String player, String key);
+	public abstract <T> T getPlayerData(String player, String key);
 
 	/**
 	 * Serve para agregar um valor a um jogador, para "marcar" ele.
@@ -78,6 +78,8 @@ public abstract class Storage
 	public abstract long getPlayerRankingPoints(String player, String evento, String tipo);
 
 	public abstract int update(final String sql, final Object... set);
+
+	public abstract boolean insert(String sql, Object... set);
 
 	/**
 	 * Efetuar uma busca na database de eventos.

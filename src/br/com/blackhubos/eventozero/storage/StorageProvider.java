@@ -31,34 +31,50 @@ public final class StorageProvider extends Storage
 {
 
 	@Override
-	public <T> T getPlayerData(final Module service, final String player, final String key)
+	@SuppressWarnings("unchecked")
+	public <T> T getPlayerData(final String player, final String key)
 	{
-
-		return null;
-	}
-
-	@Override
-	public void setPlayerData(final String player, final String key, final Object value)
-	{
-		final String table = Storage.Module.OTHER.getTable();
-
+		final ResultSet rs = this.search("SELECT * FROM ? WHERE key=?", Storage.Module.OTHER.getTable(), player.toLowerCase() + "." + key);
 		try
 		{
-			final ResultSet exists = this.search("SELECT * FROM ? WHERE key = ?;", table, player.toLowerCase() + "." + key, key.toLowerCase());
-			if (exists.next())
+			if (rs.next())
 			{
-				this.update("UPDATE ? SET value=? WHERE key=?;", table, value, player.toLowerCase() + "." + key);
+				return (T) rs.getObject("value");
 			}
 			else
 			{
-				// insert("INSERT INTO ? (key,valor) VALUES ();", table, key, value, player.toLowerCase());
+				return null;
+			}
+		}
+		catch (final SQLException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public void setPlayerData(final String player, String key, final Object value)
+	{
+		final String table = Storage.Module.OTHER.getTable();
+		key = player.toLowerCase() + "." + key;
+
+		try
+		{
+			final ResultSet exists = this.search("SELECT * FROM ? WHERE key = ?;", table, key, key.toLowerCase());
+			if (exists.next())
+			{
+				this.update("UPDATE ? SET value=? WHERE key=?;", table, value, key);
+			}
+			else
+			{
+				this.insert("INSERT INTO ? (key,value) VALUES (?,?);", table, key, value);
 			}
 		}
 		catch (final SQLException e)
 		{
 			e.printStackTrace();
 		}
-
 	}
 
 	@Override
@@ -112,6 +128,65 @@ public final class StorageProvider extends Storage
 	}
 
 	@Override
+	public boolean insert(final String sql, final Object... set)
+	{
+		boolean rs = false;
+
+		try
+		{
+			final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql);
+			for (int i = 0; i < set.length; i++)
+			{
+				final Object value = set[i];
+				if (value instanceof String)
+				{
+					ps.setString(i + 1, String.valueOf(value));
+				}
+				else if (value instanceof Long)
+				{
+					ps.setLong(i + 1, (long) value);
+				}
+				else if (value instanceof Integer)
+				{
+					ps.setInt(i + 1, (int) value);
+				}
+				else if (value instanceof Date)
+				{
+					ps.setDate(i + 1, (Date) value);
+				}
+				else if (value instanceof byte[])
+				{
+					ps.setBytes(i + 1, (byte[]) value);
+				}
+				else if (value instanceof Float)
+				{
+					ps.setFloat(i + 1, (Float) value);
+				}
+				else if (value instanceof Double)
+				{
+					ps.setDouble(i + 1, (Double) value);
+				}
+				else if (value instanceof Short)
+				{
+					ps.setShort(i + 1, (Short) value);
+				}
+				else
+				{
+					ps.setObject(i + 1, value);
+				}
+			}
+
+			rs = ps.execute();
+		}
+		catch (final SQLException e)
+		{
+			e.printStackTrace();
+		}
+
+		return rs;
+	}
+
+	@Override
 	public int update(final String sql, final Object... set)
 	{
 		int rs = 2;
@@ -128,15 +203,31 @@ public final class StorageProvider extends Storage
 				}
 				else if (value instanceof Long)
 				{
-					ps.setLong(i + 1, Long.parseLong(String.valueOf(value)));
+					ps.setLong(i + 1, (long) value);
 				}
 				else if (value instanceof Integer)
 				{
-					ps.setInt(i + 1, Integer.parseInt(String.valueOf(value)));
+					ps.setInt(i + 1, (int) value);
 				}
 				else if (value instanceof Date)
 				{
 					ps.setDate(i + 1, (Date) value);
+				}
+				else if (value instanceof byte[])
+				{
+					ps.setBytes(i + 1, (byte[]) value);
+				}
+				else if (value instanceof Float)
+				{
+					ps.setFloat(i + 1, (Float) value);
+				}
+				else if (value instanceof Double)
+				{
+					ps.setDouble(i + 1, (Double) value);
+				}
+				else if (value instanceof Short)
+				{
+					ps.setShort(i + 1, (Short) value);
 				}
 				else
 				{
@@ -171,15 +262,31 @@ public final class StorageProvider extends Storage
 				}
 				else if (value instanceof Long)
 				{
-					ps.setLong(i + 1, Long.parseLong(String.valueOf(value)));
+					ps.setLong(i + 1, (long) value);
 				}
 				else if (value instanceof Integer)
 				{
-					ps.setInt(i + 1, Integer.parseInt(String.valueOf(value)));
+					ps.setInt(i + 1, (int) value);
 				}
 				else if (value instanceof Date)
 				{
 					ps.setDate(i + 1, (Date) value);
+				}
+				else if (value instanceof byte[])
+				{
+					ps.setBytes(i + 1, (byte[]) value);
+				}
+				else if (value instanceof Float)
+				{
+					ps.setFloat(i + 1, (Float) value);
+				}
+				else if (value instanceof Double)
+				{
+					ps.setDouble(i + 1, (Double) value);
+				}
+				else if (value instanceof Short)
+				{
+					ps.setShort(i + 1, (Short) value);
 				}
 				else
 				{
@@ -197,14 +304,14 @@ public final class StorageProvider extends Storage
 		return rs;
 	}
 
-	@Override
+	@Override // -- id | jogador | evento| devolvido | vida | comida | xp | level | localizacao | itens | armadura
 	public Entry<Integer, Boolean> backupPlayer(final Player player, final String evento)
 	{
 
 		return null;
 	}
 
-	@Override
+	@Override // -- id | jogador | evento| devolvido | vida | comida | xp | level | localizacao | itens | armadura
 	public boolean hasBackup(final String player, final String evento)
 	{
 
