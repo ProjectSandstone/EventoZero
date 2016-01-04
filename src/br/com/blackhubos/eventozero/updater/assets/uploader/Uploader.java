@@ -19,6 +19,7 @@
  */
 package br.com.blackhubos.eventozero.updater.assets.uploader;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
 import org.json.simple.JSONObject;
@@ -30,22 +31,6 @@ import br.com.blackhubos.eventozero.updater.formater.MultiTypeFormatter;
 import br.com.blackhubos.eventozero.updater.parser.Parser;
 
 public class Uploader implements Parser<JSONObject, Uploader> {
-
-    enum AssetUploaderInput {
-        UNKNOWN, LOGIN, ID, ADMIN;
-
-        public static AssetUploaderInput parseObject (Object objectToParse) {
-            if(objectToParse instanceof String){
-                String stringToParse = (String) objectToParse;
-                try{
-                    return AssetUploaderInput.valueOf(stringToParse.toUpperCase());
-                }catch(IllegalArgumentException ignored){}
-            }
-
-            return AssetUploaderInput.UNKNOWN;
-        }
-
-    }
 
     private final String name;
     private final boolean admin;
@@ -61,33 +46,22 @@ public class Uploader implements Parser<JSONObject, Uploader> {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public boolean isAdmin() {
-        return admin;
-    }
-
-    public static Optional<Uploader> parseJsonObject(JSONObject parse, MultiTypeFormatter formatter){
+    @SuppressWarnings("unchecked")
+    public static Optional<Uploader> parseJsonObject(JSONObject parse, MultiTypeFormatter formatter) {
         long id = Long.MIN_VALUE;
         String name = null;
         boolean admin = false;
 
-        for(Map.Entry entries : (Set<Map.Entry>) parse.entrySet()) {
+        for (Map.Entry entries : (Set<Map.Entry>) parse.entrySet()) {
 
             Object key = entries.getKey();
             Object value = entries.getValue();
             String valueString = String.valueOf(value);
             switch (AssetUploaderInput.parseObject(key)) {
                 case ADMIN: {
-                    if(formatter.canFormat(Boolean.class)){
+                    if (formatter.canFormat(Boolean.class)) {
                         Optional<Boolean> result = formatter.format(value, Boolean.class);
-                        if(result.isPresent())
+                        if (result.isPresent())
                             admin = result.get();
                     }
                     break;
@@ -106,15 +80,53 @@ public class Uploader implements Parser<JSONObject, Uploader> {
                 }
             }
         }
-        if(id == Long.MIN_VALUE || name == null) {
+        if (id == Long.MIN_VALUE || name == null) {
             return Optional.absent();
         }
         return Optional.of(new Uploader(name, admin, id));
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("name", this.name)
+                .add("id", this.id)
+                .add("admin", this.admin)
+                .toString();
+    }
+
     @Override
     public Optional<Uploader> parseObject(JSONObject object, MultiTypeFormatter formatter) {
         return parseJsonObject(object, formatter);
+    }
+
+    enum AssetUploaderInput {
+        UNKNOWN, LOGIN, ID, ADMIN;
+
+        public static AssetUploaderInput parseObject(Object objectToParse) {
+            if (objectToParse instanceof String) {
+                String stringToParse = (String) objectToParse;
+                try {
+                    return AssetUploaderInput.valueOf(stringToParse.toUpperCase());
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+
+            return AssetUploaderInput.UNKNOWN;
+        }
+
     }
 
 

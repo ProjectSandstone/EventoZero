@@ -19,6 +19,7 @@
  */
 package br.com.blackhubos.eventozero.updater.assets;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
 import org.json.simple.JSONObject;
@@ -31,56 +32,21 @@ import br.com.blackhubos.eventozero.updater.assets.uploader.Uploader;
 import br.com.blackhubos.eventozero.updater.formater.MultiTypeFormatter;
 import br.com.blackhubos.eventozero.updater.parser.Parser;
 
-public class Asset implements Parser<JSONObject, Asset>{
-
-    enum AssetInput {
-        UNKNOWN, URL, ID, NAME, LABEL, UPLOADER, STATE, SIZE,
-        DOWNLOAD_COUNT, CREATED_AT, UPDATED_AT, BROWSER_DOWNLOAD_URL;
-
-        public static AssetInput parseObject (Object objectToParse) {
-            if(objectToParse instanceof String){
-                String stringToParse = (String) objectToParse;
-                try{
-                    return AssetInput.valueOf(stringToParse.toUpperCase());
-                }catch(IllegalArgumentException ignored){}
-            }
-
-            return AssetInput.UNKNOWN;
-        }
-
-    }
-    public enum AssetState {
-        NEW,
-        UPLOADED,
-        UNKNOWN;
-
-        public static AssetState parseString(String string) {
-            try{
-                return AssetState.valueOf(string.toUpperCase());
-            }catch(IllegalArgumentException ignored){}
-
-            return UNKNOWN;
-        }
-    }
+public class Asset implements Parser<JSONObject, Asset> {
 
     private final String url;
     private final String name;
     private final String downloadUrl;
-
     private final Date createdDate;
     private final Date updatedDate;
-
     private final long id;
     private final long size;
     private final long downloads;
-
     private final AssetState state;
-
     private final Optional<String> label;
-
     private final Optional<Uploader> uploader;
 
-    public Asset(){
+    public Asset() {
         this(null, null, null, null, null, Long.MIN_VALUE, Long.MIN_VALUE, Long.MIN_VALUE, null, null, null);
     }
 
@@ -98,6 +64,7 @@ public class Asset implements Parser<JSONObject, Asset>{
         this.uploader = uploader;
     }
 
+    @SuppressWarnings("unchecked")
     public static Optional<Asset> parseJsonObject(JSONObject jsonObject, MultiTypeFormatter formatter) {
 
         String url = null;
@@ -117,7 +84,7 @@ public class Asset implements Parser<JSONObject, Asset>{
 
         Optional<Uploader> uploader = Optional.absent();
 
-        for(Map.Entry entries : (Set<Map.Entry>) jsonObject.entrySet()) {
+        for (Map.Entry entries : (Set<Map.Entry>) jsonObject.entrySet()) {
 
             Object key = entries.getKey();
             Object value = entries.getValue();
@@ -137,18 +104,18 @@ public class Asset implements Parser<JSONObject, Asset>{
                     break;
                 }
                 case CREATED_AT: {
-                    if(formatter.canFormat(Date.class)){
+                    if (formatter.canFormat(Date.class)) {
                         Optional<Date> dateResult = formatter.format(valueString, Date.class);
-                        if(dateResult.isPresent()){
+                        if (dateResult.isPresent()) {
                             createdDate = dateResult.get();
                         }
                     }
                     break;
                 }
                 case UPDATED_AT: {
-                    if(formatter.canFormat(Date.class)){
+                    if (formatter.canFormat(Date.class)) {
                         Optional<Date> dateResult = formatter.format(valueString, Date.class);
-                        if(dateResult.isPresent()){
+                        if (dateResult.isPresent()) {
                             updatedDate = dateResult.get();
                         }
                     }
@@ -164,9 +131,9 @@ public class Asset implements Parser<JSONObject, Asset>{
                 }
 
                 case LABEL: {
-                    if(value == null){
+                    if (value == null) {
                         label = Optional.absent();
-                    }else{
+                    } else {
                         label = Optional.of(valueString);
                     }
                     break;
@@ -187,11 +154,12 @@ public class Asset implements Parser<JSONObject, Asset>{
                     break;
                 }
 
-                default: {}
+                default: {
+                }
             }
         }
 
-        if(id == Long.MIN_VALUE) {
+        if (id == Long.MIN_VALUE) {
             return Optional.absent();
         }
 
@@ -246,4 +214,55 @@ public class Asset implements Parser<JSONObject, Asset>{
     public Optional<Uploader> getUploader() {
         return uploader;
     }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("url", this.url)
+                .add("name", this.name)
+                .add("downloadUrl", this.downloadUrl)
+                .add("createdDate", this.createdDate)
+                .add("updatedDate", this.updatedDate)
+                .add("id", this.id)
+                .add("size", this.size)
+                .add("downloads", this.downloads)
+                .add("state", this.state)
+                .add("label", this.label)
+                .add("uploader", this.uploader)
+                .toString();
+    }
+
+    enum AssetInput {
+        UNKNOWN, URL, ID, NAME, LABEL, UPLOADER, STATE, SIZE,
+        DOWNLOAD_COUNT, CREATED_AT, UPDATED_AT, BROWSER_DOWNLOAD_URL;
+
+        public static AssetInput parseObject(Object objectToParse) {
+            if (objectToParse instanceof String) {
+                String stringToParse = (String) objectToParse;
+                try {
+                    return AssetInput.valueOf(stringToParse.toUpperCase());
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+
+            return AssetInput.UNKNOWN;
+        }
+
+    }
+
+    public enum AssetState {
+        NEW,
+        UPLOADED,
+        UNKNOWN;
+
+        public static AssetState parseString(String string) {
+            try {
+                return AssetState.valueOf(string.toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+            }
+
+            return UNKNOWN;
+        }
+    }
+
 }

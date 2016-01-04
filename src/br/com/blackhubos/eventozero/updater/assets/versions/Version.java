@@ -19,12 +19,17 @@
  */
 package br.com.blackhubos.eventozero.updater.assets.versions;
 
+import com.google.common.base.Objects;
+
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import br.com.blackhubos.eventozero.updater.assets.Asset;
 
-public class Version {
+public class Version implements Comparable<Version> {
 
     private final String name;
     private final String version;
@@ -50,6 +55,19 @@ public class Version {
         this.id = id;
         this.criticalBug = criticalBug;
         this.preRelease = preRelease;
+    }
+
+    public static List<Version> sortVersions(Collection<Version> collection) {
+        return sortVersions(collection, false);
+    }
+
+    public static List<Version> sortVersions(Collection<Version> collection, boolean reverse) {
+        LinkedList<Version> linkedList = new LinkedList<>(collection);
+        Collections.sort(linkedList);
+        if (reverse)
+            Collections.reverse(linkedList);
+
+        return linkedList;
     }
 
     public String getVersion() {
@@ -90,5 +108,26 @@ public class Version {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("name", this.name)
+                .add("version", this.version)
+                .add("assets", this.assets)
+                .add("commitish", this.commitish)
+                .add("changelog", this.changelog)
+                .add("creationDate", this.creationDate)
+                .add("publishDate", this.publishDate)
+                .add("id", this.id)
+                .add("criticalBug", this.criticalBug)
+                .add("preRelease", this.preRelease)
+                .toString();
+    }
+
+    @Override
+    public int compareTo(Version anotherVersion) {
+        return this.getPublishDate().compareTo(anotherVersion.getPublishDate());
     }
 }
