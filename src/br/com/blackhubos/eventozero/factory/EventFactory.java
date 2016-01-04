@@ -19,6 +19,8 @@
  */
 package br.com.blackhubos.eventozero.factory;
 
+import br.com.blackhubos.eventozero.ability.Ability;
+import br.com.blackhubos.eventozero.handlers.AbilityHandler;
 import br.com.blackhubos.eventozero.util.Framework;
 import java.io.File;
 import java.util.Vector;
@@ -61,8 +63,8 @@ public final class EventFactory {
                         .updateData("options.player_max", configuration.getInt("options.player_max"))
                         .updateData("options.player_min", configuration.getInt("options.player_min"))
                         .updateData("options.seconds_to_stop", configuration.getInt("options.seconds_to_stop"))
-                        .updateData("options.ability.fixed_ability", configuration.getString("options.ability.fixed_ability"))
-                        .updateData("options.ability.abilitys", configuration.getStringList("options.ability.abilitys"))
+                        .updateData("options.ability.fixed_ability", AbilityHandler.getAbilityByName(configuration.getString("options.ability.fixed_ability")))
+                        .updateData("options.ability.abilitys", parseAbilitys(configuration.getStringList("options.ability.abilitys")))
                         .updateData("options.shop.shops", configuration.getStringList("options..shop.shops"))
                         
                         .updateData("teleport.lobby", parseList(configuration.getStringList("teleport.lobby")))
@@ -71,6 +73,16 @@ public final class EventFactory {
                 events.add(event);
             }
         }
+    }
+    
+    private static Vector<Ability> parseAbilitys(final List<String> list){
+        final Vector<Ability> vector = new Vector<>();
+        for(String loop: list){
+            if(AbilityHandler.hasAbilityByName(loop)){
+                vector.add(AbilityHandler.getAbilityByName(loop));
+            }
+        }
+        return vector;
     }
     
     private static Vector<Location> parseList(final List<String> list){
