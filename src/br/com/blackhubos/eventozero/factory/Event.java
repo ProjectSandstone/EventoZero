@@ -17,7 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package br.com.blackhubos.eventozero.factory;
 
 import java.sql.ResultSet;
@@ -41,261 +40,252 @@ import br.com.blackhubos.eventozero.storage.Storage;
 import br.com.blackhubos.eventozero.util.Framework;
 
 /**
- * TODO: arrumar index do setSign (todos 0)
- * TODO: adicionar logs (getLoggerService()) nos backups e afins para deixar registrado
- * TODO: adicionar as mensagens e seus replaces aos respectivos voids necessários
+ * TODO: arrumar index do setSign (todos 0) TODO: adicionar logs
+ * (getLoggerService()) nos backups e afins para deixar registrado TODO:
+ * adicionar as mensagens e seus replaces aos respectivos voids necessários
  * TODO: documentar (javadoc) todos os métodos e construtores em Português BR.
- * Falta algo? documente aqui com um TODO: mensagem
- * TODO = To Do (a fazer)
- * TODO: no modo espectador, desativar comandos exceto do eventozero
+ * Falta algo? documente aqui com um TODO: mensagem TODO = To Do (a fazer) TODO:
+ * no modo espectador, desativar comandos exceto do eventozero
  *
  */
-public class Event
-{
+public class Event {
 
-	private final String eventName;
-	private final EventData eventData;
+    private final String eventName;
+    private final EventData eventData;
 
-	private final Vector<Player> joineds;
-	private final Vector<Player> spectators;
-	private final Vector<Party> partys;
-	private final Vector<Ability> abilitys;
+    private final Vector<Player> joineds;
+    private final Vector<Player> spectators;
+    private final Vector<Party> partys;
+    private final Vector<Ability> abilitys;
 
-	private String eventDescription;
-	private EventState eventoState;
+    private String eventDisplayname;
+    private String eventDescription;
+    private EventState eventoState;
 
-	public Event(final String name)
-	{
-		this.eventName = name;
-		this.joineds = new Vector<>();
-		this.spectators = new Vector<>();
-		this.partys = new Vector<>();
-		this.abilitys = new Vector<>();
-		this.eventData = new EventData();
-	}
+    public Event(final String name) {
+        this.eventName = name;
+        this.joineds = new Vector<>();
+        this.spectators = new Vector<>();
+        this.partys = new Vector<>();
+        this.abilitys = new Vector<>();
+        this.eventData = new EventData();
+    }
 
-	/**
-	 *
-	 * @return Retorna o nome do evento de forma como configurado (em casos importantes use lower-case!)
-	 */
-	public String getEventName()
-	{
-		return this.eventName;
-	}
+    /**
+     *
+     * @return Retorna o nome do evento de forma como configurado (em casos
+     * importantes use lower-case!)
+     */
+    public String getEventName() {
+        return this.eventName;
+    }
 
-	/**
-	 *
-	 * @return Retorna a descrição do evento.
-	 */
-	public String getEventDescription()
-	{
-		return this.eventDescription;
-	}
+    /**
+     *
+     * @return Retorna a descrição do evento.
+     */
+    public String getEventDescription() {
+        return this.eventDescription;
+    }
 
-	/**
-	 *
-	 * @return Retorna o {@link EventData} do evento, que contém várias informações.
-	 */
-	public EventData getEventData()
-	{
-		return this.eventData;
-	}
+    /**
+     *
+     * @return Retorna o nome customizado do evento.
+     */
+    public String getEventDisplayName() {
+        return this.eventDisplayname;
+    }
 
-	/**
-	 * Os eventos tem vários estados, com este método, é possível identificar o estado atual do evento. Leia mais na classe EventState.
-	 *
-	 * @return Retorna o estado do evento.
-	 */
-	public EventState getEventState()
-	{
-		return this.eventoState;
-	}
+    /**
+     *
+     * @return Retorna o {@link EventData} do evento, que contém várias
+     * informações.
+     */
+    public EventData getEventData() {
+        return this.eventData;
+    }
 
-	/**
-	 * Atualiza a descrição do evento
-	 *
-	 * @param desc Nova descrição
-	 * @return Retorna a instância do {@link Event} modificada.
-	 */
-	public Event updateDescription(final String desc)
-	{
-		this.eventDescription = desc;
-		return this;
-	}
+    /**
+     * Os eventos tem vários estados, com este método, é possível identificar o
+     * estado atual do evento. Leia mais na classe EventState.
+     *
+     * @return Retorna o estado do evento.
+     */
+    public EventState getEventState() {
+        return this.eventoState;
+    }
 
-	/**
-	 *
-	 * @return Retorna a lista de todas as partys em ação do evento.
-	 */
-	public Vector<Party> getPartys()
-	{
-		return this.partys;
-	}
+    /**
+     * Atualiza a descrição do evento
+     *
+     * @param desc Nova descrição
+     * @return Retorna a instância do {@link Event} modificada.
+     */
+    public Event updateDescription(final String desc) {
+        this.eventDescription = desc;
+        return this;
+    }
 
-	/**
-	 *
-	 * @return Retorna a lista de todos os participantes do evento.
-	 */
-	public Vector<Player> getPlayers()
-	{
-		return this.joineds;
-	}
+    /**
+     * 
+     * @param displayname
+     * @return Retorna a instância do {@link Event} modificada.
+     */
+    public Event updateDisplayName(final String displayname) {
+        this.eventDisplayname = displayname;
+        return this;
+    }
 
-	/**
-	 *
-	 * @return Retorna a lista de todos os es espectadores ativos no evento.
-	 */
-	public Vector<Player> getSpectators()
-	{
-		return this.spectators;
-	}
+    /**
+     *
+     * @return Retorna a lista de todas as partys em ação do evento.
+     */
+    public Vector<Party> getPartys() {
+        return this.partys;
+    }
 
-	/**
-	 *
-	 * @return Retorna as habilidades (Abilitys) do evento.
-	 */
-	public Vector<Ability> getAbilitys()
-	{
-		return this.abilitys;
-	}
+    /**
+     *
+     * @return Retorna a lista de todos os participantes do evento.
+     */
+    public Vector<Player> getPlayers() {
+        return this.joineds;
+    }
 
-	public Event playerJoin(final Player player)
-	{
-		if ((player == null) || ((player != null) && !player.isOnline()))
-		{
-			throw new NullArgumentException("Player is null");
-		}
-		if (!this.hasPlayerJoined(player))
-		{
-			this.joineds.add(player);
-			this.playerBackup(player);
-			this.updateSigns();
-		}
-		return this;
-	}
+    /**
+     *
+     * @return Retorna a lista de todos os es espectadores ativos no evento.
+     */
+    public Vector<Player> getSpectators() {
+        return this.spectators;
+    }
 
-	public Event playerQuit(final Player player)
-	{
-		if ((player == null) || ((player != null) && !player.isOnline()))
-		{
-			throw new NullArgumentException("Player is null");
-		}
-		if (this.hasPlayerJoined(player))
-		{
-			this.joineds.remove(player);
-			this.spectatorQuit(player);
-			this.playerRestore(player);
-			this.updateSigns();
-		}
-		return this;
-	}
+    /**
+     *
+     * @return Retorna as habilidades (Abilitys) do evento.
+     */
+    public Vector<Ability> getAbilitys() {
+        return this.abilitys;
+    }
 
-	/**
-	 * Define um jogador como espectador.
-	 * TODO: (o jogador deveria ser teleportado para o lugar do evento por aqui ou pelo comando?)
-	 *
-	 * @param player Jogador em questão a virar espectador
-	 * @return Retorna a instância do {@link Event} modificada.
-	 */
-	public Event spectatorJoin(final Player player)
-	{
-		if ((player == null) || ((player != null) && !player.isOnline()))
-		{
-			throw new NullArgumentException("Player is null");
-		}
-		if (!this.spectators.contains(player))
-		{
-			for (final Player obj : this.getPlayers())
-			{
-				obj.hidePlayer(player);
-			}
-			player.setAllowFlight(true);
-			player.setFlying(true);
-			this.spectators.add(player);
-		}
-		return this;
-	}
+    public Event playerJoin(final Player player) {
+        if ((player == null) || ((player != null) && !player.isOnline())) {
+            throw new NullArgumentException("Player is null");
+        }
+        if (!this.hasPlayerJoined(player)) {
+            this.joineds.add(player);
+            this.playerBackup(player);
+            this.updateSigns();
+        }
+        return this;
+    }
 
-	/**
-	 * Remove um jogador do modo espectador.
-	 *
-	 * @param player Jogador que será removido do modo espectador.
-	 * @return Retorna a instância do {@link Event} modificada.
-	 */
-	public Event spectatorQuit(final Player player)
-	{
-		if ((player == null) || ((player != null) && player.isOnline()))
-		{
-			throw new NullArgumentException("Player is null");
-		}
-		if (this.spectators.contains(player))
-		{
-			for (final Player obj : this.getPlayers())
-			{
-				obj.showPlayer(player);
-			}
-			player.setAllowFlight(false);
-			player.setFlying(false);
-			this.spectators.remove(player);
-		}
-		return this;
+    public Event playerQuit(final Player player) {
+        if ((player == null) || ((player != null) && !player.isOnline())) {
+            throw new NullArgumentException("Player is null");
+        }
+        if (this.hasPlayerJoined(player)) {
+            this.joineds.remove(player);
+            this.spectatorQuit(player);
+            this.playerRestore(player);
+            this.updateSigns();
+        }
+        return this;
+    }
 
-	}
+    /**
+     * Define um jogador como espectador. TODO: (o jogador deveria ser
+     * teleportado para o lugar do evento por aqui ou pelo comando?)
+     *
+     * @param player Jogador em questão a virar espectador
+     * @return Retorna a instância do {@link Event} modificada.
+     */
+    public Event spectatorJoin(final Player player) {
+        if ((player == null) || ((player != null) && !player.isOnline())) {
+            throw new NullArgumentException("Player is null");
+        }
+        if (!this.spectators.contains(player)) {
+            for (final Player obj : this.getPlayers()) {
+                obj.hidePlayer(player);
+            }
+            player.setAllowFlight(true);
+            player.setFlying(true);
+            this.spectators.add(player);
+        }
+        return this;
+    }
 
-	public boolean hasPlayerJoined(final Player player)
-	{
-		return this.joineds.contains(player);
-	}
+    /**
+     * Remove um jogador do modo espectador.
+     *
+     * @param player Jogador que será removido do modo espectador.
+     * @return Retorna a instância do {@link Event} modificada.
+     */
+    public Event spectatorQuit(final Player player) {
+        if ((player == null) || ((player != null) && player.isOnline())) {
+            throw new NullArgumentException("Player is null");
+        }
+        if (this.spectators.contains(player)) {
+            for (final Player obj : this.getPlayers()) {
+                obj.showPlayer(player);
+            }
+            player.setAllowFlight(false);
+            player.setFlying(false);
+            this.spectators.remove(player);
+        }
+        return this;
 
-	public void stop()
-	{
-		// TODO: STOP EVENT, GET WINNERS, ALIVES
-		this.updateSigns();
-	}
+    }
 
-	public void start()
-	{
-		// TODO: START THE COUNTDOWN
-		if (this.getEventState() == EventState.OPENED)
-		{
-			new EventCountdown(this, (Integer) this.getEventData().getData("options.countdown.seconds"));
-			this.updateSigns();
-		}
-	}
+    public boolean hasPlayerJoined(final Player player) {
+        return this.joineds.contains(player);
+    }
 
-	public void forceStop()
-	{
-		// TODO: STOP FORCE EVENT
-		for (final Player player : this.joineds)
-		{
-			this.playerQuit(player);
-		}
-		this.updateSigns();
-	}
+    public void stop() {
+        // TODO: STOP EVENT, GET WINNERS, ALIVES
+        this.updateSigns();
+    }
 
-	public void forceStart()
-	{
-		// TODO: START EVENT
-		if (this.getPlayers().size() < (Integer) this.getEventData().getData("event.min"))
-		{
-			// TODO: STOP
-			// TODO: MESSAGE CANCELED MIN PLAYER
-			this.forceStop();
-		}
-		// TODO: CODE START
-		this.updateSigns();
-	}
+    public void start() {
+        // TODO: START THE COUNTDOWN
+        if (this.getEventState() == EventState.OPENED) {
+            new EventCountdown(this, (Integer) this.getEventData().getData("options.countdown.seconds"));
+            this.updateSigns();
+        }
+    }
 
-	/**
-	 * Este método irá criar um backup no banco de dados do EventoZero com dados importantes sobre o jogador, tais como, vida, comida, itens, xp, localização, armadura, etc.
-	 * Você poderá restaurar esse backup ao jogador quando quiser, pois fica salvo em backup. Note que os backups não são retirados do banco de dados após restaurar, são
-	 * apenas 'trancados' e não podem mais ser usados.
-	 *
-	 * @param player O jogador que deverá ter um novo backup criado para o evento em questão.
-	 */
-	public void playerBackup(final Player player)
-	{
-		/*
+    public void forceStop() {
+        // TODO: STOP FORCE EVENT
+        for (final Player player : this.joineds) {
+            this.playerQuit(player);
+        }
+        this.updateSigns();
+    }
+
+    public void forceStart() {
+        // TODO: START EVENT
+        if (this.getPlayers().size() < (Integer) this.getEventData().getData("event.min")) {
+            // TODO: STOP
+            // TODO: MESSAGE CANCELED MIN PLAYER
+            this.forceStop();
+        }
+        // TODO: CODE START
+        this.updateSigns();
+    }
+
+    /**
+     * Este método irá criar um backup no banco de dados do EventoZero com dados
+     * importantes sobre o jogador, tais como, vida, comida, itens, xp,
+     * localização, armadura, etc. Você poderá restaurar esse backup ao jogador
+     * quando quiser, pois fica salvo em backup. Note que os backups não são
+     * retirados do banco de dados após restaurar, são apenas 'trancados' e não
+     * podem mais ser usados.
+     *
+     * @param player O jogador que deverá ter um novo backup criado para o
+     * evento em questão.
+     */
+    public void playerBackup(final Player player) {
+        /*
 		 * this.getEventData().updateData(player.getName() + ".health", player.getHealth());
 		 * this.getEventData().updateData(player.getName() + ".food", player.getFoodLevel());
 		 * this.getEventData().updateData(player.getName() + ".exp", player.getExp());
@@ -303,57 +293,45 @@ public class Event
 		 * this.getEventData().updateData(player.getName() + ".location", player.getLocation());
 		 * this.getEventData().updateData(player.getName() + ".inventory.contents", player.getInventory().getContents());
 		 * this.getEventData().updateData(player.getName() + ".inventory.armorContents", player.getInventory().getArmorContents());
-		 */
-		EventoZero.getStorage().backupPlayer(player, this.eventName.toLowerCase());
-	}
+         */
+        EventoZero.getStorage().backupPlayer(player, this.eventName.toLowerCase());
+    }
 
-	public void playerRestore(final Player player)
-	{
-		final ResultSet rs = EventoZero.getStorage().search("SELECT * FROM `" + Storage.Module.BACKUP.getTable() + "` WHERE `jogador`='" + player.getName().toLowerCase() + "' AND `devolvido`='0' AND `evento`='" + this.eventName.toLowerCase() + "';");
-		try
-		{
-			if (rs.next())
-			{
-				player.setHealth(rs.getInt("vida"));
-				player.setFoodLevel(rs.getInt("comida"));
-				player.setExp(rs.getFloat("xp"));
-				player.setLevel(rs.getInt("level"));
-				player.teleport(Framework.toLocation(rs.getString("localizacao")));
-				// TODO: pensar como vai ser o sistema que salva e carrega itens via mysql..
-				player.getInventory().setContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.contents"));
-				player.getInventory().setArmorContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.armorContents"));
-			}
-		}
-		catch (IllegalArgumentException | SQLException e)
-		{
-			e.printStackTrace();
-		}
-	}
+    public void playerRestore(final Player player) {
+        final ResultSet rs = EventoZero.getStorage().search("SELECT * FROM `" + Storage.Module.BACKUP.getTable() + "` WHERE `jogador`='" + player.getName().toLowerCase() + "' AND `devolvido`='0' AND `evento`='" + this.eventName.toLowerCase() + "';");
+        try {
+            if (rs.next()) {
+                player.setHealth(rs.getInt("vida"));
+                player.setFoodLevel(rs.getInt("comida"));
+                player.setExp(rs.getFloat("xp"));
+                player.setLevel(rs.getInt("level"));
+                player.teleport(Framework.toLocation(rs.getString("localizacao")));
+                // TODO: pensar como vai ser o sistema que salva e carrega itens via mysql..
+                player.getInventory().setContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.contents"));
+                player.getInventory().setArmorContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.armorContents"));
+            }
+        } catch (IllegalArgumentException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-	@SuppressWarnings("unchecked")
-	public void updateSigns()
-	{
-		if (this.getEventData().containsKey("options.signs.locations") && (this.getEventData().getData("options.signs.locations") != null))
-		{
-			/**
-			 * TODO: trocar List por Vector
-			 */
-			final List<Location> locations = (List<Location>) this.getEventData().getData("options.signs.locations");
-			for (final Location location : locations)
-			{
-				final Block block = location.getWorld().getBlockAt(location);
-				if ((block.getType() == Material.SIGN_POST) || (block.getType() == Material.WALL_SIGN))
-				{
-					final String string = String.valueOf(this.getEventData().getData("options.message." + this.getEventState().getPath()));
-					final Sign sign = (Sign) block.getState();
-					sign.setLine(0, String.valueOf(this.getEventData().getData("options.signs.line.1")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
-					sign.setLine(1, String.valueOf(this.getEventData().getData("options.signs.line.2")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
-					sign.setLine(2, String.valueOf(this.getEventData().getData("options.signs.line.3")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
-					sign.setLine(3, String.valueOf(this.getEventData().getData("options.signs.line.4")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{name}", this.getEventName()).replaceAll("&", "�"));
-					sign.update();
-				}
-			}
-		}
-	}
+    @SuppressWarnings("unchecked")
+    public void updateSigns() {
+        if (this.getEventData().containsKey("options.signs.locations") && (this.getEventData().getData("options.signs.locations") != null)) {
+            final Vector<Location> locations = (Vector<Location>) this.getEventData().getData("options.signs.locations");
+            for (final Location location : locations) {
+                final Block block = location.getWorld().getBlockAt(location);
+                if ((block.getType() == Material.SIGN_POST) || (block.getType() == Material.WALL_SIGN)) {
+                    final String string = String.valueOf(this.getEventData().getData("options.message." + this.getEventState().getPath()));
+                    final Sign sign = (Sign) block.getState();
+                    sign.setLine(0, String.valueOf(this.getEventData().getData("options.signs.line.1")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(getEventData().getData("options.player_max"))).replace("{name}", this.getEventName()).replaceAll("&", "§"));
+                    sign.setLine(1, String.valueOf(this.getEventData().getData("options.signs.line.2")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(getEventData().getData("options.player_max"))).replace("{name}", this.getEventName()).replaceAll("&", "§"));
+                    sign.setLine(2, String.valueOf(this.getEventData().getData("options.signs.line.3")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(getEventData().getData("options.player_max"))).replace("{name}", this.getEventName()).replaceAll("&", "§"));
+                    sign.setLine(3, String.valueOf(this.getEventData().getData("options.signs.line.4")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(getEventData().getData("options.player_max"))).replace("{name}", this.getEventName()).replaceAll("&", "§"));
+                    sign.update();
+                }
+            }
+        }
+    }
 
 }

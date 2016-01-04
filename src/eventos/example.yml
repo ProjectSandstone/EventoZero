@@ -12,10 +12,18 @@
 
 # Nome do evento
 name: pulapula
+# Nome do evento para ser exibido nas mensagens etc...
+display_name: '&aEvento Pula-Pula 1.0'
 # Descrição do evento
-description: Evento pula pula
+description: '&aEvento Pula-Pula 1.0, Com abilidade de pular'
 # Opções do evento
 options:
+  # Quantidade máxima de jogadores permitido no evento.
+  player_max: 25
+  # Quantidade mínima de jogadores para iniciar o evento.
+  player_min: 5
+  # Segundos para finalizar o evento, caso não houver ganhadores. Está definido como 20 minutos = 1200 segundos.
+  seconds_to_stop: 1200
   # Quantidade de colocações, exemplo 1 ganhador, 2 ganhador e 3 ganhador etc...
   placements: 3
   # Pontos do evento
@@ -31,7 +39,7 @@ options:
       '1': 100
       '2': 50
       '3': 20
-  # Fixar uma abilidade, todos do evento irão ter esta abilidade.
+  # Fixar uma abilidade, OBS: Todos do evento irão ter esta abilidade.
   ability:
     fixed_ability: jump
     # Lista de abilidades permitida no evento
@@ -43,7 +51,7 @@ options:
     shops:
     - kits
   signs:
-    line1: '&a[Pula Pula]'
+    line1: '&a[Pula-Pula]'
     line2: '{state}'
     line3: '&a{playersize}/{playermax}'
     line4: '&7Clique aqui'
@@ -57,3 +65,13 @@ options:
     occuring: '&cOCORRENDO'
     ending: ''
     closed: ''
+# Teleporte do evento.
+teleport:
+  # Localizações para teleportar o jogador ao lobby de espera, que é antes de iniciar o evento.
+  # Caso coloquei mais de uma localização ele irá escolher aleatóriamente.
+  lobby:
+  - world 10 10 10
+  # Localizações para teleportar o jogador ao iniciar o evento.
+  # Caso coloquei mais de uma localização ele irá escolher aleatóriamente.
+  spawn:
+  - world 10 10 10
