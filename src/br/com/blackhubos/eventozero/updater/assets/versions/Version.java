@@ -70,46 +70,90 @@ public class Version implements Comparable<Version> {
         return linkedList;
     }
 
+    /**
+     * Retorna a versão
+     * @return A versão
+     */
     public String getVersion() {
         return version;
     }
 
+    /**
+     * Retorna os Assets
+     * @return Uma coleção com os Assets
+     */
     public Collection<Asset> getAssets() {
         return assets;
     }
 
+    /**
+     * Retorna o Commit ou a Branch da versão
+     * @return Commit ou a Branch da versão
+     */
     public String getCommitish() {
         return commitish;
     }
 
+    /**
+     * Retorna o ChangeLog/Descrição
+     * @return O ChangeLog/Descrição
+     */
     public String getChangelog() {
         return changelog;
     }
 
+    /**
+     * Retorna a data de criação
+     * @return A data de criação
+     */
     public Date getCreationDate() {
         return creationDate;
     }
 
+    /**
+     * Retorna a data de publicação
+     * @return A data de publicação
+     */
     public Date getPublishDate() {
         return publishDate;
     }
 
+    /**
+     * Retorna o id da versão
+     * @return O id da versão
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * Determina se há um bug critico
+     * @return Se há um bug critico
+     */
     public boolean isCriticalBug() {
         return criticalBug;
     }
 
+    /**
+     * Determina se é uma pre-release (alpha, beta, etc)
+     * @return Se é uma pre-release (alpha, beta, etc)
+     */
     public boolean isPreRelease() {
         return preRelease;
     }
 
+    /**
+     * Retorna o nome/titulo da versão
+     * @return O nome/titulo da versão
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Transforma o objeto em String
+     * @return Representação em String do Objeto
+     */
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
@@ -126,6 +170,11 @@ public class Version implements Comparable<Version> {
                 .toString();
     }
 
+    /**
+     * Compara as datas das versões
+     * @param anotherVersion A outra para comprar
+     * @return Comparação entre as datas de publicação das versões
+     */
     @Override
     public int compareTo(Version anotherVersion) {
         return this.getPublishDate().compareTo(anotherVersion.getPublishDate());

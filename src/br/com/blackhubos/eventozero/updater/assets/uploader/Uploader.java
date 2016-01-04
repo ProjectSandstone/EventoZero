@@ -30,6 +30,9 @@ import java.util.Set;
 import br.com.blackhubos.eventozero.updater.formater.MultiTypeFormatter;
 import br.com.blackhubos.eventozero.updater.parser.Parser;
 
+/**
+ * Classe que representa quem enviou o arquivo
+ */
 public class Uploader implements Parser<JSONObject, Uploader> {
 
     private final String name;
@@ -48,17 +51,20 @@ public class Uploader implements Parser<JSONObject, Uploader> {
 
     @SuppressWarnings("unchecked")
     public static Optional<Uploader> parseJsonObject(JSONObject parse, MultiTypeFormatter formatter) {
+
         long id = Long.MIN_VALUE;
         String name = null;
         boolean admin = false;
-
+        // Loop em todas entradas do JSON
         for (Map.Entry entries : (Set<Map.Entry>) parse.entrySet()) {
 
             Object key = entries.getKey();
             Object value = entries.getValue();
             String valueString = String.valueOf(value);
+            /** Transforma o objeto em um {@link AssetUploaderInput) para usar com switch **/
             switch (AssetUploaderInput.parseObject(key)) {
                 case ADMIN: {
+                    // Obtem o valor que indica se quem enviou era administrador
                     if (formatter.canFormat(Boolean.class)) {
                         Optional<Boolean> result = formatter.format(value, Boolean.class);
                         if (result.isPresent())
@@ -67,10 +73,12 @@ public class Uploader implements Parser<JSONObject, Uploader> {
                     break;
                 }
                 case ID: {
+                    // Obtém o ID do usuário
                     id = Long.parseLong(valueString);
                     break;
                 }
                 case LOGIN: {
+                    // Obtém o nome/login do usuário
                     name = valueString;
                     break;
                 }
@@ -86,18 +94,36 @@ public class Uploader implements Parser<JSONObject, Uploader> {
         return Optional.of(new Uploader(name, admin, id));
     }
 
+    /**
+     * Obter o nome do usuário
+     * @return Nome do usuário
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Obter o id do usuário
+     * @return Id do usuário
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * Verifica se ele é administrador
+     * @return Se ele é administrador -> True
+     * <br>
+     * Caso contrário -> False
+     */
     public boolean isAdmin() {
         return admin;
     }
 
+    /**
+     * Transforma em uma String
+     * @return String representando todos valores do Uploader
+     */
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
@@ -106,6 +132,7 @@ public class Uploader implements Parser<JSONObject, Uploader> {
                 .add("admin", this.admin)
                 .toString();
     }
+
 
     @Override
     public Optional<Uploader> parseObject(JSONObject object, MultiTypeFormatter formatter) {

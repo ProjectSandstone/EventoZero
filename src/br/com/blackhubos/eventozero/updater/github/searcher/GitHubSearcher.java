@@ -53,20 +53,24 @@ public class GitHubSearcher implements Searcher {
     private static final String GITHUB_API_URL = "https://api.github.com/repos/BlackHubOS/EventoZero/";
     private static final String RELEASES_PATH = "releases";
     private static final String LATEST_PATH = "/latest";
+    private static final String TAG_PATH = "/tags";
 
     /**
      * Test METHOD
      **/
     public static void main(String[] args) {
         GitHubSearcher gitHubSearcher = new GitHubSearcher();
-        gitHubSearcher.getRollbackVersion();
+        gitHubSearcher.getLatestStableVersion();
     }
 
     @Override
     public Optional<Version> getLatestVersion() {
         try {
+            // Conecta ao URL de ultimas versões
             Optional<Collection<Version>> versions = connect(Optional.of(LATEST_PATH));
+            // Verifica se há alguma
             if (versions.isPresent()) {
+                // Retorna a primeira
                 Iterator<Version> versionIterator = versions.get().iterator();
                 return Optional.of(versionIterator.next());
             }
@@ -77,17 +81,22 @@ public class GitHubSearcher implements Searcher {
     }
 
     @Override
-    public Optional<Version> getRollbackVersion() {
+    public Optional<Version> getLatestStableVersion() {
 
         try {
+            // Conecta ao URL de todas versões
             Optional<Collection<Version>> versions = connect(Optional.<String>absent());
 
+            // Verifica se encontrou alguma (NullPointerException jamais)
             if (versions.isPresent()) {
+                // Obtem a lista e ordena ela
                 Collection<Version> versionCollection = versions.get();
                 List<Version> versionList = Version.sortVersions(versionCollection, true);
 
+                // Faz um loop para verificar qual a ultima versão sem bug critico ou em pre-release.
+                // Se a ultima versão disponivel estiver sem bug ela será retornada
                 for (Version version : versionList) {
-                    if (!version.isCriticalBug()) {
+                    if (!version.isCriticalBug() && !version.isPreRelease()) {
                         return Optional.of(version);
                     }
                 }
@@ -101,19 +110,37 @@ public class GitHubSearcher implements Searcher {
     @Override
     public Collection<Version> getAllVersion() {
         try {
+            // Conecta ao URL de todas versões
             Optional<Collection<Version>> versions = connect(Optional.<String>absent());
+
+            // Verifica se encontrou alguma (NullPointerException não sentirei saudades)
             if (versions.isPresent()) {
+                // Retorna a lista de versões ordenadas
                 return Version.sortVersions(versions.get(), true);
             }
         } catch (IOException | ParseException | java.text.ParseException e) {
             e.printStackTrace();
         }
+        // Retorna uma lista vazia caso tenhamos algum erro ao obter versão
         return Collections.emptyList();
     }
 
     @Override
     public Optional<Version> findVersion(String tag) {
-        return null;
+        try {
+            // Conecta ao URL de todas versões
+            Optional<Collection<Version>> versions = connect(Optional.of(TAG_PATH+"/"+tag));
+
+            // Verifica se encontrou alguma (NullPointerException cade você?)
+            if (versions.isPresent()) {
+                // Retorna a primeira (que será a unica neste caso)
+                Iterator<Version> versionIterator = versions.get().iterator();
+                return Optional.of(versionIterator.next());
+            }
+        } catch (IOException | ParseException | java.text.ParseException ignored) {
+        }
+        // Retorna uma lista vazia caso não encontre a versão informada
+        return Optional.absent();
     }
 
     private Optional<Collection<Version>> connect(Optional<String> additionalUrl) throws IOException, ParseException, java.text.ParseException {
@@ -181,84 +208,108 @@ public class GitHubSearcher implements Searcher {
             Object value = object.getValue();
             String stringValue = String.valueOf(value);
             switch (GitHubAPIInput.parseObject(key)) {
+                // Tag geralmente é a versão
                 case TAG_NAME: {
                     version = stringValue;
                     break;
                 }
 
+                // Data de criação
                 case CREATED_AT: {
                     creationDate = formatter.format(stringValue, Date.class).get();
                     break;
                 }
 
+                // Data de publicação
                 case PUBLISHED_AT: {
                     publishDate = formatter.format(stringValue, Date.class).get();
                     break;
                 }
 
+                // Assets/Artefatos ou Arquivos (processado externamente)
                 case ASSETS: {
+                    // Array com multiplos artefatos
                     JSONArray jsonArray = (JSONArray) value;
 
                     for (Object assetsJsonObject : jsonArray) {
+                        // Obtem o objeto a partir da array de artefatos
                         JSONObject jsonAsset = (JSONObject) assetsJsonObject;
+                        // Obtém o artefato a partir do objeto
                         Optional<Asset> assetOptional = Asset.parseJsonObject(jsonAsset, formatter);
+                        // É bom evitar um null né :P
                         if (assetOptional.isPresent()) {
+                            // Adiciona o artefato caso ele seja encontrado
                             downloadUrl.add(assetOptional.get());
                         }
                     }
                     break;
                 }
 
+                // Obtem o nome (titulo) da versão
                 case NAME: {
                     name = stringValue;
                     break;
                 }
 
+                // Numero de identificação do GitHub (nem sei se vamos usar)
                 case ID: {
                     id = Long.parseLong(stringValue);
                     break;
                 }
 
+                // Obtém a mensagem, geralmente nosso changelog, e define se é uma versão de bug critico
                 case BODY: {
                     changelog = stringValue;
-
+                    // Define se é versão de bug critico
                     criticalBug = changelog.endsWith("!!!CRITICAL BUG FOUND!!!")
                             || changelog.endsWith("CRITICAL BUG FOUND")
                             || changelog.endsWith("CRITICAL BUG");
                     break;
                 }
 
+                // Formata a boolean e verifica se ela é uma pre-release (alpha, beta, etc)
                 case PRERELEASE: {
                     Optional<Boolean> booleanOptional = formatter.format(value, Boolean.class);
+
+                    // Evitar um nullinho :D
                     if (!booleanOptional.isPresent()) {
                         preRelease = false;
                         break;
                     }
+
                     preRelease = booleanOptional.get();
                     break;
                 }
 
+                // Commitish geralmente é a branch ou a Commit relacionada a versão
                 case TARGET_COMMITISH: {
                     commitish = stringValue;
                     break;
                 }
+
                 default: {
                     break;
                 }
             }
         }
+
+        // Verifica se o ID é Diferente do valor minimo, isto vai fazer com que nós saibamos se alguma versão foi encontrada ou não :D
         if (id != Long.MIN_VALUE) {
+            // Cria uma nova versão e adiciona a lista
             Version versionInstance = new Version(name, version, downloadUrl, commitish, changelog, creationDate, publishDate, id, criticalBug, preRelease);
             versionList.add(versionInstance);
         }
     }
 
+    /**
+     * Neste ENUM estão os valores que iremos obter, no momento são somente estes (nem sei porque tanto)
+     */
     enum GitHubAPIInput {
-        UNKNOWN, TAG_NAME, AUTHOR, CREATED_AT, BODY, URL,
-        ASSETS_URL, ASSETS, PRERELEASE, HTM_URL, TARGET_COMMITISH,
-        DRAFT, ZIPBALL_URL, NAME, UPLOAD_URL, ID, PUBLISHED_AT,
-        TARBALL_URL;
+        UNKNOWN, TAG_NAME, CREATED_AT, BODY,
+        ASSETS, PRERELEASE, TARGET_COMMITISH,
+        NAME, ID, PUBLISHED_AT;
 
+        // Obter um dos valores acima a partir de um objeto
         public static GitHubAPIInput parseObject(Object objectToParse) {
             if (objectToParse instanceof String) {
                 String stringToParse = (String) objectToParse;

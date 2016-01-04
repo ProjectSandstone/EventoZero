@@ -30,6 +30,12 @@ import br.com.blackhubos.eventozero.updater.formater.MultiTypeFormatter;
  */
 public interface Parser<T, E> {
 
+    /**
+     * Um simples método para fazer parse de valores (foi utilizado em classes para fazer parse do JSON)
+     * @param object Objeto para fazer parse
+     * @param typeFormatter Os formatadores de objeto
+     * @return O valor se conseguir fazer parse com os formatadores
+     */
     Optional<E> parseObject(T object, MultiTypeFormatter typeFormatter);
 
 }
