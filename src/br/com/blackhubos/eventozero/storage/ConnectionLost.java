@@ -34,6 +34,7 @@ public final class ConnectionLost extends Thread
 			}
 			catch (final InterruptedException e)
 			{
+				System.out.println("[EventoZero] Falha no sleeper de checagem de conexões do mysql.");
 				e.printStackTrace();
 			}
 
