@@ -1,12 +1,23 @@
+#################################################################################################
+#                                                                                               #
+#          ####  #    # #####  ##   ##  ####### ######  ######  #####  #######  ######          #
+#          ##    #    # ##     # #  #     ###   #    #  #    #  ##     #    #   #    #          #
+#          ##    #    # ##     #  # #      #    #    #      #   ##     #   #    #    #          #
+#          ###   #    # ###    #  # #      #    #    #     #    ###    # ##     #    #          #
+#          ##    #    # ##     #  # #      #    #    #    #     ##     #  #     #    #          #
+#          ##    ##  ## ##     #  # #      #    #    #   #   #  ##     #   #    #    #          #
+#          #####   ##   #####  #  ###      #    ######   #####  #####  #    ##  ######          #
+#                                                                                               #
+#################################################################################################
 shops:
-	# Nome do shop
-	kits:
-		# Titulo do shop, cuidado o limite de caracteres é 16.
-		title: '&aShop Kits'
-		# Tamanho do shop, cuidado é sempre multiplo 9, exemplo: 9, 18, 27, 36, 45, 54
-		size: 9
-		# Item que irá abrir o shop
-		icon: 266, 1, name:&6SHOP
-		# Items do shop, exemplo: {nome do kit}
-		items:
-		- '{jump}'
+  # Nome do shop
+  kits:
+    # Titulo do shop, cuidado o limite de caracteres é 16.
+    title: '&aShop Kits'
+    # Tamanho do shop, cuidado é sempre multiplo 9, exemplo: 9, 18, 27, 36, 45, 54
+    size: 9
+    # Item que irá abrir o shop
+    icon: 266, 1, name:&6SHOP
+    # Items do shop, exemplo: {nome do kit}
+    items:
+    - '{jump}'

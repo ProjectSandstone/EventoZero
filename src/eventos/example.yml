@@ -1,47 +1,59 @@
+#################################################################################################
+#                                                                                               #
+#          ####  #    # #####  ##   ##  ####### ######  ######  #####  #######  ######          #
+#          ##    #    # ##     # #  #     ###   #    #  #    #  ##     #    #   #    #          #
+#          ##    #    # ##     #  # #      #    #    #      #   ##     #   #    #    #          #
+#          ###   #    # ###    #  # #      #    #    #     #    ###    # ##     #    #          #
+#          ##    #    # ##     #  # #      #    #    #    #     ##     #  #     #    #          #
+#          ##    ##  ## ##     #  # #      #    #    #   #   #  ##     #   #    #    #          #
+#          #####   ##   #####  #  ###      #    ######   #####  #####  #    ##  ######          #
+#                                                                                               #
+#################################################################################################
+
 # Nome do evento
 name: pulapula
 # Descrição do evento
 description: Evento pula pula
 # Opções do evento
 options:
-	# Quantidade de colocações, exemplo 1 ganhador, 2 ganhador e 3 ganhador etc...
-	placements: 3
-	# Pontos do evento
-	points:
-		for:
-			# O primeiro colocado irá ganhar 10 pontos
-			'1': 10 
-			'2': 7
-			'3': 3
-	money:
-		for:
-			# O primeiro colocado irá ganhar 100 de money
-			'1': 100
-			'2': 50
-			'3': 20
-	# Fixar uma abilidade, todos do evento irão ter esta abilidade.
-	ability:
-		fixed_ability: jump
-		# Lista de abilidades permitida no evento
-		abilitys:
-		- jump
-	# Shop do evento
-	shop:
-		# Lista de shops do evento OBS: todos irão receber os item que irá abrir o shop.
-		shops:
-		- kits
-	signs:
-		line1: '&a[Pula Pula]'
-		line2: '{state}'
-		line3: '&a{playersize}/{playermax}'
-		line4: '&7Clique aqui'
-		locations:
-		- world 10 10 10
-	# Mensagens do evento
-	message:
-		# Mensagem quando estiver aberto OBS: Irá aparecer na placa estas mensagens "{state}". Não deixe muito longa
-		opened: '&aABERTO'
-		prestarted: ''
-		occuring: '&cOCORRENDO'
-		ending: ''
-		closed: ''
+  # Quantidade de colocações, exemplo 1 ganhador, 2 ganhador e 3 ganhador etc...
+  placements: 3
+  # Pontos do evento
+  points:
+    for:
+      # O primeiro colocado irá ganhar 10 pontos
+      '1': 10 
+      '2': 7
+      '3': 3
+  money:
+    for:
+      # O primeiro colocado irá ganhar 100 de money
+      '1': 100
+      '2': 50
+      '3': 20
+  # Fixar uma abilidade, todos do evento irão ter esta abilidade.
+  ability:
+    fixed_ability: jump
+    # Lista de abilidades permitida no evento
+    abilitys:
+    - jump
+  # Shop do evento
+  shop:
+    # Lista de shops do evento OBS: todos irão receber os item que irá abrir o shop.
+    shops:
+    - kits
+  signs:
+    line1: '&a[Pula Pula]'
+    line2: '{state}'
+    line3: '&a{playersize}/{playermax}'
+    line4: '&7Clique aqui'
+    locations:
+    - world 10 10 10
+  # Mensagens do evento
+  message:
+    # Mensagem quando estiver aberto OBS: Irá aparecer na placa estas mensagens "{state}". Não deixe muito longa
+    opened: '&aABERTO'
+    prestarted: ''
+    occuring: '&cOCORRENDO'
+    ending: ''
+    closed: ''
