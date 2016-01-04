@@ -19,6 +19,9 @@
  */
 package br.com.blackhubos.eventozero.updater.formater.exception;
 
+/**
+ * Erro da tentativa de fazer parse de um objeto
+ */
 public class CannotFormatTypeException extends RuntimeException {
 
     public CannotFormatTypeException() {
