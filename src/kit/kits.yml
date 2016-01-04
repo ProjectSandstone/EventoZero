@@ -14,15 +14,17 @@
 kits:
   # Kit "Jump"
   jump:
+    icon: item(317) amount(1) name('&5KIT Jumper') lore('&ePule na altura de 2 blocos', '&e&lKIT JUMPER')
     # Preço de points, que será precisar para comprar o kit
     price: 0
     # Abilidade fixada, apos comprar o kit
     ability: jump
+    # Inventário
     inventory:
       # Items do inventário do kit, que serão entregues ao jogador após efetuar a compra do kit
       contents:
-      - '322, 1, name:&aKit Jump, lore:&5Kit Jump'
-      armorContents:
+      -  item(276) amount(1) name('&6SWORD Jump') enchantments(sharpness,5 unbreaking3)
+      armor_contents:
         helmet: null
         armor: null
         leggings: null
