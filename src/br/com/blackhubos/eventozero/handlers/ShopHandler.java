@@ -27,37 +27,31 @@ import org.bukkit.plugin.Plugin;
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.factory.ItemFactory;
 import br.com.blackhubos.eventozero.shop.Shop;
+import br.com.blackhubos.eventozero.shop.ShopItem;
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
 
-public class ShopHandler
-{
+public class ShopHandler {
 
-	private final Vector<Shop> shops;
+    private final Vector<Shop> shops;
 
-	public ShopHandler()
-	{
-		this.shops = new Vector<>();
-	}
+    public ShopHandler() {
+        this.shops = new Vector<>();
+    }
 
-	public void loadShops(final Plugin plugin)
-	{
-		final File file = new File(plugin.getDataFolder() + File.separator + "shop" + File.separator + "shops.yml");
-		final Configuration configuration = new Configuration(file);
-		for (final String key : configuration.getConfigurationSection("shops").getKeys(false))
-		{
-			final Shop shop = new Shop(configuration.getString("shops." + key + ".name"), new ItemFactory(configuration.getString("shops." + key + ".icon"), null).getPreparedItem());
-			for (final String s : configuration.getStringList("shops." + key + ".items"))
-			{
-				if (EventoZero.getKitHandler().getKitByName(s.replace("{|}", "")) != null)
-				{
-					shop.addItem(EventoZero.getKitHandler().getKitByName(s.replace("{|}", "")));
-				}
-				else
-				{
-
-				}
-			}
-		}
-	}
+    public void loadShops(final Plugin plugin) {
+        final File file = new File(plugin.getDataFolder() + File.separator + "shop" + File.separator + "shops.yml");
+        final Configuration configuration = new Configuration(file);
+        for (final String key : configuration.getConfigurationSection("shops").getKeys(false)) {
+            final Shop shop = new Shop(configuration.getString("shops." + key + ".name"), new ItemFactory(configuration.getString("shops." + key + ".icon"), null).getPreparedItem());
+            for (final String s : configuration.getStringList("shops." + key + ".items")) {
+                if (EventoZero.getKitHandler().getKitByName(s.replace("{|}", "")) != null) {
+                    shop.addItem(EventoZero.getKitHandler().getKitByName(s.replace("{|}", "")));
+                } else {
+                    shop.addItem(new ShopItem(s.replace("{|}", ""), new ItemFactory(configuration.getString("shops." + key + "." + s.replace("{|}", "") + ".icon"), null).getPreparedItem()).updatePrice(configuration.getInt("shops." + key + "." + s.replace("{|}", "") + ".price")));
+                }
+            }
+        }
+        // TODO: LOG size loadaded shops 
+    }
 
 }
