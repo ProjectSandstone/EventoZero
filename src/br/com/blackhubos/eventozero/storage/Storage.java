@@ -41,12 +41,11 @@ public abstract class Storage
 	/**
 	 * Serve para agregar um valor a um jogador, para "marcar" ele.
 	 *
-	 * @param service Em qual serviço isso afeta? bans? pontos? etc.
 	 * @param player Nome do jogador
 	 * @param key A key desejada para marcar (para ser usada ou pegar depois)
 	 * @param value O objeto que deseja linkar a key
 	 */
-	public abstract void setPlayerData(Module service, String player, String key, Object value);
+	public abstract void setPlayerData(String player, String key, Object value);
 
 	/**
 	 * Acrescenta pontos do ranking de um jogador.
@@ -56,7 +55,7 @@ public abstract class Storage
 	 * @param tipo acrescentar em qual dos diferentes tipos de pontos? 0 = derrotas; 1 = vitórias; 2 = desconectou; 3 = morreu
 	 * @param value o valor a acrescentar.
 	 */
-	public abstract void depositPlayerRankingPoints(String player, String evento, int tipo, long value);
+	public abstract void depositPlayerRankingPoints(String player, String evento, String tipo, long value);
 
 	/**
 	 * Remove pontos do ranking de um jogador.
@@ -66,7 +65,7 @@ public abstract class Storage
 	 * @param tipo debitar em qual dos diferentes tipos de pontos? 0 = derrotas; 1 = vitórias; 2 = desconectou; 3 = morreu
 	 * @param value o valor a remover (poderá ficar negativo).
 	 */
-	public abstract void withdrawPlayerRankingPoints(String player, String evento, int tipo, long value);
+	public abstract void withdrawPlayerRankingPoints(String player, String evento, String tipo, long value);
 
 	/**
 	 * Obtém a quantia de pontos que um jogador tem em um evento em X modalidade (tipo).
@@ -76,7 +75,9 @@ public abstract class Storage
 	 * @param tipo debitar em qual dos diferentes tipos de pontos? 0 = derrotas; 1 = vitórias; 2 = desconectou; 3 = morreu
 	 * @return Retorna a quantia se ele tiver, ou 0 se ele não tiver nada.
 	 */
-	public abstract long getPlayerRankingPoints(String player, String evento, int tipo);
+	public abstract long getPlayerRankingPoints(String player, String evento, String tipo);
+
+	public abstract int update(final String sql, final Object... set);
 
 	/**
 	 * Efetuar uma busca na database de eventos.
@@ -84,7 +85,7 @@ public abstract class Storage
 	 * @param query O código-mysql para a busca.
 	 * @return Uma {@link ResultSet} referente a busca.
 	 */
-	public abstract ResultSet search(String query);
+	public abstract ResultSet search(String query, Object... search);
 
 	/**
 	 * Insere o backup de um jogador no banco de dados. Um backup, basicamente, guarda seu inventário, armadura, comida, xp, level, local, etc.

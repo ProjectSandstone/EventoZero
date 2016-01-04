@@ -94,8 +94,8 @@ public final class EventoZero extends JavaPlugin
 	@SuppressWarnings("unused")
 	private void exemploRanking()
 	{
-		EventoZero.getStorage().depositPlayerRankingPoints("Atom", "Spleef", 1, 1);
-		EventoZero.getStorage().withdrawPlayerRankingPoints("atoM", "spleef", 1, 1);
+		EventoZero.getStorage().depositPlayerRankingPoints("Atom", "Spleef", "vitorias", 1);
+		EventoZero.getStorage().withdrawPlayerRankingPoints("atoM", "spleef", "vitorias", 1);
 		// NOTA: spleef = Spleef, tal para Atom = atoM. Caso insensitive.
 	}
 
