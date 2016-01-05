@@ -26,31 +26,41 @@ import org.apache.commons.lang.NullArgumentException;
 import org.bukkit.entity.Player;
 
 public class EventHandler {
-	
-	private final Set<Event> events;
-	
-	public EventHandler(){
-		this.events = new HashSet<>();
-	}
-	
-	public Event getEventByPlayer(final Player player){
-		for(Event e : getEvents()){
-			if(e.hasPlayerJoined(player)){
-				return e;
-			}
-		}
-		return null;
-	}
-	
-	public Set<Event> getEvents(){
-		return this.events;
-		
-	}
-	
-	public void loadEvent(final Event event){
-		if(event != null)
-			throw new NullArgumentException("Event is null");
-		events.add(event);
-	}
+
+    private final Set<Event> events;
+
+    public EventHandler() {
+        this.events = new HashSet<>();
+    }
+
+    public Event getEventByName(final String name) {
+        for (Event e : getEvents()) {
+            if (e.getEventName().equals(name)) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    public Event getEventByPlayer(final Player player) {
+        for (Event e : getEvents()) {
+            if (e.hasPlayerJoined(player)) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    public Set<Event> getEvents() {
+        return this.events;
+
+    }
+
+    public void loadEvent(final Event event) {
+        if (event != null) {
+            throw new NullArgumentException("Event is null");
+        }
+        events.add(event);
+    }
 
 }
