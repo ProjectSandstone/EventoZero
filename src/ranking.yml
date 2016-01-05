@@ -1,0 +1,6 @@
+sign:
+  output:
+    - "&0&l{evento}"
+    - "&1&lTOP {rank}"
+    - "&l{player}"
+    - "&l{tipo}"
