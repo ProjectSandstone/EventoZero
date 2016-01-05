@@ -47,11 +47,11 @@ public class ShopHandler {
                 if (EventoZero.getKitHandler().getKitByName(s.replace("{|}", "")) != null) {
                     shop.addItem(EventoZero.getKitHandler().getKitByName(s.replace("{|}", "")));
                 } else {
-                    shop.addItem(new ShopItem(s.replace("{|}", ""), new ItemFactory(configuration.getString("shops." + key + "." + s.replace("{|}", "") + ".icon"), null).getPreparedItem()).updatePrice(configuration.getInt("shops." + key + "." + s.replace("{|}", "") + ".price")));
+                    shop.addItem(new ShopItem(s.replace("{|}", ""), new ItemFactory(configuration.getString("shops." + key + ".items_shop." + s.replace("{|}", "") + ".icon"), null).getPreparedItem()).updatePrice(configuration.getInt("shops." + key + ".items_shop." + s.replace("{|}", "") + ".price")));
                 }
             }
         }
-        // TODO: LOG size loadaded shops 
+        EventoZero.consoleMessage("Foram carregado(s) " + shops.size() + " shop(s).");
     }
 
 }

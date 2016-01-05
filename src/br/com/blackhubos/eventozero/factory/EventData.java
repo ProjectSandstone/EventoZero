@@ -58,5 +58,18 @@ public class EventData {
         this.data.putIfAbsent(key, data);
         return this;
     }
+    
+    /**
+     * 
+     * @param name
+     * @return 
+     */
+    public EventData removeKeyStartWith(String name){
+        for(ConcurrentMap.Entry<String, Object> entry : data.entrySet()){
+            if(entry.getKey().startsWith(name))
+                data.remove(entry.getKey());
+        }
+        return this;
+    }
 
 }

@@ -34,7 +34,6 @@ import org.bukkit.inventory.ItemStack;
 
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.ability.Ability;
-import br.com.blackhubos.eventozero.handlers.MessageHandler;
 import br.com.blackhubos.eventozero.kit.Kit;
 import br.com.blackhubos.eventozero.party.Party;
 import br.com.blackhubos.eventozero.storage.Storage;
@@ -275,7 +274,7 @@ public class Event {
             Kit kit = getEventData().getData(player.getName() + ".kit");
             if (kit != null) {
                 kit.giveKit(player);
-                if(kit.getAbility() != null){
+                if (kit.getAbility() != null) {
                     getEventData().updateData(player.getName() + ".ability", kit.getAbility());
                 }
             }
