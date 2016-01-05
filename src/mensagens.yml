@@ -26,3 +26,13 @@ ANUNCIOS_ABERTO:
   - "&7Evento {nome} aberto agora"
   - "&7PvP [{pvp}] - Use /{comando}!"
   - "&d-------------------------------"
+
+ANUNCIOS_INICIADO:
+  - "Iniciado"
+
+ANUNCIOS_FINALIZADO:
+  - "Finalizado"
+
+ANUNCIOS_CANCELADO: "Cancelado"
+
+ANUNCIOS_CANCELADO_MINIMUM_PLAYERS: "Sem jogadores necessarios"
