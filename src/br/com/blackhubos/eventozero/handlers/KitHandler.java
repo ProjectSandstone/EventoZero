@@ -19,42 +19,53 @@
  */
 package br.com.blackhubos.eventozero.handlers;
 
+import br.com.blackhubos.eventozero.EventoZero;
+import br.com.blackhubos.eventozero.factory.ItemFactory;
 import java.util.Vector;
 
 import org.bukkit.plugin.Plugin;
 
 import br.com.blackhubos.eventozero.kit.Kit;
+import br.com.blackhubos.eventozero.util.Framework;
+import java.io.File;
 
-public final class KitHandler
-{
-
-	private final Vector<Kit> kits;
-
-	public KitHandler()
-	{
-		this.kits = new Vector<>();
-	}
-
-	public Kit getKitByName(final String name)
-	{
-		for (final Kit kit : this.getKits())
-		{
-			if (kit.getName().equals(name))
-			{
-				return kit;
-			}
-		}
-		return null;
-	}
-
-	public Vector<Kit> getKits()
-	{
-		return this.kits;
-	}
-
-	public void loadKits(final Plugin plugin)
-	{
-
-	}
-
+public final class KitHandler {
+    
+    private final Vector<Kit> kits;
+    
+    public KitHandler() {
+        this.kits = new Vector<>();
+    }
+    
+    public Kit getKitByName(final String name) {
+        for (final Kit kit : this.getKits()) {
+            if (kit.getName().equals(name)) {
+                return kit;
+            }
+        }
+        return null;
+    }
+    
+    public Vector<Kit> getKits() {
+        return this.kits;
+    }
+    
+    public void loadKits(final Plugin plugin) {
+        final File file = new File(plugin.getDataFolder() + File.separator + "kit" + File.separator + "kits.yml");
+        final Framework.Configuration configuration = new Framework.Configuration(file);
+        for (String key : configuration.getConfigurationSection("kits").getKeys(false)) {
+            Kit kit = new Kit(key, new ItemFactory(configuration.getString("kits." + key + ".icon"), null).getPreparedItem());
+            kit.updateAbility(AbilityHandler.getAbilityByName(configuration.getString("kits." + key + ".ability"))).
+                    setArmorContents(3, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.helmet"), null).getPreparedItem()).
+                    setArmorContents(2, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.armor"), null).getPreparedItem()).
+                    setArmorContents(1, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.leggings"), null).getPreparedItem()).
+                    setArmorContents(0, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.boots"), null).getPreparedItem());
+            int count = 0;
+            for (String otherKey : configuration.getStringList("kits." + key + ".inventory.contents")) {
+                kit.setContents(count, new ItemFactory(otherKey, null).getPreparedItem());
+                count++;
+            }
+        }
+    }
+    
 }

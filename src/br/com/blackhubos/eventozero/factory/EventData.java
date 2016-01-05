@@ -22,40 +22,41 @@ package br.com.blackhubos.eventozero.factory;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class EventData {	
-	
-	private final ConcurrentMap<String, Object> data;
-	
-	public EventData(){
-		this.data = new ConcurrentHashMap<>();
-	}
-	
-	/**
-	 * @param key
-	 * @return Retorna {@link Object}.
-	 */
-	
-	public <T> T getData(String key){
-		if(!data.containsKey(key)){
-			throw new IllegalArgumentException("Key is not valid");
-		}
-		return (T) this.data.get(key);
-	}
-	
-	/**
-	 * @param key
-	 * @return Retorna {@link Boolean}
-	 */
-	public boolean containsKey(String key){
-		return this.data.containsKey(key);
-	}
-	
-	/**
-	 * @param key
-	 * @param data
-	 */
-	public void updateData(String key, Object data){
-		this.data.putIfAbsent(key, data);
-	}
+public class EventData {
+
+    private final ConcurrentMap<String, Object> data;
+
+    public EventData() {
+        this.data = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * @param key
+     * @return Retorna {@link Object}.
+     */
+    public <T> T getData(String key) {
+        if (!data.containsKey(key)) {
+            throw new IllegalArgumentException("Key is not valid");
+        }
+        return (T) this.data.get(key);
+    }
+
+    /**
+     * @param key
+     * @return Retorna {@link Boolean}
+     */
+    public boolean containsKey(String key) {
+        return this.data.containsKey(key);
+    }
+
+    /**
+     * @param key
+     * @param data
+     * @return 
+     */
+    public EventData updateData(String key, Object data) {
+        this.data.putIfAbsent(key, data);
+        return this;
+    }
 
 }

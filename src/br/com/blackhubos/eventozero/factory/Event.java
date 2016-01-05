@@ -21,7 +21,6 @@ package br.com.blackhubos.eventozero.factory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.NullArgumentException;
@@ -294,6 +293,7 @@ public class Event {
 		 * this.getEventData().updateData(player.getName() + ".inventory.contents", player.getInventory().getContents());
 		 * this.getEventData().updateData(player.getName() + ".inventory.armorContents", player.getInventory().getArmorContents());
          */
+        this.getEventData().updateData(player.getName() + ".ability", getEventData().getData("options.ability.fixed_ability"));
         EventoZero.getStorage().backupPlayer(player, this.eventName.toLowerCase());
     }
 
@@ -307,6 +307,7 @@ public class Event {
                 player.setLevel(rs.getInt("level"));
                 player.teleport(Framework.toLocation(rs.getString("localizacao")));
                 // TODO: pensar como vai ser o sistema que salva e carrega itens via mysql..
+                // TODO: itemstack.serializer ou criar método que suporta livros
                 player.getInventory().setContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.contents"));
                 player.getInventory().setArmorContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.armorContents"));
             }

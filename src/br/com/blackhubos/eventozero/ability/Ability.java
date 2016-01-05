@@ -19,6 +19,7 @@
  */
 package br.com.blackhubos.eventozero.ability;
 
+import br.com.blackhubos.eventozero.handlers.AbilityHandler;
 import org.bukkit.entity.Player;
 
 public abstract class Ability implements Cloneable
@@ -34,6 +35,7 @@ public abstract class Ability implements Cloneable
 		this.name = name;
 		this.cooldown = cooldown;
 		this.lastTime = 0;
+                AbilityHandler.loadAbility(this);
 	}
 	
 	public String getName(){

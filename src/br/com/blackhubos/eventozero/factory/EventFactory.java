@@ -19,12 +19,17 @@
  */
 package br.com.blackhubos.eventozero.factory;
 
+import br.com.blackhubos.eventozero.ability.Ability;
+import br.com.blackhubos.eventozero.handlers.AbilityHandler;
+import br.com.blackhubos.eventozero.util.Framework;
 import java.io.File;
 import java.util.Vector;
 
 import org.bukkit.plugin.Plugin;
 
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
+import java.util.List;
+import org.bukkit.Location;
 
 public final class EventFactory {
 
@@ -39,21 +44,55 @@ public final class EventFactory {
         for (final File file : folder.listFiles()) {
             if (file.getName().endsWith(".yml")) {
                 final Configuration configuration = new Configuration(file); // Já carrega automaticamente
-                final Event event = new Event(configuration.getString("name")).updateDescription(configuration.getString("description"));
+                final Event event = new Event(configuration.getString("name"))
+                        .updateDescription(configuration.getString("description"))
+                        .updateDisplayName(configuration.getString("display_name"));
 
-                event.getEventData().updateData("options.signs.line.1", configuration.getString("signs.lines.1"));
-                event.getEventData().updateData("options.signs.line.2", configuration.getString("signs.lines.2"));
-                event.getEventData().updateData("options.signs.line.3", configuration.getString("signs.lines.3"));
-                event.getEventData().updateData("options.signs.line.4", configuration.getString("signs.lines.4"));
+                event.getEventData()
+                        .updateData("options.signs.line.1", configuration.getString("signs.lines.1"))
+                        .updateData("options.signs.line.2", configuration.getString("signs.lines.2"))
+                        .updateData("options.signs.line.3", configuration.getString("signs.lines.3"))
+                        .updateData("options.signs.line.4", configuration.getString("signs.lines.4"))
 
-                event.getEventData().updateData("options.message.opened", configuration.getString("options.message.opened"));
-                event.getEventData().updateData("options.message.prestarted", configuration.getString("options.message.prestarted"));
-                event.getEventData().updateData("options.message.occurring", configuration.getString("options.message.occurring"));
-                event.getEventData().updateData("options.message.ending", configuration.getString("options.message.ending"));
-                event.getEventData().updateData("options.message.closed", configuration.getString("options.message.closed"));
+                        .updateData("options.message.opened", configuration.getString("options.message.opened"))
+                        .updateData("options.message.prestarted", configuration.getString("options.message.prestarted"))
+                        .updateData("options.message.occurring", configuration.getString("options.message.occurring"))
+                        .updateData("options.message.ending", configuration.getString("options.message.ending"))
+                        .updateData("options.message.closed", configuration.getString("options.message.closed"))
+
+                        .updateData("options.player_max", configuration.getInt("options.player_max"))
+                        .updateData("options.player_min", configuration.getInt("options.player_min"))
+                        .updateData("options.seconds_to_stop", configuration.getInt("options.seconds_to_stop"))
+                        .updateData("options.ability.fixed_ability", AbilityHandler.getAbilityByName(configuration.getString("options.ability.fixed_ability")))
+                        .updateData("options.ability.abilitys", parseAbilitys(configuration.getStringList("options.ability.abilitys")))
+                        .updateData("options.shop.shops", configuration.getStringList("options..shop.shops"))
+                        
+                        .updateData("teleport.lobby", parseList(configuration.getStringList("teleport.lobby")))
+                        .updateData("teleport.spawn", parseList(configuration.getStringList("teleport.spawn")));
+
                 events.add(event);
             }
         }
     }
+    
+    private static Vector<Ability> parseAbilitys(final List<String> list){
+        final Vector<Ability> vector = new Vector<>();
+        for(String loop: list){
+            if(AbilityHandler.hasAbilityByName(loop)){
+                vector.add(AbilityHandler.getAbilityByName(loop));
+            }
+        }
+        return vector;
+    }
+    
+    private static Vector<Location> parseList(final List<String> list){
+        final Vector<Location> vector = new Vector<>();
+        for(String loop : list){
+            if(loop != null && !loop.isEmpty())
+                vector.add(Framework.toLocation(loop));
+        }
+        return vector;
+    }
+    
 
 }
