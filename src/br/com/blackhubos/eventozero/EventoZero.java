@@ -19,6 +19,8 @@
  */
 package br.com.blackhubos.eventozero;
 
+import br.com.blackhubos.eventozero.factory.EventFactory;
+import br.com.blackhubos.eventozero.factory.EventHandler;
 import java.io.File;
 
 import org.bukkit.event.HandlerList;
@@ -44,6 +46,7 @@ public final class EventoZero extends JavaPlugin
 
 	private static ShopHandler shopHandler;
 	private static KitHandler kitHandler;
+        private static EventHandler eventHandler;
 
 	@Override
 	public void onEnable()
@@ -66,6 +69,9 @@ public final class EventoZero extends JavaPlugin
 
 		EventoZero.shopHandler = new ShopHandler();
 		EventoZero.kitHandler = new KitHandler();
+                EventoZero.eventHandler = new EventHandler();
+                
+                EventFactory.loadEvents(this);
 
 	}
 
@@ -78,6 +84,10 @@ public final class EventoZero extends JavaPlugin
 		// Remove os listeners do plugin para ter melhor funcionamento com PluginManagers.
 		HandlerList.unregisterAll(this);
 	}
+        
+        public static void consoleMessage(String message){
+            System.out.println("[EventoZero] " + message);
+        }
 
 	/**
 	 * Dentro da classe EventoZero há uma variável estática carregada no <code>onEnable()</code> que representa a configuração do plugin, aceitando e usando o formato/charset
@@ -116,6 +126,10 @@ public final class EventoZero extends JavaPlugin
 	{
 		return EventoZero.kitHandler;
 	}
+        
+        public static EventHandler getEventHandler(){
+                return EventoZero.eventHandler;
+        }
 
 	/**
 	 * Dentro da classe EventoZero há uma variável estática carregada no <code>onEnable()</code> que representa a configuração do plugin, aceitando e usando o formato/charset
