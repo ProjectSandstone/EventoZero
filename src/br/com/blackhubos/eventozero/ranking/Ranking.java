@@ -47,13 +47,23 @@ public enum Ranking implements Serializable
 		return this.column;
 	}
 
-	public String byId(final int id)
+	public static String byId(final int id)
 	{
 		switch (id)
 		{
 			case 1:
 			{
 				return VITÓRIAS.getColuna();
+			}
+
+			case 2:
+			{
+				return DERROTAS.getColuna();
+			}
+
+			case 3:
+			{
+				return MORTES.getColuna();
 			}
 
 			default:
