@@ -20,3 +20,9 @@ EVENTO_ENTROU:
   - "&7Total de Partys: &a{partys}"
   - "&7Tempo até o início: &a{timeleft}"
   - "&9[ &b- &3INSTRUÇÕES: &9/{comando} tutorial &b- ]"
+
+ANUNCIOS_ABERTO:
+  - "&d-------------------------------"
+  - "&7Evento {nome} aberto agora"
+  - "&7PvP [{pvp}] - Use /{comando}!"
+  - "&d-------------------------------"
