@@ -4,6 +4,7 @@ import org.bukkit.inventory.ItemStack;
 
 import br.com.blackhubos.eventozero.ability.Ability;
 import br.com.blackhubos.eventozero.shop.ShopItem;
+import org.bukkit.entity.Player;
 
 public class Kit extends ShopItem implements Cloneable {
 
@@ -59,6 +60,17 @@ public class Kit extends ShopItem implements Cloneable {
 
     public Kit updateArmorContents(ItemStack[] armorContents) {
         this.armorContents = armorContents;
+        return this;
+    }
+    
+    public Kit giveKit(Player player){
+        player.getInventory().setArmorContents(armorContents);
+        for(ItemStack is : contents){
+            int empty = player.getInventory().firstEmpty();
+            if(empty != -1){
+                player.getInventory().setItem(empty, is);
+            }
+        }
         return this;
     }
 
