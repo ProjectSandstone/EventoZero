@@ -19,60 +19,58 @@
  */
 package br.com.blackhubos.eventozero.ability;
 
-import br.com.blackhubos.eventozero.handlers.AbilityHandler;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import org.bukkit.entity.Player;
 
-public abstract class Ability implements Cloneable
-{
+public abstract class Ability {
 
-	private final String name;
-	private final long cooldown;
-	
-	protected long lastTime;
+    private final String name;
+    private final long cooldown;
 
-	public Ability(String name, final long cooldown)
-	{
-		this.name = name;
-		this.cooldown = cooldown;
-		this.lastTime = 0;
-                AbilityHandler.loadAbility(this);
-	}
-	
-	public String getName(){
-		return this.name;
-	}
-	
-	public long getCooldown(){
-		return this.cooldown;
-	}
+    private final ConcurrentMap<String, Long> cooldowns;
 
-	public long getRemaingTime()
-	{
-		return (this.lastTime - (getCooldown() * 1000));
-	}
+    public Ability(String name, final long cooldown) {
+        this.name = name;
+        this.cooldown = cooldown;
+        this.cooldowns = new ConcurrentHashMap<>();
+    }
 
-	public long getRemaingTimePostive()
-	{
-		return (this.getRemaingTime() >= 0 ? this.getRemaingTime() : 0);
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public boolean canUse()
-	{
-		return (this.getRemaingTimePostive() == 0);
-	}
-	
-	public abstract Ability clone();
+    public long getCooldown() {
+        return this.cooldown;
+    }
 
-	public abstract boolean tryUse(final Player player);
+    public long getLastTime(final String name) {
+        return (cooldowns.containsKey(name) ? cooldowns.get(name) : 0);
+    }
 
-	public abstract void foceUse(final Player player);
-	
-	public Ability updateTime(){
-		this.lastTime = System.currentTimeMillis();
-		return this;
-	}
-	public Ability updateTime(final long lastTime){
-		this.lastTime = lastTime;
-		return this;
-	}
+    public long getRemaingTime(final String name) {
+        return (getLastTime(name) - (getCooldown() * 1000));
+    }
+
+    public long getRemaingTimePostive(final String name) {
+        return (this.getRemaingTime(name) >= 0 ? this.getRemaingTime(name) : 0);
+    }
+
+    public boolean canUse(final String name) {
+        return (this.getRemaingTimePostive(name) == 0);
+    }
+
+    public Ability updateTime(final String name) {
+        cooldowns.put(name, System.currentTimeMillis());
+        return this;
+    }
+
+    public Ability updateTime(final String name, final long lastTime) {
+        cooldowns.put(name, lastTime);
+        return this;
+    }
+
+    public abstract boolean tryUse(final Player player);
+
+    public abstract void foceUse(final Player player);
 }

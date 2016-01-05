@@ -31,50 +31,42 @@ import org.bukkit.util.Vector;
 
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.ability.Ability;
+import br.com.blackhubos.eventozero.handlers.AbilityHandler;
+import com.google.common.collect.HashBasedTable;
 
-public final class Jump extends Ability implements Listener
-{
-	
-	private final EventoZero plugin;
+public final class Jump extends Ability implements Listener {
 
-	public Jump(final long cooldown)
-	{
-		super("DoubleJump", cooldown);
-		plugin = (EventoZero) Bukkit.getPluginManager().getPlugin("EventoZero");
-		Bukkit.getPluginManager().registerEvents(this, plugin);
-	}
+    private final EventoZero plugin;
 
-	@Override
-	public boolean tryUse(final Player player)
-	{
-		if (this.canUse())
-		{
-			this.foceUse(player);
-			this.updateTime();
-			return true;
-		}
-		return false;
-	}
+    public Jump(final long cooldown) {
+        super("DoubleJump", cooldown);
+        plugin = (EventoZero) Bukkit.getPluginManager().getPlugin("EventoZero");
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+        AbilityHandler.loadAbility(this);
+    }
 
-	@Override
-	public void foceUse(final Player player)
-	{
-		player.setVelocity(new Vector(0, 0.5, 0));
-		player.setFallDistance(-10);
-	}
-	
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-	public void onTogle(PlayerMoveEvent event){
-		Location locationTo = event.getTo();
-		Location locationFrom = event.getFrom();
-		if(locationTo.getBlockY() > locationFrom.getBlockY() && (locationTo.getBlock().getType() == Material.AIR)){
-			tryUse(event.getPlayer());
-		}
-	}
+    @Override
+    public boolean tryUse(final Player player) {
+        if (this.canUse(player.getName())) {
+            this.foceUse(player);
+            this.updateTime(player.getName());
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public Ability clone() {
-		return new Jump(getCooldown()).updateTime(lastTime);
-	}
+    @Override
+    public void foceUse(final Player player) {
+        player.setVelocity(new Vector(0, 0.5, 0));
+        player.setFallDistance(-10);
+    }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void onTogle(PlayerMoveEvent event) {
+        Location locationTo = event.getTo();
+        Location locationFrom = event.getFrom();
+        if (locationTo.getBlockY() > locationFrom.getBlockY() && (locationTo.getBlock().getType() == Material.AIR)) {
+            tryUse(event.getPlayer());
+        }
+    }
 }

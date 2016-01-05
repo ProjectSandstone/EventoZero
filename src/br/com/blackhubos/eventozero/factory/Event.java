@@ -34,9 +34,12 @@ import org.bukkit.inventory.ItemStack;
 
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.ability.Ability;
+import br.com.blackhubos.eventozero.handlers.MessageHandler;
+import br.com.blackhubos.eventozero.kit.Kit;
 import br.com.blackhubos.eventozero.party.Party;
 import br.com.blackhubos.eventozero.storage.Storage;
 import br.com.blackhubos.eventozero.util.Framework;
+import java.util.Random;
 
 /**
  * TODO: arrumar index do setSign (todos 0) TODO: adicionar logs
@@ -126,7 +129,7 @@ public class Event {
     }
 
     /**
-     * 
+     *
      * @param displayname
      * @return Retorna a instância do {@link Event} modificada.
      */
@@ -267,6 +270,18 @@ public class Event {
             // TODO: STOP
             // TODO: MESSAGE CANCELED MIN PLAYER
             this.forceStop();
+        }
+        for (Player player : getPlayers()) {
+            Kit kit = getEventData().getData(player.getName() + ".kit");
+            if (kit != null) {
+                kit.giveKit(player);
+                if(kit.getAbility() != null){
+                    getEventData().updateData(player.getName() + ".ability", kit.getAbility());
+                }
+            }
+            Random r = new Random();
+            Vector<Location> spawns = getEventData().getData("teleport.spawn");
+            player.teleport(spawns.get(r.nextInt(spawns.size())));
         }
         // TODO: CODE START
         this.updateSigns();
