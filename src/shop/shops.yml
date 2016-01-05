@@ -26,8 +26,9 @@ shops:
       - {jump}
       - {armor}
       # Aqui está criando um item chamado armor e irá adicionar no shop
-      armor:
-          # Incone do item
-          icon: item(311) amount(1) name('&5Armor') enchantments(sharpness,5 unbreaking3) lore('linha 1', 'linha 2')
-          # Preço do item será 10 pontos.
-          price: 10
+    items_shop:
+        armor:
+            # Incone do item
+            icon: item(311) amount(1) name('&5Armor') enchantments(sharpness,5 unbreaking3) lore('linha 1', 'linha 2')
+            # Preço do item será 10 pontos.
+            price: 10
