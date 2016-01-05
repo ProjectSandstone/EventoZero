@@ -35,10 +35,10 @@ public final class MessageHandler
 
 	private static Configuration flatfile = null;
 	public static MessageRecipient SEM_PERMISSAO = new MessageRecipient("SEM_PERMISSÃO").defaultValue("&7Você não está autorizado a fazer isto.").build();
-        public static MessageRecipient ANÚNCIOS = new MessageRecipient("ANUNCIOS_ABERTO").defaultValue("").build():
-        public static MessageRecipient ANUNCIOS_FINALIZADO = new MessageRecipient("ANUNCIOS_FINALIZADO").defaultValue("").build():
-        public static MessageRecipient ANUNCIOS_CANCELADO = new MessageRecipient("ANUNCIOS_CANCELADO").defaultValue("").build():
-        public static MessageRecipient ANUNCIOS_CANCELADO_MINIMUM_PLAYER = new MessageRecipient("ANUNCIOS_CANCELADO_MINIMUM_PLAYER").defaultValue("").build():
+	public static MessageRecipient ANÚNCIOS = new MessageRecipient("ANUNCIOS_ABERTO").defaultValue("").build();
+	public static MessageRecipient ANUNCIOS_FINALIZADO = new MessageRecipient("ANUNCIOS_FINALIZADO").defaultValue("").build();
+	public static MessageRecipient ANUNCIOS_CANCELADO = new MessageRecipient("ANUNCIOS_CANCELADO").defaultValue("").build();
+	public static MessageRecipient ANUNCIOS_CANCELADO_MINIMUM_PLAYER = new MessageRecipient("ANUNCIOS_CANCELADO_MINIMUM_PLAYER").defaultValue("").build();
 
 	/**
 	 * Recarrega todas as mensagens da classe MessageHandler, carregando todas as keys encontradas pelo arquivo fornecido na configuração.
