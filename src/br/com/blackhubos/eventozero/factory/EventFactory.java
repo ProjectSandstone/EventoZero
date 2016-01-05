@@ -19,6 +19,7 @@
  */
 package br.com.blackhubos.eventozero.factory;
 
+import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.ability.Ability;
 import br.com.blackhubos.eventozero.handlers.AbilityHandler;
 import br.com.blackhubos.eventozero.util.Framework;
@@ -32,8 +33,6 @@ import java.util.List;
 import org.bukkit.Location;
 
 public final class EventFactory {
-
-    private static final Vector<Event> events = new Vector<>();
 
     public static Event createMyEvent(final String name) {
         return new Event(name).updateDescription("");
@@ -70,9 +69,10 @@ public final class EventFactory {
                         .updateData("teleport.lobby", parseList(configuration.getStringList("teleport.lobby")))
                         .updateData("teleport.spawn", parseList(configuration.getStringList("teleport.spawn")));
 
-                events.add(event);
+                EventoZero.getEventHandler().loadEvent(event);
             }
         }
+        EventoZero.consoleMessage("Foram carregado(s) " + EventoZero.getEventHandler().getEvents().size() + " evento(s).");
     }
     
     private static Vector<Ability> parseAbilitys(final List<String> list){
