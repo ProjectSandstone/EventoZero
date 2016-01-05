@@ -29,10 +29,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import br.com.blackhubos.eventozero.util.Framework;
 
@@ -74,6 +81,34 @@ public final class ItemFactory
 	 */
 	private static final Pattern pattern_amount = Pattern.compile("(?:quantia|amount|total|qnt)\\s*(?:\\{)\\s*([0-9]+)\\}", Pattern.CASE_INSENSITIVE);
 
+	/**
+	 * Processa durabilidade(5), porém, durabilidade pode ser 'durabilidade', 'dur', 'durability' ou 'desgaste'.
+	 */
+	private static final Pattern pattern_dur = Pattern.compile("(?:durabilidade|dur|durability|desgaste)\\s*(?:\\{)\\s*([0-9]+)\\}", Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Processa skull(nome), porém, skull pode ser 'skull', 'dur', 'head', 'cabeça' ou 'cbc'.
+	 */
+	private static final Pattern pattern_skull = Pattern.compile("(?:skull|head|cabeça|cabeca|cbc)\\s*(?:\\{)\\s*([a-zA-Z0-9_-]+)\\}", Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Processa potion(speed,5,60), porém, potion pode ser 'potion', 'pots', 'poções' ou 'poção'.
+	 */
+	private static final Pattern pattern_pots = Pattern.compile("(?:pots|poções|poção|potion|pot)\\s*(?:\\{)\\s*([a-zA-Z0-9_-\\,\\s]+)\\}", Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Processa parte interna do potion ('speed,2,60 strength,2,60') ignore as aspas.
+	 */
+	private static final Pattern pattern_pots_inside = Pattern.compile("\\s*([a-zA-Z_-]+)\\s*,\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*");
+
+	private static final Pattern pattern_book_outside = Pattern.compile("(?:book|livro)\\s*(?:\\{)\\s*([^\\}]+)\\s*\\}");
+
+	private static final Pattern pattern_book_inside_p1 = Pattern.compile("\\(\\s*'([^']+)\\s*'\\s*,\\s*'\\s*([^']+)\\s*'\\s*\\)\\s*([^\\}]+)\\s*\\}");
+
+	private static final Pattern pattern_book_inside_p2 = Pattern.compile("\\s*\\(\\s*'\\s*(.+)\\s*'\\s*\\)\\s*");
+
+	private static final Pattern pattern_book_inside_p3 = Pattern.compile("\\s*'\\s*([^']+)\\s*'");
+
 	private ItemStack item;
 	private String serial;
 
@@ -86,6 +121,66 @@ public final class ItemFactory
 		buffer.append(" ");
 		buffer.append("amount{" + is.getAmount() + "}");
 		buffer.append(" ");
+		buffer.append("dur{" + is.getDurability() + "}");
+		buffer.append(" ");
+
+		if (is.getType() == Material.WRITTEN_BOOK)
+		{
+			final BookMeta meta = (BookMeta) is.getItemMeta();
+			buffer.append("book{");
+			buffer.append("('" + meta.getAuthor() + "','" + meta.getTitle() + "')");
+			buffer.append(" ");
+			buffer.append("(");
+			boolean first = true;
+			for (String page : meta.getPages())
+			{
+				if (!first)
+				{
+					buffer.append(",");
+				}
+				buffer.append("'");
+				if (page.contains("'"))
+				{
+					page = page.replaceAll("'", "${1}:");
+				}
+
+				buffer.append(page);
+				buffer.append("'");
+				first = false;
+			}
+			buffer.append(")");
+			buffer.append("}");
+			buffer.append(" ");
+		}
+
+		if (is.getType() == Material.POTION)
+		{
+			buffer.append("pots{");
+			boolean first = true;
+			final ThrownPotion pot = (ThrownPotion) is;
+			for (final PotionEffect effect : pot.getEffects())
+			{
+				if (!first)
+				{
+					buffer.append(" ");
+				}
+
+				final String line = effect.getType().getName() + "," + effect.getAmplifier() + "," + effect.getDuration();
+				buffer.append(line);
+				first = false;
+			}
+			buffer.append("}");
+			buffer.append(" ");
+		}
+
+		if (is.getType() == Material.SKULL_ITEM)
+		{
+			buffer.append("skull{");
+			final SkullMeta meta = (SkullMeta) is.getItemMeta();
+			buffer.append(meta.getOwner());
+			buffer.append("}");
+			buffer.append(" ");
+		}
 
 		if (!is.getItemMeta().getLore().isEmpty())
 		{
@@ -180,6 +275,13 @@ public final class ItemFactory
 			meta.setLore(lore);
 		}
 
+		final Matcher dur = ItemFactory.pattern_dur.matcher(script);
+		if (dur.find())
+		{
+			final short s = Short.parseShort(dur.group(1));
+			is.setDurability(s);
+		}
+
 		final Matcher ench = ItemFactory.pattern_encantos_outside.matcher(script);
 		if (ench.find())
 		{
@@ -207,6 +309,60 @@ public final class ItemFactory
 		}
 
 		is.setItemMeta(meta);
+
+		final Matcher pot = ItemFactory.pattern_pots.matcher(script);
+		if (pot.find())
+		{
+			final PotionMeta pm = (PotionMeta) is.getItemMeta();
+			final String efeitos = pot.group(1);
+			final Matcher eff = ItemFactory.pattern_pots_inside.matcher(efeitos);
+			while (eff.find())
+			{
+				final String efeito = eff.group(1);
+				final int level = Integer.parseInt(eff.group(2));
+				final int tempo = Integer.parseInt(eff.group(3));
+				pm.getCustomEffects().add(new PotionEffect(PotionEffectType.getByName(efeito), tempo, level));
+			}
+			is.setItemMeta(pm);
+		}
+
+		final Matcher skull = ItemFactory.pattern_skull.matcher(script);
+		if (skull.find())
+		{
+			final String owner = skull.group(1);
+			final SkullMeta sm = (SkullMeta) is.getItemMeta();
+			sm.setOwner(owner);
+			is.setItemMeta(sm);
+		}
+
+		final Matcher book = ItemFactory.pattern_book_outside.matcher(script);
+		if (book.find())
+		{
+			final String content = book.group(1);
+			final Matcher p1 = ItemFactory.pattern_book_inside_p1.matcher(content);
+			if (p1.find())
+			{
+				final String titulo = p1.group(1);
+				final String autor = p1.group(2);
+				final BookMeta bm = (BookMeta) is.getItemMeta();
+				bm.setAuthor(this.replaces(autor, replaces));
+				bm.setTitle(this.replaces(titulo, replaces));
+				final String unco = p1.group(3);
+				final Matcher mpgs = ItemFactory.pattern_book_inside_p2.matcher(unco);
+				while (mpgs.find())
+				{
+					final Vector<String> array = new Vector<String>();
+					final Matcher pages = ItemFactory.pattern_book_inside_p3.matcher(mpgs.group(1));
+					while (pages.find())
+					{
+						array.add(this.replaces(pages.group(1), replaces).replace("${1}:", "'"));
+					}
+					final String[] local = array.toArray(new String[array.size()]);
+					bm.addPage(local);
+				}
+			}
+		}
+
 		this.item = is;
 	}
 
