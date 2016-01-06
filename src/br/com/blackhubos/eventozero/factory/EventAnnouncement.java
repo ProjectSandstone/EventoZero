@@ -19,34 +19,34 @@
  */
 package br.com.blackhubos.eventozero.factory;
 
-import org.bukkit.Bukkit;
+public class EventAnnouncement {
 
-public class EventCountdown implements Runnable
-{
+    private final Event event;
+    private int seconds;
+    private long time;
 
-	private final Event event;
-	private int seconds;
+    public EventAnnouncement(final Event event, final int seconds) {
+        this.event = event;
+        this.seconds = seconds;
+        this.time = 0;
+    }
 
-	public EventCountdown(final Event event, final int seconds)
-	{
-		this.event = event;
-		this.seconds = seconds;
-		this.run();
-	}
+    public EventAnnouncement tryAnnouncement() {
+        if (event.getEventState() == EventState.OPENED && (time + (seconds * 1000) < System.currentTimeMillis())) {
+            forceAnnouncement();
+            updateTime();
+        }
+        return this;
+    }
 
-	@Override
-	public void run()
-	{
-		if (this.seconds > 0)
-		{
-			this.seconds--;
-			Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("EventoZero"), this, 20L);
-		}
-		else
-		{
-			this.event.forceStart();
-		}
+    public EventAnnouncement forceAnnouncement() {
+        
+        return this;
+    }
 
-	}
+    public EventAnnouncement updateTime() {
+        this.time = System.currentTimeMillis();
+        return this;
+    }
 
 }

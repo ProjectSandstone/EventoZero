@@ -279,7 +279,7 @@ public class Event extends EventCommand {
     public void start() {
         // TODO: START THE COUNTDOWN
         if (this.getEventState() == EventState.OPENED) {
-            new EventCountdown(this, (Integer) this.getEventData().getData("options.countdown.seconds"));
+            new EventAnnouncement(this, (Integer) this.getEventData().getData("options.countdown.seconds"));
             this.updateSigns();
         }
     }
