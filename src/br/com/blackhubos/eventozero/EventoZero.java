@@ -126,7 +126,10 @@ public final class EventoZero extends JavaPlugin
 	{
 		return EventoZero.kitHandler;
 	}
-        
+        /**
+         * 
+         * @return Retorna instancia {@link EventHandler}.
+         */
         public static EventHandler getEventHandler(){
                 return EventoZero.eventHandler;
         }
