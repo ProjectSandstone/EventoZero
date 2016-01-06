@@ -19,6 +19,7 @@
  */
 package br.com.blackhubos.eventozero.factory;
 
+import br.com.blackhubos.eventozero.EventCommand;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -39,6 +40,8 @@ import br.com.blackhubos.eventozero.party.Party;
 import br.com.blackhubos.eventozero.storage.Storage;
 import br.com.blackhubos.eventozero.util.Framework;
 import java.util.Random;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 
 /**
  * TODO: arrumar index do setSign (todos 0) TODO: adicionar logs
@@ -49,7 +52,7 @@ import java.util.Random;
  * no modo espectador, desativar comandos exceto do eventozero
  *
  */
-public class Event {
+public class Event extends EventCommand {
 
     private final String eventName;
     private final EventData eventData;
@@ -70,6 +73,7 @@ public class Event {
         this.partys = new Vector<>();
         this.abilitys = new Vector<>();
         this.eventData = new EventData();
+        this.command(eventName);
     }
 
     /**
@@ -155,6 +159,20 @@ public class Event {
 
     /**
      *
+     * @return Retorna a lista de todos os jogadores restantes no evento.
+     */
+    public Vector<Player> getPlayersRemaining() {
+        Vector<Player> remaings = new Vector<>();
+        for (Player remaing : getPlayers()) {
+            if (!getSpectators().contains(remaing)) {
+                remaings.add(remaing);
+            }
+        }
+        return remaings;
+    }
+
+    /**
+     *
      * @return Retorna a lista de todos os es espectadores ativos no evento.
      */
     public Vector<Player> getSpectators() {
@@ -169,6 +187,11 @@ public class Event {
         return this.abilitys;
     }
 
+    /**
+     *
+     * @param player
+     * @return
+     */
     public Event playerJoin(final Player player) {
         if ((player == null) || ((player != null) && !player.isOnline())) {
             throw new NullArgumentException("Player is null");
@@ -181,6 +204,11 @@ public class Event {
         return this;
     }
 
+    /**
+     *
+     * @param player
+     * @return
+     */
     public Event playerQuit(final Player player) {
         if ((player == null) || ((player != null) && !player.isOnline())) {
             throw new NullArgumentException("Player is null");
@@ -244,6 +272,7 @@ public class Event {
 
     public void stop() {
         // TODO: STOP EVENT, GET WINNERS, ALIVES
+        forceStop();
         this.updateSigns();
     }
 
@@ -280,6 +309,7 @@ public class Event {
             }
             Random r = new Random();
             Vector<Location> spawns = getEventData().getData("teleport.spawn");
+
             player.teleport(spawns.get(r.nextInt(spawns.size())));
         }
         // TODO: CODE START
@@ -298,20 +328,26 @@ public class Event {
      * evento em questão.
      */
     public void playerBackup(final Player player) {
-        /*
-		 * this.getEventData().updateData(player.getName() + ".health", player.getHealth());
-		 * this.getEventData().updateData(player.getName() + ".food", player.getFoodLevel());
-		 * this.getEventData().updateData(player.getName() + ".exp", player.getExp());
-		 * this.getEventData().updateData(player.getName() + ".expLevel", player.getLevel());
-		 * this.getEventData().updateData(player.getName() + ".location", player.getLocation());
-		 * this.getEventData().updateData(player.getName() + ".inventory.contents", player.getInventory().getContents());
-		 * this.getEventData().updateData(player.getName() + ".inventory.armorContents", player.getInventory().getArmorContents());
-         */
+        this.getEventData().updateData(player.getName() + ".inventory.contents", player.getInventory().getContents());
+        this.getEventData().updateData(player.getName() + ".inventory.armorContents", player.getInventory().getArmorContents());
         this.getEventData().updateData(player.getName() + ".ability", getEventData().getData("options.ability.fixed_ability"));
         EventoZero.getStorage().backupPlayer(player, this.eventName.toLowerCase());
     }
 
+    /**
+     * Este método irá restaurar um backup do jogador, salvo no banco de dados
+     * do EventoZero com dados importantes sobre o jogador, tais como, vida,
+     * comida, itens, xp, localização, armadura, etc. Você poderá restaurar esse
+     * backup ao jogador quando quiser, pois fica salvo em backup. Note que os
+     * backups não são retirados do banco de dados após restaurar, são apenas
+     * 'trancados' e não podem mais ser usados.
+     *
+     * @param player
+     */
     public void playerRestore(final Player player) {
+        if (player == null || (player != null && !player.isOnline())) {
+            throw new NullArgumentException("Player is null");
+        }
         final ResultSet rs = EventoZero.getStorage().search("SELECT * FROM `" + Storage.Module.BACKUP.getTable() + "` WHERE `jogador`='" + player.getName().toLowerCase() + "' AND `devolvido`='0' AND `evento`='" + this.eventName.toLowerCase() + "';");
         try {
             if (rs.next()) {
@@ -320,20 +356,22 @@ public class Event {
                 player.setExp(rs.getFloat("xp"));
                 player.setLevel(rs.getInt("level"));
                 player.teleport(Framework.toLocation(rs.getString("localizacao")));
-                // TODO: pensar como vai ser o sistema que salva e carrega itens via mysql..
-                // TODO: itemstack.serializer ou criar método que suporta livros
                 player.getInventory().setContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.contents"));
                 player.getInventory().setArmorContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.armorContents"));
+                getEventData().removeKeyStartWith(player.getName());
             }
         } catch (IllegalArgumentException | SQLException e) {
             e.printStackTrace();
         }
+
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Atualiza todas placas
+     */
     public void updateSigns() {
         if (this.getEventData().containsKey("options.signs.locations") && (this.getEventData().getData("options.signs.locations") != null)) {
-            final Vector<Location> locations = (Vector<Location>) this.getEventData().getData("options.signs.locations");
+            final Vector<Location> locations = this.getEventData().getData("options.signs.locations");
             for (final Location location : locations) {
                 final Block block = location.getWorld().getBlockAt(location);
                 if ((block.getType() == Material.SIGN_POST) || (block.getType() == Material.WALL_SIGN)) {
@@ -347,6 +385,12 @@ public class Event {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
+        return false;
     }
 
 }

@@ -31,8 +31,8 @@ import org.bukkit.util.Vector;
 
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.ability.Ability;
+import br.com.blackhubos.eventozero.factory.Event;
 import br.com.blackhubos.eventozero.handlers.AbilityHandler;
-import com.google.common.collect.HashBasedTable;
 
 public final class Jump extends Ability implements Listener {
 
@@ -47,7 +47,8 @@ public final class Jump extends Ability implements Listener {
 
     @Override
     public boolean tryUse(final Player player) {
-        if (this.canUse(player.getName())) {
+        Event event = EventoZero.getEventHandler().getEventByPlayer(player);
+        if (this.canUse(player.getName()) && (event != null && (event.getAbilitys().contains(this) || (event.getPlayersRemaining().contains(player) && event.getEventData().getData(player.getName() + ".ability").equals(this))))) {
             this.foceUse(player);
             this.updateTime(player.getName());
             return true;
