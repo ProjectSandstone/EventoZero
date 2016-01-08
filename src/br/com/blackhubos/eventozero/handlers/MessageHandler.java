@@ -59,6 +59,7 @@ public enum MessageHandler
 
 	public String getKey()
 	{
+
 		return this.key;
 	}
 
