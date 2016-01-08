@@ -37,11 +37,11 @@ public final class BlockStructure
 	private final Player player;
 	private final Block bloco;
 	private final int tipo;
-	private final int top;
+	private final long top;
 	private final String name;
 	private final String evento;
 
-	public BlockStructure(final Player player, final Block block, final String name, final String evento, final int tipo, final int top)
+	public BlockStructure(final Player player, final Block block, final String name, final String evento, final int tipo, final long top)
 	{
 		this.player = player;
 		this.bloco = block;
@@ -55,26 +55,53 @@ public final class BlockStructure
 	{
 		final Event e = EventoZero.getEventHandler().getEventByName(this.evento);
 		final Location pos = this.bloco.getLocation();
+		this.bloco.setType(Material.SKULL);
+		final Skull skull = (Skull) this.bloco;
+		skull.setOwner(this.name);
+		if (this.player != null)
+		{
+			skull.setRotation(this.getDirection(this.player).getOppositeFace());
+		}
+		else
+		{
+			if ((this.bloco != null) && (this.bloco.getType() == Material.SKULL))
+			{
+				skull.setRotation(((Skull) this.bloco).getRotation());
+			}
+		}
+
+		skull.update(true);
+
 		final Location pos2 = pos.clone().add(0, 1, 0);
 		final Block bloco = pos2.getBlock();
 		bloco.setType(Material.SIGN_POST);
 		final org.bukkit.block.Sign placa = (org.bukkit.block.Sign) bloco.getState();
 		final Sign data = new Sign(Material.SIGN_POST);
-		data.setFacingDirection(this.getDirection(this.player).getOppositeFace());
+		if (this.player != null)
+		{
+			data.setFacingDirection(this.getDirection(this.player).getOppositeFace());
+		}
+		else
+		{
+			data.setFacingDirection(((Skull) this.bloco).getRotation());
+		}
+
 		placa.setData(data);
 		for (int i = 0; (i < EventoZero.getRankingConfiguration().getStringList("sign.output").size()) && (i < 3); i++)
 		{
 			final String line = EventoZero.getRankingConfiguration().getStringList("sign.output").get(i);
 			placa.setLine(i, ChatColor.translateAlternateColorCodes('&', line.replace("{evento}", e.getEventDisplayName()).replace("{rank}", this.top + "").replace("{player}", this.name).replace("{tipo}", Ranking.byId(this.tipo))));
 		}
+
 		placa.update(true);
-		bloco.setType(Material.SKULL);
-		final Skull skull = (Skull) bloco;
-		skull.setOwner(this.name);
-		skull.setRotation(this.getDirection(this.player).getOppositeFace());
-		skull.update(true);
 	}
 
+	/**
+	 * Utilidado para obter a direção em que o jogador está olhando
+	 * 
+	 * @param player
+	 * @return
+	 */
 	public BlockFace getDirection(final Player player)
 	{
 		BlockFace dir = null;
