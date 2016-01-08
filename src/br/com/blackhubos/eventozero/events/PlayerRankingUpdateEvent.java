@@ -37,9 +37,10 @@ public final class PlayerRankingUpdateEvent extends Event implements Cancellable
 	private final Ranking rank;
 	private boolean cancelled;
 	private boolean updateBlocks;
+	private final long top;
 	private long valor;
 
-	public PlayerRankingUpdateEvent(final OfflinePlayer player, final Ranking rank, final long valor, final br.com.blackhubos.eventozero.factory.Event event, final RankingAction action, final boolean update)
+	public PlayerRankingUpdateEvent(final OfflinePlayer player, final Ranking rank, final long valor, final long top, final br.com.blackhubos.eventozero.factory.Event event, final RankingAction action, final boolean update)
 	{
 		this.player = player;
 		this.event = event;
@@ -47,6 +48,12 @@ public final class PlayerRankingUpdateEvent extends Event implements Cancellable
 		this.updateBlocks = update;
 		this.rank = rank;
 		this.valor = valor;
+		this.top = top;
+	}
+
+	public long getPlayerRankingPosition()
+	{
+		return this.top;
 	}
 
 	public OfflinePlayer getPlayer()
