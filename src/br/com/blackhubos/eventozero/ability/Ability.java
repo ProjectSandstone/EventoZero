@@ -72,5 +72,5 @@ public abstract class Ability {
 
     public abstract boolean tryUse(final Player player);
 
-    public abstract void foceUse(final Player player);
+    public abstract void forceUse(final Player player);
 }
