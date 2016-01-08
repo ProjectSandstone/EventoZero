@@ -19,7 +19,6 @@
  */
 package br.com.blackhubos.eventozero.handlers;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.Map.Entry;
 import java.util.Vector;
@@ -30,30 +29,47 @@ import org.bukkit.command.CommandSender;
 
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
 
-public final class MessageHandler
+public enum MessageHandler
 {
 
-	private static Configuration flatfile = null;
-	public static MessageRecipient SEM_PERMISSAO = new MessageRecipient("SEM_PERMISSÃO").defaultValue("&7Você não está autorizado a fazer isto.").build();
-	public static MessageRecipient ANÚNCIOS = new MessageRecipient("ANUNCIOS_ABERTO").defaultValue("").build();
-	public static MessageRecipient ANUNCIOS_FINALIZADO = new MessageRecipient("ANUNCIOS_FINALIZADO").defaultValue("").build();
-	public static MessageRecipient ANUNCIOS_CANCELADO = new MessageRecipient("ANUNCIOS_CANCELADO").defaultValue("").build();
-	public static MessageRecipient ANUNCIOS_CANCELADO_MINIMUM_PLAYER = new MessageRecipient("ANUNCIOS_CANCELADO_MINIMUM_PLAYER").defaultValue("").build();
+	PLAYER_WITHOUT_PERMISSION(
+			"without_permission",
+			"&7Você não está autorizado a fazer isto."),
+	EVENT_ANNOUNCEMENT_OPENED(
+			"announces_open",
+			"&7Evento {nome} está aberto, participe!"),
+	EVENT_ANNOUNCEMENT_FINISHED(
+			"announces_finished",
+			"&7Evento {nome} terminou!"),
+	EVENT_ANNOUNCEMENT_CANCELLED(
+			"announces_cancelled",
+			"&cEvento {nome} cancelado por um admin!"),
+	EVENT_ANNOUNCEMENT_CANCELLED_PLAYERS(
+			"announces_cancelled_players",
+			"&cEvento {nome} cancelado devido a falta de jogadores!");
 
-	/**
-	 * Recarrega todas as mensagens da classe MessageHandler, carregando todas as keys encontradas pelo arquivo fornecido na configuração.
-	 *
-	 * @param flatfile Uma {@link Configuration} para fazer o carregamento em UTF-8 das mensagens.
-	 * @since EventoZero v1.0.1-ALPHA
-	 */
-	public static void setFlatfile(final File file)
+	private String key, padrao;
+
+	private MessageHandler(final String key, final String padrao)
 	{
-		MessageHandler.flatfile = new Configuration(file);
+		this.key = key;
+		this.padrao = padrao;
+	}
+
+	public String getKey()
+	{
+		return this.key;
+	}
+
+	public String getDefault()
+	{
+		return this.padrao;
 	}
 
 	public final static class MessageRecipient implements Serializable
 	{
 
+		private static Configuration flatfile;
 		private static final long serialVersionUID = 2951277980455897571L;
 		private String key;
 		private String string;
@@ -119,20 +135,20 @@ public final class MessageHandler
 		 */
 		public Vector<String> getText()
 		{
-			final boolean exists = (((this.key != null) && !this.key.isEmpty() && (MessageHandler.flatfile != null) && MessageHandler.flatfile.contains(this.key)));
+			final boolean exists = (((this.key != null) && !this.key.isEmpty() && (MessageRecipient.flatfile != null) && MessageRecipient.flatfile.contains(this.key)));
 			final Vector<String> messages = new Vector<String>();
 			if (exists)
 			{
-				if (MessageHandler.flatfile.isList(this.key))
+				if (MessageRecipient.flatfile.isList(this.key))
 				{
-					for (final String line : MessageHandler.flatfile.getStringList(this.key))
+					for (final String line : MessageRecipient.flatfile.getStringList(this.key))
 					{
 						messages.add(line);
 					}
 				}
 				else
 				{
-					messages.add(MessageHandler.flatfile.getString(this.key));
+					messages.add(MessageRecipient.flatfile.getString(this.key));
 				}
 			}
 			else
