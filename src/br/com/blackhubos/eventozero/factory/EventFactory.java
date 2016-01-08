@@ -61,6 +61,11 @@ public final class EventFactory {
 
                         .updateData("options.player_max", configuration.getInt("options.player_max"))
                         .updateData("options.player_min", configuration.getInt("options.player_min"))
+                        .updateData("options.party_size", configuration.getInt("options.party_size"))
+                        
+                        .updateData("options.enables.party", configuration.getBoolean("options.enables.party"))
+                        .updateData("options.enables.safe_inventory", configuration.getBoolean("options.enables.safe_inventory"))
+                        
                         .updateData("options.seconds_to_stop", configuration.getInt("options.seconds_to_stop"))
                         .updateData("options.ability.fixed_ability", AbilityHandler.getAbilityByName(configuration.getString("options.ability.fixed_ability")))
                         .updateData("options.ability.abilitys", parseAbilitys(configuration.getStringList("options.ability.abilitys")))

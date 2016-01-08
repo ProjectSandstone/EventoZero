@@ -73,7 +73,7 @@ public class Event extends EventCommand {
         this.partys = new Vector<>();
         this.abilitys = new Vector<>();
         this.eventData = new EventData();
-        this.command(eventName);
+        this.command(eventName).register();
     }
 
     /**
@@ -196,10 +196,20 @@ public class Event extends EventCommand {
         if ((player == null) || ((player != null) && !player.isOnline())) {
             throw new NullArgumentException("Player is null");
         }
+        boolean safe = getEventData().getData("options.enables.safe_inventory");
         if (!this.hasPlayerJoined(player)) {
             this.joineds.add(player);
-            this.playerBackup(player);
             this.updateSigns();
+            if (safe) {
+                playerBackup(player);
+                player.getInventory().clear();
+                player.getInventory().setArmorContents(new ItemStack[4]);
+
+            }
+            Random r = new Random();
+            Vector<Location> lobby = getEventData().getData("teleport.lobby");
+
+            player.teleport(lobby.get(r.nextInt(lobby.size() > 0 ? lobby.size() : 0)));
         }
         return this;
     }
@@ -213,11 +223,14 @@ public class Event extends EventCommand {
         if ((player == null) || ((player != null) && !player.isOnline())) {
             throw new NullArgumentException("Player is null");
         }
+        boolean safe = getEventData().getData("options.enables.safe_inventory");
         if (this.hasPlayerJoined(player)) {
             this.joineds.remove(player);
             this.spectatorQuit(player);
-            this.playerRestore(player);
             this.updateSigns();
+            if (safe) {
+                this.playerRestore(player);
+            }
         }
         return this;
     }
@@ -279,6 +292,7 @@ public class Event extends EventCommand {
     public void start() {
         // TODO: START THE COUNTDOWN
         if (this.getEventState() == EventState.OPENED) {
+            // ERRADO FALTA TERMINAR
             new EventAnnouncement(this, (Integer) this.getEventData().getData("options.countdown.seconds"));
             this.updateSigns();
         }
@@ -310,7 +324,7 @@ public class Event extends EventCommand {
             Random r = new Random();
             Vector<Location> spawns = getEventData().getData("teleport.spawn");
 
-            player.teleport(spawns.get(r.nextInt(spawns.size())));
+            player.teleport(spawns.get(r.nextInt(spawns.size() > 0 ? spawns.size() : 0)));
         }
         // TODO: CODE START
         this.updateSigns();
@@ -389,7 +403,19 @@ public class Event extends EventCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
+        if (args.length == 0) {
+            if (sender instanceof Player) {
+                sender.sendMessage("command not allowed to console");
+                return true;
+            }
+            Player player = (Player) sender;
+            if (hasPlayerJoined(player)) {
+                sender.sendMessage("you already entered the event");
+                return true;
+            }
+            playerJoin(player);
+            player.sendMessage("you entered the event");
+        }
         return false;
     }
 
