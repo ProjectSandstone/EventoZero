@@ -1,0 +1,34 @@
+#################################################################################################
+#                                                                                               #
+#          ####  #    # #####  ##   ##  ####### ######  ######  #####  #######  ######          #
+#          ##    #    # ##     # #  #     ###   #    #  #    #  ##     #    #   #    #          #
+#          ##    #    # ##     #  # #      #    #    #      #   ##     #   #    #    #          #
+#          ###   #    # ###    #  # #      #    #    #     #    ###    # ##     #    #          #
+#          ##    #    # ##     #  # #      #    #    #    #     ##     #  #     #    #          #
+#          ##    ##  ## ##     #  # #      #    #    #   #   #  ##     #   #    #    #          #
+#          #####   ##   #####  #  ###      #    ######   #####  #####  #    ##  ######          #
+#                                                                                               #
+#################################################################################################
+
+# Configuração do Atualizador
+
+# Configuração da verificação de atualizações
+check:
+  # Habilitar verificação de atualizações
+  ## Padrão: true
+  enable: true
+  # Ao habilitar você receberá mais mensagens de informação sobre os processos de atualização
+  # Algumas destas mensagens são avisos uteis de erros e bugs para que nossa equipe possa corrigi-los.
+  ## Padrão: false
+  debug: false
+
+# Instalar atualizações automaticamente
+# Obs: Isto não indica que elas serão aplicadas automaticamente.
+#  Para aplicar será necessário recarregar o plugin ou reiniciar o servidor
+## Padrão: true
+auto_install: true
+
+# Caso o auto_install esteja definido como fasle, o diretório abaixo será no qual o sistema
+#  salvará os arquivos baixados de update
+# Ao utilizar o comando '/uc update apply' as atualizações no diretório serão aplicadas!
+save_directory: 'updates/'

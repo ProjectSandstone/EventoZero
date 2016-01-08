@@ -179,4 +179,35 @@ public class Version implements Comparable<Version> {
     public int compareTo(Version anotherVersion) {
         return this.getPublishDate().compareTo(anotherVersion.getPublishDate());
     }
+
+    /**
+     * Determina se a versão atual é mais nova que a informada
+     * @see #compareTo(Version)
+     * @param anotherVersion Versão a comparar
+     * @return True se a versão atual é mais recente que a informada, false caso seja igual ou mais antiga
+     */
+    public boolean isNewerThan(Version anotherVersion) {
+        return compareTo(anotherVersion) > 0;
+    }
+
+    /**
+     * Determina se a versão atual é mais antiga que a informada
+     * @see #compareTo(Version)
+     * @param anotherVersion Versão a comparar
+     * @return True se a versão atual é mais antiga que a informada, false caso seja igual ou mais recente
+     */
+    public boolean isOlderThan(Version anotherVersion) {
+        return compareTo(anotherVersion) < 0;
+    }
+
+    /**
+     * Determina se a versão atual é a mesma que a informada
+     * @see #compareTo(Version)
+     * @param anotherVersion Versão a comparar
+     * @return True se a versão atual é a mesma que a informada, false caso seja mais recente ou mais antiga
+     */
+    public boolean isSameVersion(Version anotherVersion) {
+        return compareTo(anotherVersion) == 0;
+    }
+
 }

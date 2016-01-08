@@ -50,6 +50,7 @@ import br.com.blackhubos.eventozero.updater.searcher.Searcher;
 
 public class GitHubSearcher implements Searcher {
 
+    private static final String GITHUB_RELEASES_URL = "https://github.com/BlackHubOS/EventoZero/releases";
     private static final String GITHUB_API_URL = "https://api.github.com/repos/BlackHubOS/EventoZero/";
     private static final String RELEASES_PATH = "releases";
     private static final String LATEST_PATH = "/latest";
@@ -129,7 +130,7 @@ public class GitHubSearcher implements Searcher {
     public Optional<Version> findVersion(String tag) {
         try {
             // Conecta ao URL de todas versões
-            Optional<Collection<Version>> versions = connect(Optional.of(TAG_PATH+"/"+tag));
+            Optional<Collection<Version>> versions = connect(Optional.of(TAG_PATH + "/" + tag));
 
             // Verifica se encontrou alguma (NullPointerException cade você?)
             if (versions.isPresent()) {
@@ -141,6 +142,11 @@ public class GitHubSearcher implements Searcher {
         }
         // Retorna uma lista vazia caso não encontre a versão informada
         return Optional.absent();
+    }
+
+    @Override
+    public String getReleasesUrl() {
+        return GITHUB_RELEASES_URL;
     }
 
     private Optional<Collection<Version>> connect(Optional<String> additionalUrl) throws IOException, ParseException, java.text.ParseException {
