@@ -52,6 +52,7 @@ public enum MessageHandler
 
 	private MessageHandler(final String key, final String padrao)
 	{
+
 		this.key = key;
 		this.padrao = padrao;
 	}
