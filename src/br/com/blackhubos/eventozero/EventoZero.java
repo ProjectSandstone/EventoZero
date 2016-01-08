@@ -72,6 +72,9 @@ public final class EventoZero extends JavaPlugin
                 EventoZero.eventHandler = new EventHandler();
                 
                 EventFactory.loadEvents(this);
+                
+                kitHandler.loadKits(this);
+                shopHandler.loadShops(this);
 
 	}
 

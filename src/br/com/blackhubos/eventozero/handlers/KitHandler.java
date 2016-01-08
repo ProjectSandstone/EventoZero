@@ -65,7 +65,10 @@ public final class KitHandler {
                 kit.setContents(count, new ItemFactory(otherKey, null).getPreparedItem());
                 count++;
             }
+            kits.add(kit);
         }
+        
+        EventoZero.consoleMessage("Formam carregado(s) " + kits.size() + " kit(s)");
     }
     
 }
