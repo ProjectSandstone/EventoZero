@@ -28,7 +28,7 @@ check:
 ## Padrão: true
 auto_install: true
 
-# Caso o auto_install esteja definido como fasle, o diretório abaixo será no qual o sistema
+# Caso o auto_install esteja definido como false, o diretório abaixo será no qual o sistema
 #  salvará os arquivos baixados de update
-# Ao utilizar o comando '/uc update apply' as atualizações no diretório serão aplicadas!
+# Ao utilizar o comando '/ez update apply' as atualizações no diretório serão aplicadas!
 save_directory: 'updates/'

@@ -29,6 +29,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import br.com.blackhubos.eventozero.handlers.KitHandler;
 import br.com.blackhubos.eventozero.handlers.ShopHandler;
 import br.com.blackhubos.eventozero.storage.Storage;
+import br.com.blackhubos.eventozero.updater.Updater;
 import br.com.blackhubos.eventozero.util.Framework;
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
 import br.com.blackhubos.eventozero.util.Framework.LoggerManager;
@@ -42,11 +43,13 @@ public final class EventoZero extends JavaPlugin
 	private static Configuration config_points = null;
 	private static Configuration config_bans = null;
 	private static Configuration config_signs = null;
+	private static Configuration config_updater = null;
 	private static Storage storage = null;
+	private static Updater updater = null;
 
 	private static ShopHandler shopHandler;
 	private static KitHandler kitHandler;
-        private static EventHandler eventHandler;
+	private static EventHandler eventHandler;
 
 	@Override
 	public void onEnable()
@@ -57,9 +60,10 @@ public final class EventoZero extends JavaPlugin
 		EventoZero.config_points = new Configuration(this, new File(this.getDataFolder(), "points.yml"));
 		EventoZero.config_bans = new Configuration(this, new File(this.getDataFolder(), "bans.yml"));
 		EventoZero.config_signs = new Configuration(this, new File(this.getDataFolder(), "signs.yml"));
+		EventoZero.config_updater = new Configuration(this, new File(this.getDataFolder(), "updater.yml"));
 		EventoZero.logger = new LoggerManager<EventoZero>(this, new File(this.getDataFolder(), "logs")).init(EventoZero.config.getString("tasks.savelogs"));
 
-		for (final Configuration c : new Configuration[] { EventoZero.config, EventoZero.config_rankings, EventoZero.config_points, EventoZero.config_bans, EventoZero.config_signs })
+		for (final Configuration c : new Configuration[] { EventoZero.config, EventoZero.config_rankings, EventoZero.config_points, EventoZero.config_bans, EventoZero.config_signs, EventoZero.config_updater })
 		{
 			if (c.copied())
 			{
@@ -69,12 +73,12 @@ public final class EventoZero extends JavaPlugin
 
 		EventoZero.shopHandler = new ShopHandler();
 		EventoZero.kitHandler = new KitHandler();
-                EventoZero.eventHandler = new EventHandler();
+        EventoZero.eventHandler = new EventHandler();
                 
-                EventFactory.loadEvents(this);
+        EventFactory.loadEvents(this);
                 
-                kitHandler.loadKits(this);
-                shopHandler.loadShops(this);
+        kitHandler.loadKits(this);
+        shopHandler.loadShops(this);
 
 	}
 
