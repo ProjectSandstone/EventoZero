@@ -45,19 +45,19 @@ public final class RankingListener implements Listener
 				@Override
 				public void run()
 				{
-					final ResultSet ranking = EventoZero.getStorage().search("SELECT * FROM evento WHERE ? = ? ORDER BY ?", Ranking.VITÓRIAS.getTable(), event.getEvent().getEventName().toLowerCase(), Ranking.VITÓRIAS.getColuna());
+					final ResultSet ranking = EventoZero.getStorage().search("SELECT * FROM evento WHERE ? = ? ORDER BY ?", Ranking.VITORIAS.getTable(), event.getEvent().getEventName().toLowerCase(), Ranking.VITORIAS.getColuna());
 					int id = 0;
 					try
 					{
 						while (ranking.next()) // -- id | tipo | evento | index | mundo | localizacao
 						{
 							id++;
-							final ResultSet signs = EventoZero.getStorage().search("SELECT * FROM ? WHERE evento = ? AND tipo = 1 AND ? = ?", Ranking.VITÓRIAS.getTable(), event.getEvent().getEventName().toLowerCase(), "index", id);
+							final ResultSet signs = EventoZero.getStorage().search("SELECT * FROM ? WHERE evento = ? AND tipo = 1 AND ? = ?", Ranking.VITORIAS.getTable(), event.getEvent().getEventName().toLowerCase(), "index", id);
 							while (signs.next())
 							{
 								final String pos = signs.getString(6);
 								final Location loc = Framework.toLocation(pos);
-								final BlockStructure block = new BlockStructure(null, loc.getBlock(), event.getPlayer().getName(), event.getEventName(), Ranking.VITÓRIAS.getId(), event.getPlayerRankingPosition());
+								final BlockStructure block = new BlockStructure(null, loc.getBlock(), event.getPlayer().getName(), event.getEventName(), Ranking.VITORIAS.getId(), event.getPlayerRankingPosition());
 								block.update();
 							}
 						}

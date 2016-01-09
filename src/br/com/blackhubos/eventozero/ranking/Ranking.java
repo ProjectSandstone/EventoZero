@@ -26,7 +26,7 @@ import br.com.blackhubos.eventozero.storage.Storage;
 public enum Ranking implements Serializable
 {
 
-	VITÓRIAS("vitorias", 1), DERROTAS("derrotas", 2), MORTES("mortes", 3);
+	VITORIAS("vitorias", 1), DERROTAS("derrotas", 2), MORTES("mortes", 3);
 
 	private int id;
 	private String column;
@@ -53,7 +53,7 @@ public enum Ranking implements Serializable
 		{
 			case 1:
 			{
-				return VITÓRIAS.getColuna();
+				return VITORIAS.getColuna();
 			}
 
 			case 2:
@@ -68,7 +68,7 @@ public enum Ranking implements Serializable
 
 			default:
 			{
-				return VITÓRIAS.getColuna();
+				return VITORIAS.getColuna();
 			}
 		}
 	}
