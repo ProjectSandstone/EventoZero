@@ -40,7 +40,6 @@ public final class Jump extends Ability implements Listener {
         super("DoubleJump", cooldown);
         final EventoZero plugin = (EventoZero) Bukkit.getPluginManager().getPlugin("EventoZero");
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        AbilityHandler.loadAbility(this);
     }
 
     @Override
