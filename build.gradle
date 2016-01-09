@@ -1,0 +1,89 @@
+plugins {
+    id 'com.github.hierynomus.license' version '0.11.0'
+}
+
+group 'br.com.blackhubos'
+version '1.0.1'
+
+
+apply plugin: 'java'
+apply plugin: 'license'
+apply plugin: 'maven'
+apply plugin: 'eclipse' //Usuarios do eclipse
+
+defaultTasks 'licenseFormat', 'build', 'jar', 'uploadArchives'
+
+sourceCompatibility = 1.7
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/'
+        }        
+        resources {
+            srcDirs 'src/'
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'EventoZero',
+                'Implementation-Version': version
+    }
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+    mavenCentral()
+    maven {
+        name = 'Spigot MC'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+}
+
+dependencies {
+    compile group: 'org.bukkit', name: 'bukkit', version: '1.8.8-R0.1-SNAPSHOT'
+}
+
+test {
+    systemProperties 'property': 'value'
+}
+
+uploadArchives {
+    repositories {
+        flatDir {
+            dirs 'repos'
+        }
+    }
+
+}
+
+license {
+    ext.name = 'EventoZero'
+    ext.organization = 'BlackHub OS and contributors.'
+    ext.description = 'Advanced event factory and executor for Bukkit and Spigot.'
+    ext.url = 'https://github.com/BlackHubOS/EventoZero'
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+
+    // Arquivos para excluir da formatação da licença
+    exclude "**/*.info"
+    exclude "**/*.md"
+    exclude "**/*.yml"
+    exclude "**/*.sql"
+    exclude "**/*.cs"
+    exclude "res/**"
+
+    header file('LICENSE_HEADER')
+    
+    sourceSets = project.sourceSets
+    
+    ignoreFailures false
+    strictCheck true
+    
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
