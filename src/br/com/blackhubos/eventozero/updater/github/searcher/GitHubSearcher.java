@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -39,7 +40,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import br.com.blackhubos.eventozero.updater.assets.Asset;
 import br.com.blackhubos.eventozero.updater.assets.versions.Version;
@@ -61,7 +64,7 @@ public class GitHubSearcher implements Searcher {
      **/
     public static void main(String[] args) {
         GitHubSearcher gitHubSearcher = new GitHubSearcher();
-        gitHubSearcher.getLatestStableVersion();
+        System.out.println(gitHubSearcher.getLatestVersion().get().toString());
     }
 
     @Override
@@ -78,6 +81,24 @@ public class GitHubSearcher implements Searcher {
         } catch (IOException | ParseException | java.text.ParseException e) {
             e.printStackTrace();
         }
+        return Optional.absent();
+    }
+
+    @Override
+    public Optional<Version> getLatestVersionFor(String mcVersion) {
+        Objects.requireNonNull(mcVersion);
+        // Faz um loop em todas versões
+        for (Version version : getAllVersion()) {
+            // Faz um loop em todas versões suportadas
+            for (String supported : version.getSupportedVersions()) {
+                // Verifica se a versão do minecraft inicia com a versão suportada
+                if (mcVersion.startsWith(supported)) {
+                    // Retorna a versão
+                    return Optional.of(version);
+                }
+            }
+        }
+
         return Optional.absent();
     }
 
@@ -105,6 +126,26 @@ public class GitHubSearcher implements Searcher {
         } catch (IOException | ParseException | java.text.ParseException e) {
             e.printStackTrace();
         }
+        return Optional.absent();
+    }
+
+    @Override
+    public Optional<Version> getLatestStableVersionFor(String mcVersion) {
+        Objects.requireNonNull(mcVersion);
+        // Faz um loop em todas versões
+        for (Version version : getAllVersion()) {
+            // Pula a versão se ela não for estável
+            if (version.isCriticalBug() || version.isPreRelease()) continue;
+            // Faz um loop em todas versões suportadas
+            for (String supported : version.getSupportedVersions()) {
+                // Verifica se a versão do minecraft inicia com a versão suportada
+                if (mcVersion.startsWith(supported)) {
+                    // Retorna a versão
+                    return Optional.of(version);
+                }
+            }
+        }
+
         return Optional.absent();
     }
 
@@ -204,6 +245,7 @@ public class GitHubSearcher implements Searcher {
         long id = Long.MIN_VALUE;
         boolean criticalBug = false;
         boolean preRelease = false;
+        List<String> supportedVersions = new ArrayList<>();
         /**
          * /Variaveis do {@link Version}
          */
@@ -270,6 +312,22 @@ public class GitHubSearcher implements Searcher {
                     criticalBug = changelog.endsWith("!!!CRITICAL BUG FOUND!!!")
                             || changelog.endsWith("CRITICAL BUG FOUND")
                             || changelog.endsWith("CRITICAL BUG");
+
+                    // Regex para obter a linha que diz as versões suportadas
+                    Pattern supportedPattern = Pattern.compile("^(Versões|Supported)", Pattern.CASE_INSENSITIVE);
+
+                    // Faz loop nas linhas
+                    for (String line : changelog.split("\n")) {
+                        // Procura o regex na linha
+                        if (supportedPattern.matcher(line).find()) {
+                            // Remove as letras
+                            line = line.replaceAll("[^\\d. ]+", "").trim();
+                            // Adiciona a lista
+                            supportedVersions.addAll(Arrays.asList(line.split(" ")));
+                        }
+                    }
+
+
                     break;
                 }
 
@@ -302,13 +360,14 @@ public class GitHubSearcher implements Searcher {
         // Verifica se o ID é Diferente do valor minimo, isto vai fazer com que nós saibamos se alguma versão foi encontrada ou não :D
         if (id != Long.MIN_VALUE) {
             // Cria uma nova versão e adiciona a lista
-            Version versionInstance = new Version(name, version, downloadUrl, commitish, changelog, creationDate, publishDate, id, criticalBug, preRelease);
+            Version versionInstance = new Version(name, version, supportedVersions, downloadUrl, commitish, changelog, creationDate, publishDate, id, criticalBug, preRelease);
             versionList.add(versionInstance);
         }
     }
 
     /**
-     * Neste ENUM estão os valores que iremos obter, no momento são somente estes (nem sei porque tanto)
+     * Neste ENUM estão os valores que iremos obter, no momento são somente estes (nem sei porque
+     * tanto)
      */
     enum GitHubAPIInput {
         UNKNOWN, TAG_NAME, CREATED_AT, BODY,

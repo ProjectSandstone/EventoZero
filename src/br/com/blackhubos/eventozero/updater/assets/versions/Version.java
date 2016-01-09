@@ -35,6 +35,7 @@ public class Version implements Comparable<Version> {
     private final String version;
     private final String commitish;
     private final String changelog;
+    private final List<String> supportedVersions;
     private final Date creationDate;
     private final Date publishDate;
 
@@ -44,9 +45,10 @@ public class Version implements Comparable<Version> {
     private final boolean criticalBug;
     private final boolean preRelease;
 
-    public Version(String name, String version, Collection<Asset> assets, String commitish, String changelog, Date creationDate, Date publishDate, long id, boolean criticalBug, boolean preRelease) {
+    public Version(String name, String version, List<String> supportedVersions, Collection<Asset> assets, String commitish, String changelog, Date creationDate, Date publishDate, long id, boolean criticalBug, boolean preRelease) {
         this.name = name;
         this.version = version;
+        this.supportedVersions = supportedVersions;
         this.assets = assets;
         this.commitish = commitish;
         this.changelog = changelog;
@@ -100,6 +102,14 @@ public class Version implements Comparable<Version> {
      */
     public String getChangelog() {
         return changelog;
+    }
+
+    /**
+     * Retorna as versões suportadas
+     * @return As versões suportadas
+     */
+    public List<String> getSupportedVersions() {
+        return supportedVersions;
     }
 
     /**
@@ -162,6 +172,7 @@ public class Version implements Comparable<Version> {
                 .add("assets", this.assets)
                 .add("commitish", this.commitish)
                 .add("changelog", this.changelog)
+                .add("supportedVersions", this.supportedVersions)
                 .add("creationDate", this.creationDate)
                 .add("publishDate", this.publishDate)
                 .add("id", this.id)

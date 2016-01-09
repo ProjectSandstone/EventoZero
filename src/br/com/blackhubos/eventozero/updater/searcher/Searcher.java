@@ -34,27 +34,45 @@ public interface Searcher {
     Optional<Version> getLatestVersion();
 
     /**
+     * Buscar a ultima versão para uma versão especifica do Minecraft
+     *
+     * @return Versão ou {@link Optional#absent()} se não encontrar nenhuma
+     */
+    Optional<Version> getLatestVersionFor(String mcVersion);
+
+    /**
      * Buscar a ultima versão estável
+     *
      * @return Versão ou {@link Optional#absent()} se não encontrar nenhuma
      */
     Optional<Version> getLatestStableVersion();
 
     /**
+     * Buscar a ultima versão estável para uma versão especifica do Minecraft
+     *
+     * @return Versão ou {@link Optional#absent()} se não encontrar nenhuma
+     */
+    Optional<Version> getLatestStableVersionFor(String mcVersion);
+
+    /**
      * Buscar todas versões
+     *
      * @return Coleção de versões, ou lista vazia se não encontrar nenhuma
      */
     Collection<Version> getAllVersion();
 
     /**
      * Encontrar versão especifica
+     *
      * @param tag Nome da versão (tag)
      * @return Versão ou {@link Optional#absent()} se não encontrar nenhuma
      */
     Optional<Version> findVersion(String tag);
 
     /**
-     * Retorna o link onde o projeto está hospedado
-     * @return O link onde o projeto está hospedado
+     * Retorna o link onde as releases estão hospedadas
+     *
+     * @return O link onde as releases estão hospedadas
      */
     String getReleasesUrl();
 }

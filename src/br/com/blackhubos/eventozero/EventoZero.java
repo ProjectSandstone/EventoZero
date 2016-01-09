@@ -23,7 +23,10 @@ import br.com.blackhubos.eventozero.factory.EventFactory;
 import br.com.blackhubos.eventozero.factory.EventHandler;
 import java.io.File;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.InvalidDescriptionException;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.blackhubos.eventozero.handlers.KitHandler;
@@ -33,6 +36,7 @@ import br.com.blackhubos.eventozero.updater.Updater;
 import br.com.blackhubos.eventozero.util.Framework;
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
 import br.com.blackhubos.eventozero.util.Framework.LoggerManager;
+import br.com.blackhubos.eventozero.util.ThreadUtils;
 
 public final class EventoZero extends JavaPlugin
 {
@@ -74,7 +78,9 @@ public final class EventoZero extends JavaPlugin
 		EventoZero.shopHandler = new ShopHandler();
 		EventoZero.kitHandler = new KitHandler();
         EventoZero.eventHandler = new EventHandler();
-                
+
+		updater = new Updater(this, EventoZero.config_updater);
+
         EventFactory.loadEvents(this);
                 
         kitHandler.loadKits(this);
@@ -90,11 +96,14 @@ public final class EventoZero extends JavaPlugin
 
 		// Remove os listeners do plugin para ter melhor funcionamento com PluginManagers.
 		HandlerList.unregisterAll(this);
+
+		// Para todos threads registrados pelo ThreadUtils
+		ThreadUtils.stopAllThreads();
 	}
         
-        public static void consoleMessage(String message){
-            System.out.println("[EventoZero] " + message);
-        }
+	public static void consoleMessage(String message){
+		System.out.println("[EventoZero] " + message);
+	}
 
 	/**
 	 * Dentro da classe EventoZero há uma variável estática carregada no <code>onEnable()</code> que representa a configuração do plugin, aceitando e usando o formato/charset
@@ -133,13 +142,14 @@ public final class EventoZero extends JavaPlugin
 	{
 		return EventoZero.kitHandler;
 	}
-        /**
-         * 
-         * @return Retorna instancia {@link EventHandler}.
-         */
-        public static EventHandler getEventHandler(){
-                return EventoZero.eventHandler;
-        }
+
+	/**
+	 *
+	 * @return Retorna instancia {@link EventHandler}.
+	 */
+	public static EventHandler getEventHandler(){
+			return EventoZero.eventHandler;
+	}
 
 	/**
 	 * Dentro da classe EventoZero há uma variável estática carregada no <code>onEnable()</code> que representa a configuração do plugin, aceitando e usando o formato/charset
@@ -206,6 +216,31 @@ public final class EventoZero extends JavaPlugin
 	public static Storage getStorage()
 	{
 		return EventoZero.storage;
+	}
+
+	/**
+	 * Obtém o Atualizador, veja a documentação na classe {@link Updater}
+	 * @see Updater
+	 *
+	 * @return Instancia do atualizador.
+     */
+	public static Updater getUpdater() {
+		return updater;
+	}
+
+	/**
+	 * Obtém a instancia do {@link EventoZero}
+	 *
+	 * @return Obtém a instancia do {@link EventoZero}
+     */
+	public static EventoZero getInstance() {
+		try {
+			PluginDescriptionFile pluginDescriptionFile = new PluginDescriptionFile(EventoZero.class.getResourceAsStream("/plugin.yml"));
+			return (EventoZero) Bukkit.getPluginManager().getPlugin(pluginDescriptionFile.getName());
+		} catch (InvalidDescriptionException e) {
+			return null;
+		}
+
 	}
 
 }

@@ -46,7 +46,7 @@ public final class Jump extends Ability implements Listener {
     public boolean tryUse(final Player player) {
         Event event = EventoZero.getEventHandler().getEventByPlayer(player);
         if (this.canUse(player.getName()) && (event != null && (event.getAbilitys().contains(this) || (event.getPlayersRemaining().contains(player) && event.getEventData().getData(player.getName() + ".ability").equals(this))))) {
-            this.foceUse(player);
+            this.forceUse(player);
             this.updateTime(player.getName());
             return true;
         }
@@ -54,7 +54,7 @@ public final class Jump extends Ability implements Listener {
     }
 
     @Override
-    public void foceUse(final Player player) {
+    public void forceUse(final Player player) {
         player.setVelocity(new Vector(0, 0.5, 0));
         player.setFallDistance(-10);
     }
