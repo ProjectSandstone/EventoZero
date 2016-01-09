@@ -19,6 +19,7 @@
  */
 package br.com.blackhubos.eventozero.handlers;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Map.Entry;
 import java.util.Vector;
@@ -66,6 +67,11 @@ public enum MessageHandler
 	public String getDefault()
 	{
 		return this.padrao;
+	}
+
+	public static void loadMessages(final File file)
+	{
+		MessageRecipient.flatfile = new Configuration(file);
 	}
 
 	public final static class MessageRecipient implements Serializable
