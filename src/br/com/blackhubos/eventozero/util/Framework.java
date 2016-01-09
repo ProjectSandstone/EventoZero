@@ -897,10 +897,10 @@ public final class Framework
 	}
 
 	/**
-	 * Transforma um {@link Location} em um WorldEdit {@link BlockVector}.
+	 * Transforma um {@link Location} em um WorldEdit {@link com.sk89q.worldedit.BlockVector}.
 	 *
 	 * @param location O lugar a ser convertido
-	 * @return Retorna o Location em {@link BlockVector}.
+	 * @return Retorna o Location em {@link com.sk89q.worldedit.BlockVector}.
 	 */
 	public static com.sk89q.worldedit.BlockVector getWorldEditVector(final Location location)
 	{
@@ -1921,6 +1921,24 @@ public final class Framework
 		}
 
 	}
+
+	/**
+	 * Obtém a versão do minecraft
+	 *
+	 * @return Versão do minecraft
+	 * @throws RuntimeException Irá falhar caso não consiga determinar a versão
+	 */
+	public static String getMinecraftVersion() throws RuntimeException {
+		Pattern versionPattern = Pattern.compile(".*?\\(.*?([\\d. ]+)\\)");
+		String version = Bukkit.getVersion();
+		Matcher matcher = versionPattern.matcher(version);
+
+		if (matcher.matches()) {
+			return matcher.group(1).trim();
+		}
+		throw new RuntimeException(String.format("Não foi possivel determinar sua versão do Minecraft. (Versão do Bukkit: %s)", version));
+	}
+
 
 	/*
 	 * public static final class ItemFactory
