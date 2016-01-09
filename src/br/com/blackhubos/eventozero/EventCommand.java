@@ -20,12 +20,15 @@
 package br.com.blackhubos.eventozero;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Vector;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
 
 public abstract class EventCommand implements Serializable, CommandExecutor
 {
@@ -70,7 +73,22 @@ public abstract class EventCommand implements Serializable, CommandExecutor
 
 	public void register()
 	{
-		// TODO: registrar o comando e aliases
+		try {
+			Field bukkitCommandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+			bukkitCommandMapField.setAccessible(true);
+			SimpleCommandMap commandMap = (SimpleCommandMap) bukkitCommandMapField.get(Bukkit.getServer());
+			Command commandToRegister = new Command(command, commandDesc, "/" + command, aliases) {
+				@Override
+				public boolean execute(CommandSender sender, String label, String[] args) {
+					onCommand(sender, this, label, args);
+					return true;
+				}
+			};
+			commandMap.register("EventoZero", commandToRegister);
+		} catch (Exception e) {
+			// TODO: Log the exception xD
+			e.printStackTrace();
+		}
 	}
 
 	@Override
