@@ -61,12 +61,12 @@ public final class EventoZero extends JavaPlugin
 	{
 		new Framework(); // Apenas carrega o WorldGuard e WorldEdit
 		EventoZero.config = new Configuration(this, new File(this.getDataFolder(), "config.yml"));
-		EventoZero.config_rankings = new Configuration(this, new File(this.getDataFolder(), "rankings.yml"));
+		EventoZero.config_rankings = new Configuration(this, new File(this.getDataFolder(), "ranking.yml"));
 		EventoZero.config_points = new Configuration(this, new File(this.getDataFolder(), "points.yml"));
 		EventoZero.config_bans = new Configuration(this, new File(this.getDataFolder(), "bans.yml"));
 		EventoZero.config_signs = new Configuration(this, new File(this.getDataFolder(), "signs.yml"));
 		EventoZero.config_updater = new Configuration(this, new File(this.getDataFolder(), "updater.yml"));
-		EventoZero.config_messages = new Configuration(this, new File(this.getDataFolder(), "updater.yml"));
+		EventoZero.config_messages = new Configuration(this, new File(this.getDataFolder(), "mensagens.yml"));
 		EventoZero.logger = new LoggerManager<EventoZero>(this, new File(this.getDataFolder(), "logs")).init(EventoZero.config.getString("tasks.savelogs"));
 
 		for (final Configuration c : new Configuration[] { EventoZero.config, EventoZero.config_rankings, EventoZero.config_points, EventoZero.config_bans, EventoZero.config_signs, EventoZero.config_updater })
