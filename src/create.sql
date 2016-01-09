@@ -30,12 +30,14 @@ CREATE TABLE IF NOT EXISTS `{points}`
   PRIMARY KEY(`id`)
 )
 
--- id | evento | mundo | localização
+-- id | tipo | evento | index | mundo | localização
 CREATE TABLE IF NOT EXISTS `{signs}`
 (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
+  `tipo` INT NOT NULL DEFAULT 1,
   `evento` TEXT,
   `mundo` TEXT,
+  `index` INT NOT NULL DEFAULT 1,
   `localizacao` TEXT,
   PRIMARY KEY(`id`)
 )

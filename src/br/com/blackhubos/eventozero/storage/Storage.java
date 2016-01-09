@@ -116,6 +116,8 @@ public abstract class Storage
 	 */
 	public abstract boolean hasBackup(int id);
 
+	public abstract void createTables();
+
 	public static enum Module implements Serializable
 	{
 		// id | jogador | evento | vitorias | derrotas | dc | mortes

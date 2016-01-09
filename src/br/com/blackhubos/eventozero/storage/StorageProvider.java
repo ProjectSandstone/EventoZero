@@ -20,6 +20,7 @@
 package br.com.blackhubos.eventozero.storage;
 
 import java.sql.Date;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -316,6 +317,41 @@ public final class StorageProvider extends Storage
 	{
 
 		return false;
+	}
+
+	public static void main(final String[] args)
+	{
+		try
+		{
+			DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+		}
+		catch (final SQLException e)
+		{
+			e.printStackTrace();
+		}
+
+		final Storage s = new StorageProvider();
+		s.createTables();
+	}
+
+	@Override
+	public void createTables()
+	{
+		try
+		{
+			if (DatabaseConnection.getConnection() == null)
+			{
+				new DatabaseConnection("jdbc:mysql://blackhubos.com.br/blackhub_eventozero", "blackhub_ez", "10455889");
+			}
+
+			final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS rankings" + "(" + "  `id` INTEGER NOT NULL AUTO_INCREMENT," + "  `jogador` TEXT," + "  `evento` TEXT," + "  `vitorias` INT NOT NULL DEFAULT '0',poha" + "  `derrotas` INT NOT NULL DEFAULT '0'," + "  `dc` INT NOT NULL DEFAULT '0'," + "  `mortes` INT NOT NULL DEFAULT '0'," + "  PRIMARY KEY(`id`)" + ")");
+			ps.execute();
+			System.out.println("Tabela rankings criada com sucesso!");
+		}
+		catch (final SQLException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@Override

@@ -20,12 +20,10 @@ tasks:
 # Configurações de mysql.
 mysql:
   # Servidor do mysql (localhost = na própria máquina)
-  server: 'localhost'
+  server: 'blackhubos.com.br'
   # Nome da conta que tem acesso ao banco de dados
-  account: 'root'
+  account: 'blackhub_ez'
   # Senha da conta configurada acima
-  password: '12345@@'
+  password: '10455889'
   # Nome do banco de dados
-  database: 'eventozero'
-  # Deseja algum prefixo nas tabelas? Opcional.
-  prefix: 'ez_'
+  database: 'blackhub_eventozero'

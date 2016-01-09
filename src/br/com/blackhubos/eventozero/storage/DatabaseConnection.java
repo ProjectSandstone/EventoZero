@@ -37,16 +37,6 @@ public final class DatabaseConnection
 
 	public DatabaseConnection(final String hosting, final String root, final String password)
 	{
-		try
-		{
-			Class.forName("com.mysql.jdbc.Driver");
-		}
-		catch (final ClassNotFoundException e)
-		{
-			System.out.println("[EventoZero] Driver de MySQL não encontrado [com.mysql.jdbc.Driver]!");
-			return;
-		}
-
 		DatabaseConnection.user = root;
 		DatabaseConnection.password = password;
 		DatabaseConnection.hosting = hosting;
@@ -79,7 +69,16 @@ public final class DatabaseConnection
 			}
 		}
 
-		conn = new ConnectionSide(DriverManager.getConnection(DatabaseConnection.hosting, DatabaseConnection.user, DatabaseConnection.password));
+		try
+		{
+			DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+		}
+		catch (final SQLException e)
+		{
+			e.printStackTrace();
+		}
+		final Connection c = DriverManager.getConnection(DatabaseConnection.hosting, DatabaseConnection.user, DatabaseConnection.password);
+		conn = new ConnectionSide(c);
 		conn.riuinr();
 		if (!conn.isValid())
 		{
