@@ -8,6 +8,8 @@ package br.com.blackhubos.eventozero.handlers;
 import br.com.blackhubos.eventozero.ability.Ability;
 import java.util.Vector;
 
+import com.google.common.base.Optional;
+
 /**
  *
  * @author Hugo
@@ -16,17 +18,17 @@ public class AbilityHandler {
 
     public static final Vector<Ability> abilitys = new Vector<>();
 
-    public static Ability getAbilityByName(String name){
+    public static Optional<Ability> getAbilityByName(String name){
         for(Ability ability : abilitys){
             if(ability.getName().equals(name)){
-                return ability;
+                return Optional.of(ability);
             }
         }
-        return null;
+        return Optional.absent();
     }
     
     public static boolean hasAbilityByName(String name){
-        return (getAbilityByName(name) != null);
+        return getAbilityByName(name).isPresent();
     }
     
     public static void loadAbility(Ability ability) {

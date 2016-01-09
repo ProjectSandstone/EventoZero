@@ -84,7 +84,7 @@ public final class EventFactory {
         final Vector<Ability> vector = new Vector<>();
         for(String loop: list){
             if(AbilityHandler.hasAbilityByName(loop)){
-                vector.add(AbilityHandler.getAbilityByName(loop));
+                vector.add(AbilityHandler.getAbilityByName(loop).get());
             }
         }
         return vector;

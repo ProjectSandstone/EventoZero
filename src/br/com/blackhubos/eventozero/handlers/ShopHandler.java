@@ -44,8 +44,8 @@ public class ShopHandler {
         for (final String key : configuration.getConfigurationSection("shops").getKeys(false)) {
             final Shop shop = new Shop(configuration.getString("shops." + key + ".name"), new ItemFactory(configuration.getString("shops." + key + ".icon"), null).getPreparedItem());
             for (final String s : configuration.getStringList("shops." + key + ".items")) {
-                if (EventoZero.getKitHandler().getKitByName(s.replace("{|}", "")) != null) {
-                    shop.addItem(EventoZero.getKitHandler().getKitByName(s.replace("{|}", "")));
+                if (EventoZero.getKitHandler().getKitByName(s.replace("{|}", "")).isPresent()) {
+                    shop.addItem(EventoZero.getKitHandler().getKitByName(s.replace("{|}", "")).get());
                 } else {
                     shop.addItem(new ShopItem(s.replace("{|}", ""), new ItemFactory(configuration.getString("shops." + key + ".items_shop." + s.replace("{|}", "") + ".icon"), null).getPreparedItem()).updatePrice(configuration.getInt("shops." + key + ".items_shop." + s.replace("{|}", "") + ".price")));
                 }
