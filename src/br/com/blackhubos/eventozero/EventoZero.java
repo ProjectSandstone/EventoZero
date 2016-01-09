@@ -59,6 +59,7 @@ public final class EventoZero extends JavaPlugin
 	@Override
 	public void onEnable()
 	{
+
 		new Framework(); // Apenas carrega o WorldGuard e WorldEdit
 		EventoZero.config = new Configuration(this, new File(this.getDataFolder(), "config.yml"));
 		EventoZero.config_rankings = new Configuration(this, new File(this.getDataFolder(), "ranking.yml"));
