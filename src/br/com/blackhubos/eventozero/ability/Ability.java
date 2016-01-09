@@ -23,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.bukkit.entity.Player;
 
+import br.com.blackhubos.eventozero.handlers.AbilityHandler;
+
 public abstract class Ability {
 
     private final String name;
@@ -34,6 +36,8 @@ public abstract class Ability {
         this.name = name;
         this.cooldown = cooldown;
         this.cooldowns = new ConcurrentHashMap<>();
+        
+        AbilityHandler.loadAbility(this);
     }
 
     public String getName() {
