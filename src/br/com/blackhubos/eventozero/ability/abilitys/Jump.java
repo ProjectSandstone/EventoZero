@@ -36,11 +36,9 @@ import br.com.blackhubos.eventozero.handlers.AbilityHandler;
 
 public final class Jump extends Ability implements Listener {
 
-    private final EventoZero plugin;
-
     public Jump(final long cooldown) {
         super("DoubleJump", cooldown);
-        plugin = (EventoZero) Bukkit.getPluginManager().getPlugin("EventoZero");
+        final EventoZero plugin = (EventoZero) Bukkit.getPluginManager().getPlugin("EventoZero");
         Bukkit.getPluginManager().registerEvents(this, plugin);
         AbilityHandler.loadAbility(this);
     }
@@ -63,7 +61,7 @@ public final class Jump extends Ability implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-    public void onTogle(PlayerMoveEvent event) {
+    public void onToggle(PlayerMoveEvent event) {
         Location locationTo = event.getTo();
         Location locationFrom = event.getFrom();
         if (locationTo.getBlockY() > locationFrom.getBlockY() && (locationTo.getBlock().getType() == Material.AIR)) {
