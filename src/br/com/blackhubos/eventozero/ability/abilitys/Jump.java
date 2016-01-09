@@ -32,13 +32,12 @@ import org.bukkit.util.Vector;
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.ability.Ability;
 import br.com.blackhubos.eventozero.factory.Event;
-import br.com.blackhubos.eventozero.handlers.AbilityHandler;
 
 public final class Jump extends Ability implements Listener {
 
     public Jump(final long cooldown) {
         super("DoubleJump", cooldown);
-        final EventoZero plugin = (EventoZero) Bukkit.getPluginManager().getPlugin("EventoZero");
+        final EventoZero plugin = EventoZero.getInstance();
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
