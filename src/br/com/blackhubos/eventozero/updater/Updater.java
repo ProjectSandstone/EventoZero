@@ -59,12 +59,22 @@ public class Updater implements CallBack<File> {
 
     private final EventoZero plugin;
     private final Logger logger;
+
+    // Definição 'Auto Install Updates'
     private final boolean auto_install;
+
+    // Definição 'Debug All Messages'
     private final boolean debug;
-    // Definição AutoCheck Updates
+
+    // Definição 'AutoCheck Updates'
     private final boolean enable;
+
+    // Definição 'Updates directory'
     private final File updates;
+
+    // Definição 'Old version directory'
     private final File oldDir;
+
     private final AtomicReference<UpdaterCache> updaterCache = new AtomicReference<>();
     private Optional<Version> current;
     private Downloader downloader;
@@ -285,6 +295,27 @@ public class Updater implements CallBack<File> {
                 }
             }
         }).start();
+    }
+
+    /**
+     * Aplica as atualizações (utilize somente caso não saiba qual o arquivo de atualização)
+     */
+    public synchronized void applyUpdate() {
+        // Verifica se o arquivo baixado não é nulo
+        if(downloadedFile != null){
+            // Se não for aplica ele como o arquivo de atualização
+            applyUpdate(downloadedFile);
+        } else {
+            // Caso seja nullo procura todas atualizações no diretorio de atualizações e aplica elas
+            File[] files = updates.listFiles();
+            if(files != null) {
+                for(File currentFile : files) {
+                    if(!currentFile.isDirectory()) {
+                        applyUpdate(currentFile);
+                    }
+                }
+            }
+        }
     }
 
     /**
