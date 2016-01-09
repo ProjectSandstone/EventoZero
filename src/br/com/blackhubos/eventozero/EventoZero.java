@@ -19,8 +19,6 @@
  */
 package br.com.blackhubos.eventozero;
 
-import br.com.blackhubos.eventozero.factory.EventFactory;
-import br.com.blackhubos.eventozero.factory.EventHandler;
 import java.io.File;
 
 import org.bukkit.Bukkit;
@@ -29,7 +27,10 @@ import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import br.com.blackhubos.eventozero.factory.EventFactory;
+import br.com.blackhubos.eventozero.factory.EventHandler;
 import br.com.blackhubos.eventozero.handlers.KitHandler;
+import br.com.blackhubos.eventozero.handlers.MessageHandler;
 import br.com.blackhubos.eventozero.handlers.ShopHandler;
 import br.com.blackhubos.eventozero.storage.Storage;
 import br.com.blackhubos.eventozero.updater.Updater;
@@ -48,9 +49,9 @@ public final class EventoZero extends JavaPlugin
 	private static Configuration config_bans = null;
 	private static Configuration config_signs = null;
 	private static Configuration config_updater = null;
+	private static Configuration config_messages = null;
 	private static Storage storage = null;
 	private static Updater updater = null;
-
 	private static ShopHandler shopHandler;
 	private static KitHandler kitHandler;
 	private static EventHandler eventHandler;
@@ -65,6 +66,7 @@ public final class EventoZero extends JavaPlugin
 		EventoZero.config_bans = new Configuration(this, new File(this.getDataFolder(), "bans.yml"));
 		EventoZero.config_signs = new Configuration(this, new File(this.getDataFolder(), "signs.yml"));
 		EventoZero.config_updater = new Configuration(this, new File(this.getDataFolder(), "updater.yml"));
+		EventoZero.config_messages = new Configuration(this, new File(this.getDataFolder(), "updater.yml"));
 		EventoZero.logger = new LoggerManager<EventoZero>(this, new File(this.getDataFolder(), "logs")).init(EventoZero.config.getString("tasks.savelogs"));
 
 		for (final Configuration c : new Configuration[] { EventoZero.config, EventoZero.config_rankings, EventoZero.config_points, EventoZero.config_bans, EventoZero.config_signs, EventoZero.config_updater })
@@ -77,14 +79,12 @@ public final class EventoZero extends JavaPlugin
 
 		EventoZero.shopHandler = new ShopHandler();
 		EventoZero.kitHandler = new KitHandler();
-        EventoZero.eventHandler = new EventHandler();
-
-		updater = new Updater(this, EventoZero.config_updater);
-
-        EventFactory.loadEvents(this);
-                
-        kitHandler.loadKits(this);
-        shopHandler.loadShops(this);
+		EventoZero.eventHandler = new EventHandler();
+		EventoZero.updater = new Updater(this, EventoZero.config_updater);
+		EventFactory.loadEvents(this);
+		MessageHandler.loadMessages(EventoZero.config_messages);
+		EventoZero.kitHandler.loadKits(this);
+		EventoZero.shopHandler.loadShops(this);
 
 	}
 
@@ -100,8 +100,9 @@ public final class EventoZero extends JavaPlugin
 		// Para todos threads registrados pelo ThreadUtils
 		ThreadUtils.stopAllThreads();
 	}
-        
-	public static void consoleMessage(String message){
+
+	public static void consoleMessage(final String message)
+	{
 		System.out.println("[EventoZero] " + message);
 	}
 
@@ -147,8 +148,9 @@ public final class EventoZero extends JavaPlugin
 	 *
 	 * @return Retorna instancia {@link EventHandler}.
 	 */
-	public static EventHandler getEventHandler(){
-			return EventoZero.eventHandler;
+	public static EventHandler getEventHandler()
+	{
+		return EventoZero.eventHandler;
 	}
 
 	/**
@@ -220,24 +222,30 @@ public final class EventoZero extends JavaPlugin
 
 	/**
 	 * Obtém o Atualizador, veja a documentação na classe {@link Updater}
+	 *
 	 * @see Updater
 	 *
 	 * @return Instancia do atualizador.
-     */
-	public static Updater getUpdater() {
-		return updater;
+	 */
+	public static Updater getUpdater()
+	{
+		return EventoZero.updater;
 	}
 
 	/**
 	 * Obtém a instancia do {@link EventoZero}
 	 *
 	 * @return Obtém a instancia do {@link EventoZero}
-     */
-	public static EventoZero getInstance() {
-		try {
-			PluginDescriptionFile pluginDescriptionFile = new PluginDescriptionFile(EventoZero.class.getResourceAsStream("/plugin.yml"));
+	 */
+	public static EventoZero getInstance()
+	{
+		try
+		{
+			final PluginDescriptionFile pluginDescriptionFile = new PluginDescriptionFile(EventoZero.class.getResourceAsStream("/plugin.yml"));
 			return (EventoZero) Bukkit.getPluginManager().getPlugin(pluginDescriptionFile.getName());
-		} catch (InvalidDescriptionException e) {
+		}
+		catch (final InvalidDescriptionException e)
+		{
 			return null;
 		}
 

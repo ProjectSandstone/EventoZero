@@ -68,6 +68,11 @@ public enum MessageHandler
 		return this.padrao;
 	}
 
+	public static void loadMessages(final Configuration file)
+	{
+		MessageRecipient.flatfile = file;
+	}
+
 	public final static class MessageRecipient implements Serializable
 	{
 
