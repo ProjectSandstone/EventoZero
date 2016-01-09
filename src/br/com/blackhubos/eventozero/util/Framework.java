@@ -1928,17 +1928,18 @@ public final class Framework
 	 * @return Versão do minecraft
 	 * @throws RuntimeException Irá falhar caso não consiga determinar a versão
 	 */
-	public static String getMinecraftVersion() throws RuntimeException {
-		Pattern versionPattern = Pattern.compile(".*?\\(.*?([\\d. ]+)\\)");
-		String version = Bukkit.getVersion();
-		Matcher matcher = versionPattern.matcher(version);
+	public static String getMinecraftVersion() throws RuntimeException
+	{
+		final Pattern versionPattern = Pattern.compile(".*?\\(.*?([\\d. ]+)\\)");
+		final String version = Bukkit.getVersion();
+		final Matcher matcher = versionPattern.matcher(version);
 
-		if (matcher.matches()) {
+		if (matcher.matches())
+		{
 			return matcher.group(1).trim();
 		}
 		throw new RuntimeException(String.format("Não foi possivel determinar sua versão do Minecraft. (Versão do Bukkit: %s)", version));
 	}
-
 
 	/*
 	 * public static final class ItemFactory
