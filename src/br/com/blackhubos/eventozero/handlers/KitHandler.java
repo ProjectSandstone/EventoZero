@@ -61,9 +61,8 @@ public final class KitHandler {
             
             Optional<Ability> ability = AbilityHandler.getAbilityByName(configuration.getString("kits." + key + ".ability"));
             
-            if (ability.isPresent())
-            {
-                kit.updateAbility(ability.get()).
+            if (ability.isPresent()) {
+            	kit.updateAbility(ability.get()).
                 setArmorContents(3, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.helmet"), null).getPreparedItem()).
                 setArmorContents(2, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.armor"), null).getPreparedItem()).
                 setArmorContents(1, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.leggings"), null).getPreparedItem()).
