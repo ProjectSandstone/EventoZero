@@ -22,6 +22,10 @@ build:
     # http://devcenter.wercker.com/docs/steps/index.html
   steps:
     - script:
-        name: echo
+        name: Refresh dependencies
         code: |
-          echo "hello world!"
+          ./gradle --refresh-dependencies
+    - script:
+        name: Build
+        code: |
+          ./gradle
