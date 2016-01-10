@@ -111,7 +111,11 @@ public final class PlayerRankingUpdateEvent extends Event implements Cancellable
 	@Override
 	public HandlerList getHandlers()
 	{
-		return PlayerRankingUpdateEvent.handler;
+		return handler;
 	}
 
+	public static HandlerList getHandlerList() 
+	{
+		return handler;
+	}
 }
