@@ -24,7 +24,10 @@ sourceSets {
 jar {
     manifest {
         attributes 'Implementation-Title': 'EventoZero',
-                'Implementation-Version': version
+                'Implementation-Version': version,
+                'Created-By': 'BlackHub OS',
+                'Application-Description' : 'Advanced event factory and executor for Bukkit and Spigot',
+                'Repositories': 'https://github.com/BlackHubOS/EventoZero/'
     }
 }
 

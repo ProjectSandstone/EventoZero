@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Name: EventoZero
-Created-By: BlackHub OS
-Application-Description: Advanced event factory and executor for Bukkit and Spigot
-Application-Version: 1.0.1
-Repositories: https://github.com/BlackHubOS/EventoZero/
