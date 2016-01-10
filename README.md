@@ -1,4 +1,4 @@
-# EventoZero
+# EventoZero [![wercker status](https://app.wercker.com/status/784a7a95687e37d44267da91f89927f5/s/master)](https://app.wercker.com/project/bykey/784a7a95687e37d44267da91f89927f5)
 O EventoZero é um plugin/sistema que permite a criação, execução e participação de eventos/games dentro do Minecraft. Ele está sendo desenvolvido pelas implementações Bukkit e Spigot, futuramente implementaremos via SpongePowered. Com ele, você poderá fazer vários eventos e o que mais poderá limitá-lo é sua própria criatividade.
 
 #### Recursos
