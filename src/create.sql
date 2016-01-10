@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `{rankings}`
   `id` INTEGER NOT NULL AUTO_INCREMENT,
   `jogador` TEXT,
   `evento` TEXT,
-  `vitorias` INT NOT NULL DEFAULT '0',
+  `vitorias` INT NOT NULL DEFAULT '0',poha
   `derrotas` INT NOT NULL DEFAULT '0',
   `dc` INT NOT NULL DEFAULT '0',
   `mortes` INT NOT NULL DEFAULT '0',
