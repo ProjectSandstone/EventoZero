@@ -94,7 +94,7 @@ public final class ItemFactory
 	/**
 	 * Processa potion(speed,5,60), porém, potion pode ser 'potion', 'pots', 'poções' ou 'poção'.
 	 */
-	private static final Pattern pattern_pots = Pattern.compile("(?:pots|poções|poção|potion|pot)\\s*(?:\\{)\\s*([a-zA-Z0-9_-\\,\\s]+)\\}", Pattern.CASE_INSENSITIVE);
+	private static final Pattern pattern_pots = Pattern.compile("(?:pots|poções|poção|potion|pot)\\s*(?:\\{)\\s*([a-zA-Z0-9_\\-,\\s]+)\\}", Pattern.CASE_INSENSITIVE);
 
 	/**
 	 * Processa parte interna do potion ('speed,2,60 strength,2,60') ignore as aspas.
