@@ -20,18 +20,24 @@
 package br.com.blackhubos.eventozero;
 
 import java.io.File;
+import java.util.Optional;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import br.com.blackhubos.eventozero.factory.Event;
 import br.com.blackhubos.eventozero.factory.EventFactory;
 import br.com.blackhubos.eventozero.factory.EventHandler;
+import br.com.blackhubos.eventozero.factory.EventState;
 import br.com.blackhubos.eventozero.handlers.KitHandler;
 import br.com.blackhubos.eventozero.handlers.MessageHandler;
 import br.com.blackhubos.eventozero.handlers.ShopHandler;
+import br.com.blackhubos.eventozero.ranking.RankingListener;
 import br.com.blackhubos.eventozero.storage.Storage;
 import br.com.blackhubos.eventozero.updater.Updater;
 import br.com.blackhubos.eventozero.util.Framework;
@@ -87,6 +93,7 @@ public final class EventoZero extends JavaPlugin
 		EventoZero.kitHandler.loadKits(this);
 		EventoZero.shopHandler.loadShops(this);
 
+		this.getServer().getPluginManager().registerEvents(new RankingListener(), this);
 	}
 
 	@Override
@@ -250,6 +257,126 @@ public final class EventoZero extends JavaPlugin
 			return null;
 		}
 
+	}
+
+	@Override
+	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args)
+	{
+		if (command.getName().equalsIgnoreCase("eventozero"))
+		{
+			if (sender.hasPermission("eventozero.admin"))
+			{
+				if (args.length == 0)
+				{
+					return this.showHelpTopic(sender, 1);
+				}
+				else if ((args.length == 1) && Framework.tryInt(args[0], 1, 5))
+				{
+					return this.showHelpTopic(sender, Integer.parseInt(args[0]));
+				}
+				else
+				{
+					if (args[0].equalsIgnoreCase("iniciar"))
+					{
+						if (args.length == 2)
+						{
+							final String name = Framework.normalize(args[1].toLowerCase());
+							final Optional<Event> event = EventoZero.getEventHandler().getEventByName(name);
+							if (event.isPresent())
+							{
+								if (event.get().getEventState() == EventState.CLOSED) // TODO: verificar se esse 'CLOSED' esta dentro da minha logica
+								{
+									// TODO: iniciar evento
+								}
+							}
+							else
+							{
+								// TODO: trocar esse 'event_annoucement_cancelled', botei so para testar o metodo do enum
+								MessageHandler.EVENT_ANNOUNCEMENT_CANCELLED.send(new CommandSender[] { sender });
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private boolean showHelpTopic(final CommandSender sender, final int page)
+	{
+		if (page == 1)
+		{
+			sender.sendMessage("§2[EventoZero] §aComandos do Sistema (Página 0" + page + "):");
+			sender.sendMessage("§2• §a/ez iniciar <evento> §2= Iniciar um evento manualmente");
+			sender.sendMessage("§2• §a/ez cancelar <evento> §2= Cancela um evento ocorrendo");
+			sender.sendMessage("§2• §a/ez add entrada <evento> §2= Adiciona uma nova entrada");
+			sender.sendMessage("§2• §a/ez del entrada <evento> <id> §2= Remove uma entrada");
+			sender.sendMessage("§2• §a/ez entradas <evento> §2= Obtém as entradas e suas IDs");
+			sender.sendMessage("§22 §a/ez camarote <evento> §2= Adiciona um novo camarote");
+			sender.sendMessage("§2• §a/ez pvp <evento> <allow/deny> §2= Define o status de pvp");
+			sender.sendMessage("§2• §a/ez mc <evento> <allow/deny> §2= Bloqueia ou permite MC");
+			sender.sendMessage("§2• §a/ez tools §2= Abre a caixa de ferramentas do eventozero");
+			sender.sendMessage("§2Para mais comandos utilize §a/ez help 2§2.");
+		}
+		else if (page == 2)
+		{
+			sender.sendMessage("§2[EventoZero] §aComandos do Sistema (Página 0" + page + "):");
+			sender.sendMessage("§2• §a/ez cmd -b <evento> <comando> §2= Bloquear um comando");
+			sender.sendMessage("§2• §a/ez cmd -r <evento> <comando> §2= Remover um comando bloqueado");
+			sender.sendMessage("§2• §a/ez cmd -c <evento> §2= Limpar comandos bloqueados");
+			sender.sendMessage("§2• §a/ez cmd -l <evento> §2= Ver a lista de comandos bloqueados");
+			sender.sendMessage("§2• §a/ez potion -b <evento> <id> §2= Bloquear uma poção no evento");
+			sender.sendMessage("§2• §a/ez potion -r <evento> <id> §2= Remover uma poção bloqueada");
+			sender.sendMessage("§2• §a/ez potion -c <evento> §2= Limpar pots bloqueados");
+			sender.sendMessage("§2• §a/ez potion -l <evento> §2= Ver lista de pots bloqueadas");
+			sender.sendMessage("§2• §a/ez potion -ids §2= Obter os IDs das poções do jogo");
+			sender.sendMessage("§2Para mais comandos utilize §a/ez help 2§3.");
+		}
+		else if (page == 3)
+		{
+			sender.sendMessage("§2[EventoZero] §aComandos do Sistema (Página 0" + page + "):");
+			sender.sendMessage("§2• §a/ez kit -p <evento> <nome> §2= Permitir que um kit possa ser usado");
+			sender.sendMessage("§2• §a/ez kit -b <evento> <nome> §2= Bloquear que um kit possa ser usado");
+			sender.sendMessage("§2• §a/ez kit -l <evento> §2= Visualizar kits permitidos e bloqueados");
+			sender.sendMessage("§2• §a/ez kit -c <evento> §2= Limpar dados de kits do evento");
+			sender.sendMessage("§2• §a/ez kit -r <nome> §2= Remover um kit do plugin (apaga totalmente)");
+			sender.sendMessage("§2• §a/ez kit price <valor> §2= Modifica o preço de um kit");
+			sender.sendMessage("§2• §a/ez kit armor <valor> §2= Define a armadura do kit como a que você está usando");
+			sender.sendMessage("§2• §a/ez kit contents <valor> §2= Define os itens do kit como os que você tem no inventário");
+			sender.sendMessage("§2Para mais comandos utilize §a/ez help 2§4.");
+		}
+		else if (page == 4)
+		{
+			sender.sendMessage("§2[EventoZero] §aComandos do Sistema (Página 0" + page + "):");
+			sender.sendMessage("§2• §a/ez party -e <evento> §2= Ativa as partys no evento");
+			sender.sendMessage("§2• §a/ez party -d <evento> §2= Desativa partys no evento");
+			sender.sendMessage("§2• §a/ez party -l <evento> <quantia> §2= Define a quantia máxima de jogadores por party");
+			sender.sendMessage("§2• §a/ez max <evento> <quantia> §2= Define o número máximo de jogadores (autoinicia)");
+			sender.sendMessage("§2• §a/ez min <evento> <quantia> §2= Define o número mínimo de jogadores para poder iniciar o evento");
+			sender.sendMessage("§2• §a/ez autostop <evento> <tempo> §2= Define o tempo para terminar o evento se não houver ganhadores.");
+			sender.sendMessage("§2• §a/ez setengine <evento> <arquivo.sc> §2= Definir uma engine para um evento");
+			sender.sendMessage("§2• §a/ez placements <evento> <quantia> §2= Define o limite de colocações");
+			sender.sendMessage("§2Para mais comandos utilize §a/ez help 2§5.");
+		}
+		else if (page == 5)
+		{
+			sender.sendMessage("§2[EventoZero] §aComandos do Sistema (Página 0" + page + "):");
+			sender.sendMessage("§2• §a/ez points add <player> <quantia> §2= Creditar pontos à um jogador");
+			sender.sendMessage("§2• §a/ez points rem <player> <quantia> §2= Debitar pontos de um jogador");
+			sender.sendMessage("§2• §a/ez points set <player> <quantia> §2= Modificar pontos de um jogador");
+			sender.sendMessage("§2• §a/ez points coins <quantia> §2= Define quanto 01 ponto vale em coins");
+			sender.sendMessage("§2• §a/ez updates §2= Apenas verifica se há novos updats");
+			sender.sendMessage("§2• §a/ez upgrade §2= Verifica e aplica o update automaticamente se existir");
+			sender.sendMessage("§2• §a/ez reload §2= Faz reload completo no plugin");
+			sender.sendMessage("§2• §a/ez disable §2= Desativa o plugin completamente");
+		}
+		else
+		{
+			sender.sendMessage("§cPara visualizar os comandos disponíveis, utilize §4/ez help§c.");
+		}
+
+		return true;
 	}
 
 }
