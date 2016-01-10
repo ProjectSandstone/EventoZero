@@ -68,6 +68,14 @@ public enum MessageHandler
 		return this.padrao;
 	}
 
+	public void send(final CommandSender[] players, final String... replacements)
+	{
+		for (final CommandSender player : players)
+		{
+			new MessageRecipient(this.getKey()).sendMessage(player, replacements);
+		}
+	}
+
 	public static void loadMessages(final Configuration file)
 	{
 		MessageRecipient.flatfile = file;
