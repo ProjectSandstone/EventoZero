@@ -19,8 +19,6 @@
  */
 package br.com.blackhubos.eventozero.updater.github.searcher;
 
-import com.google.common.base.Optional;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -41,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -81,7 +80,7 @@ public class GitHubSearcher implements Searcher {
         } catch (IOException | ParseException | java.text.ParseException e) {
             e.printStackTrace();
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override
@@ -99,7 +98,7 @@ public class GitHubSearcher implements Searcher {
             }
         }
 
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override
@@ -107,7 +106,7 @@ public class GitHubSearcher implements Searcher {
 
         try {
             // Conecta ao URL de todas versões
-            Optional<Collection<Version>> versions = connect(Optional.<String>absent());
+            Optional<Collection<Version>> versions = connect(Optional.empty());
 
             // Verifica se encontrou alguma (NullPointerException jamais)
             if (versions.isPresent()) {
@@ -126,7 +125,7 @@ public class GitHubSearcher implements Searcher {
         } catch (IOException | ParseException | java.text.ParseException e) {
             e.printStackTrace();
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override
@@ -146,14 +145,14 @@ public class GitHubSearcher implements Searcher {
             }
         }
 
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override
     public Collection<Version> getAllVersion() {
         try {
             // Conecta ao URL de todas versões
-            Optional<Collection<Version>> versions = connect(Optional.<String>absent());
+            Optional<Collection<Version>> versions = connect(Optional.empty());
 
             // Verifica se encontrou alguma (NullPointerException não sentirei saudades)
             if (versions.isPresent()) {
@@ -182,7 +181,7 @@ public class GitHubSearcher implements Searcher {
         } catch (IOException | ParseException | java.text.ParseException ignored) {
         }
         // Retorna uma lista vazia caso não encontre a versão informada
-        return Optional.absent();
+        return Optional.empty();
     }
 
     @Override
@@ -227,7 +226,7 @@ public class GitHubSearcher implements Searcher {
             processJsonObject((JSONObject) array, multiFormatter, versionList);
         }
 
-        return (!versionList.isEmpty() ? Optional.of(versionList) : Optional.<Collection<Version>>absent());
+        return (!versionList.isEmpty() ? Optional.of(versionList) : Optional.empty());
     }
 
     @SuppressWarnings("unchecked")

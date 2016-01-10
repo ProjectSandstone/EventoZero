@@ -20,12 +20,12 @@
 package br.com.blackhubos.eventozero.updater.assets;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 
 import org.json.simple.JSONObject;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import br.com.blackhubos.eventozero.updater.assets.uploader.Uploader;
@@ -97,9 +97,9 @@ public class Asset implements Parser<JSONObject, Asset> {
 
         AssetState state = null;
 
-        Optional<String> label = Optional.absent();
+        Optional<String> label = Optional.empty();
 
-        Optional<Uploader> uploader = Optional.absent();
+        Optional<Uploader> uploader = Optional.empty();
         // Obtem todos valores do JSON
         for (Map.Entry entries : (Set<Map.Entry>) jsonObject.entrySet()) {
 
@@ -157,7 +157,7 @@ public class Asset implements Parser<JSONObject, Asset> {
                 case LABEL: {
                     /** Rótulo (se houver, caso contrário, {@link Optional#absent()}  **/
                     if (value == null) {
-                        label = Optional.absent();
+                        label = Optional.empty();
                     } else {
                         label = Optional.of(valueString);
                     }
@@ -189,7 +189,7 @@ public class Asset implements Parser<JSONObject, Asset> {
 
         if (id == Long.MIN_VALUE) {
             // Retorna um optional de valor ausente se não for encontrado o Asset.
-            return Optional.absent();
+            return Optional.empty();
         }
 
         // Cria um novo Asset
@@ -274,16 +274,16 @@ public class Asset implements Parser<JSONObject, Asset> {
     }
 
     /**
-     * Retorna o rótulo, se existir, caso contrário {@link Optional#absent()}
-     * @return O rótulo, se existir, caso contrário {@link Optional#absent()}
+     * Retorna o rótulo, se existir, caso contrário {@link Optional#empty()}
+     * @return O rótulo, se existir, caso contrário {@link Optional#empty()}
      */
     public Optional<String> getLabel() {
         return label;
     }
 
     /**
-     * Retorna quem enviou, se existir, caso contrário {@link Optional#absent()}
-     * @return Quem enviou, se existir, caso contrário {@link Optional#absent()}
+     * Retorna quem enviou, se existir, caso contrário {@link Optional#empty()}
+     * @return Quem enviou, se existir, caso contrário {@link Optional#empty()}
      */
     public Optional<Uploader> getUploader() {
         return uploader;

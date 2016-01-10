@@ -19,10 +19,9 @@
  */
 package br.com.blackhubos.eventozero.updater.github.formatter;
 
-import com.google.common.base.Optional;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import br.com.blackhubos.eventozero.updater.formater.TypeFormatter;
@@ -77,7 +76,7 @@ public class GitHubDateFormatter implements TypeFormatter<Date> {
 
     @Override
     public Optional<Date> formatType(Object objectToFormat) {
-        return Optional.fromNullable(unsecuredFormatType(objectToFormat));
+        return Optional.ofNullable(unsecuredFormatType(objectToFormat));
     }
 
     @Override

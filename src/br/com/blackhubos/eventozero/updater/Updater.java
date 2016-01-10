@@ -19,8 +19,6 @@
  */
 package br.com.blackhubos.eventozero.updater;
 
-import com.google.common.base.Optional;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -30,7 +28,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import br.com.blackhubos.eventozero.EventoZero;
@@ -46,7 +46,7 @@ import br.com.blackhubos.eventozero.util.ThreadUtils;
  * Classe que irá atualizar tudo Alguns processos são automaticos então leia a documentação com
  * muita atenção
  */
-public class Updater implements CallBack<File> {
+public class Updater implements IUpdater {
     private static final Searcher searcher = new GitHubSearcher();
     private static final File pluginFile = new File(Updater.class.getProtectionDomain().getCodeSource().getLocation().getFile());
     /**
@@ -72,11 +72,11 @@ public class Updater implements CallBack<File> {
 
     // Definição 'Old version directory'
     private final File oldDir;
-
     private final AtomicReference<UpdaterCache> updaterCache = new AtomicReference<>();
     private Optional<Version> current;
     private Downloader downloader;
     private File downloadedFile = null;
+    private final Consumer<File> updateConsumer = this::downloadFinish;
 
     /**
      * Cria um novo Updater com a instancia do {@link EventoZero}
@@ -107,38 +107,32 @@ public class Updater implements CallBack<File> {
         this.logger = plugin.getLogger();
 
         // Verifica se é o thread principal
-        ThreadUtils.createNewThread(this, new Runnable() {
-            @Override
-            public void run() {
-                String versionString = Updater.this.plugin.getDescription().getVersion();
+        ThreadUtils.createNewThread(this, () -> {
+            String versionString = Updater.this.plugin.getDescription().getVersion();
 
-                logger.info(String.format("%sProcurando a versão '%s'...", updaterNamespace, versionString));
+            logger.info(String.format("%sProcurando a versão '%s'...", updaterNamespace, versionString));
 
-                Optional<Version> versionOptional = searcher.findVersion(versionString);
-                current = versionOptional;
-                if (!versionOptional.isPresent()) {
-                    versionOptional = searcher.findVersion(INTERNAL_VERSION);
-                }
+            Optional<Version> versionOptional = searcher.findVersion(versionString);
+            current = versionOptional;
+            if (!versionOptional.isPresent()) {
+                versionOptional = searcher.findVersion(INTERNAL_VERSION);
+            }
 
 
-                if (versionOptional.isPresent()) {
-                    logger.info(String.format("%sVersão encontrada.", updaterNamespace));
-                } else {
-                    logger.warning(String.format("%sNão foi possivel encontrar a versão '%s'...", updaterNamespace, versionString));
-                }
+            if (versionOptional.isPresent()) {
+                logger.info(String.format("%sVersão encontrada.", updaterNamespace));
+            } else {
+                logger.warning(String.format("%sNão foi possivel encontrar a versão '%s'...", updaterNamespace, versionString));
+            }
 
-                if (Updater.this.enable) {
-                    logger.info(String.format("%sFazendo verificações automaticas, caso não queira isto desabilite na configuração.", updaterNamespace));
-                    updateCheck();
-                }
+            if (Updater.this.enable) {
+                logger.info(String.format("%sFazendo verificações automaticas, caso não queira isto desabilite na configuração.", updaterNamespace));
+                updateCheck();
             }
         }).start();
     }
 
-    /**
-     * Verifica as atualizações mostrando mensagens de informação Obs: Este método roda
-     * automaticamente em um Thread caso não esteja em um
-     */
+    @Override
     public synchronized void updateCheck() {
         this.updateCheck(false);
     }
@@ -156,12 +150,7 @@ public class Updater implements CallBack<File> {
             /**
              * Cria um novo thread
              */
-            ThreadUtils.createNewThread(this, new Runnable() {
-                @Override
-                public void run() {
-                    updateCheck();
-                }
-            }).start();
+            ThreadUtils.createNewThread(this, this::updateCheck).start();
             // Impede que seja rodado o código de atualização fora de um Thread (para não travar o Thread principal do servidor
             return;
         }
@@ -237,14 +226,8 @@ public class Updater implements CallBack<File> {
         }
     }
 
-    /**
-     * Inicia a atualização, se o cache estiver vazio ele verifica as atualizações automaticamente
-     *
-     * Obs: Caso o cache não seja nulo, este método irá baixar as atualizações enquanto verifica se
-     * há versões mais recentes, se houver, cancela o download atual e inicia um novo com o cache
-     * atualizado!
-     */
-    private void startUpdate() {
+    @Override
+    public void startUpdate() {
 
         if (updaterCache.get() == null) {
             updateCheck();
@@ -252,77 +235,88 @@ public class Updater implements CallBack<File> {
 
         final UpdaterCache cache = this.updaterCache.get();
 
-        ThreadUtils.createNewThread(this, "updater", new Runnable() {
-            @Override
-            public void run() {
-                if (cache.getVersion().getAssets().size() > 0) {
-                    Asset asset = cache.getVersion().getAssets().iterator().next();
-                    try {
-                        logger.info(String.format("%sAtualizando...!", updaterNamespace));
-                        URL downloadUrl = new URL(asset.getDownloadUrl());
-                        downloadedFile = new File(updates, asset.getName());
-                        downloader = new Downloader(downloadUrl, 1, new DefaultDownloadMonitor(Updater.this, downloadedFile, logger, updaterNamespace));
-                        downloader.download(updates, asset.getName());
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    }
+        ThreadUtils.createNewThread(this, "updater", () -> {
+            if (cache.getVersion().getAssets().size() > 0) {
+                Asset asset = cache.getVersion().getAssets().iterator().next();
+                try {
+                    logger.info(String.format("%sAtualizando...!", updaterNamespace));
+                    URL downloadUrl = new URL(asset.getDownloadUrl());
+                    downloadedFile = new File(updates, asset.getName());
+                    downloader = new Downloader(downloadUrl, 1, new DefaultDownloadMonitor(updateConsumer, downloadedFile, logger, updaterNamespace));
+                    downloader.download(updates, asset.getName());
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
                 }
             }
         }).start();
 
 
-        ThreadUtils.createNewThread(this, new Runnable() {
-            @Override
-            public void run() {
-                // Inicia uma verificação somente de atualização de cache
-                updateCheck(true);
-                // Verifica se o resultado é mais recente que o atual
-                if (cache.compareTo(updaterCache.get()) > 0) {
-                    logger.info(String.format("%sNova versão detectada!", updaterNamespace));
-                    Thread currentUpdate = ThreadUtils.getThread(Updater.this, "updater");
-                    if (currentUpdate != null && currentUpdate.isAlive() && !currentUpdate.isInterrupted()) {
-                        logger.info(String.format("%sParando atualização atual...", updaterNamespace));
-                        currentUpdate.interrupt();
-                        // Tenta apagar o arquivo antigo
-                        if (downloadedFile != null && downloadedFile.exists()) {
-                            downloadedFile.delete();
-                        }
+        ThreadUtils.createNewThread(this, () -> {
+            // Inicia uma verificação somente de atualização de cache
+            updateCheck(true);
+            // Verifica se o resultado é mais recente que o atual
+            if (cache.compareTo(updaterCache.get()) > 0) {
+                logger.info(String.format("%sNova versão detectada!", updaterNamespace));
+                Thread currentUpdate = ThreadUtils.getThread(Updater.this, "updater");
+                if (currentUpdate != null && currentUpdate.isAlive() && !currentUpdate.isInterrupted()) {
+                    logger.info(String.format("%sParando atualização atual...", updaterNamespace));
+                    currentUpdate.interrupt();
+                    // Tenta apagar o arquivo antigo
+                    if (downloadedFile != null && downloadedFile.exists()) {
+                        downloadedFile.delete();
                     }
-                    logger.info(String.format("%sIniciando nova atualização.", updaterNamespace));
-                    startUpdate();
                 }
+                logger.info(String.format("%sIniciando nova atualização.", updaterNamespace));
+                startUpdate();
             }
         }).start();
     }
 
-    /**
-     * Aplica as atualizações (utilize somente caso não saiba qual o arquivo de atualização)
-     */
+    @Override
+    public synchronized void applyUnsecureUpdate() {
+        findUpdates(this::applyUnsecureUpdate);
+    }
+
+    @Override
     public synchronized void applyUpdate() {
+        findUpdates(this::applyUpdate);
+    }
+
+    private void findUpdates(Consumer<File> updateConsumer) {
         // Verifica se o arquivo baixado não é nulo
-        if(downloadedFile != null){
+        if (downloadedFile != null) {
             // Se não for aplica ele como o arquivo de atualização
-            applyUpdate(downloadedFile);
+            updateConsumer.accept(downloadedFile);
         } else {
             // Caso seja nullo procura todas atualizações no diretorio de atualizações e aplica elas
             File[] files = updates.listFiles();
-            if(files != null) {
-                for(File currentFile : files) {
-                    if(!currentFile.isDirectory()) {
-                        applyUpdate(currentFile);
+            if (files != null) {
+                for (File currentFile : files) {
+                    if (!currentFile.isDirectory()) {
+                        updateConsumer.accept(currentFile);
                     }
                 }
             }
         }
     }
 
-    /**
-     * Aplica a atualização e move o arquivo antigo para o diretório de versões antigas para que
-     * possa ser restaurado caso ocorra algum erro
-     *
-     * @param newFile Destino do novo arquivo
-     */
+    @Override
     public synchronized void applyUpdate(File newFile) {
+        iApplyUpdate(newFile, false);
+    }
+
+    private synchronized void iApplyUpdate(File newFile, boolean unsecureAccept) {
+        if (this.getUpdaterCache().isPresent()) {
+            if (this.getUpdaterCache().get().isUnsecureVersion()) {
+                if (!unsecureAccept) {
+                    logger.warning(String.format("%sErro, você precisa usar o comando /ez update unsecure", updaterNamespace));
+                    return;
+                }
+            } else if (unsecureAccept) {
+                logger.warning(String.format("%sErro, você precisa usar o comando /ez update", updaterNamespace));
+                return;
+            }
+        }
         downloadedFile = null;
         File oldFile = new File(oldDir, pluginFile.getName());
         logger.info(String.format("%sAplicando atualizações... ", updaterNamespace));
@@ -336,9 +330,12 @@ public class Updater implements CallBack<File> {
         }
     }
 
-    /**
-     * Quando chamado irá limpar todos arquivos antigos de atualizações
-     */
+    @Override
+    public synchronized void applyUnsecureUpdate(File newFile) {
+        iApplyUpdate(newFile, true);
+    }
+
+    @Override
     public synchronized void updateSuccess() {
         logger.info(String.format("%sA atualização foi executada com sucesso!", updaterNamespace));
         File[] files = oldDir.listFiles();
@@ -373,18 +370,25 @@ public class Updater implements CallBack<File> {
         this.updaterCache.set(new UpdaterCache(unsecure, versionCache));
     }
 
-    @Override
-    public void callBack(File object) {
+    /**
+     * Método chamado pelo Lambda quando o download terminar
+     *
+     * @param file Arquivo para aplicar a atualização
+     */
+    private boolean downloadFinish(File file) {
         if (auto_install) {
-            applyUpdate(object);
+            applyUpdate(file);
         }
+        return true;
     }
 
-    /**
-     * Para todos threads criados somente pelo Update (os demais, como do Downloader não são
-     * cancelados)
-     */
+    @Override
     public void stopAll() {
         ThreadUtils.stopAllThreads(this);
+    }
+
+    @Override
+    public Optional<UpdaterCache> getUpdaterCache() {
+        return Optional.ofNullable(updaterCache.get());
     }
 }

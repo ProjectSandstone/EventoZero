@@ -19,9 +19,8 @@
  */
 package br.com.blackhubos.eventozero.updater.formater;
 
-import com.google.common.base.Optional;
-
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import br.com.blackhubos.eventozero.updater.formater.exception.CannotFormatTypeException;
@@ -54,11 +53,7 @@ public class MultiTypeFormatter {
      * @param formatterClass Classe do formatador
      */
     public void unregisterFormatter(Class<? extends TypeFormatter> formatterClass) {
-        for (TypeFormatter<?> typeFormatter : formatterSet) {
-            if (typeFormatter.getClass() == formatterClass) {
-                formatterSet.remove(typeFormatter);
-            }
-        }
+        formatterSet.removeIf(typeFormatter -> typeFormatter.getClass() == formatterClass);
     }
 
     /**
@@ -66,11 +61,7 @@ public class MultiTypeFormatter {
      * @param formatClass Classe que o formatador pode formatar
      */
     public void unregisterFormatterType(Class<?> formatClass) {
-        for (TypeFormatter<?> typeFormatter : formatterSet) {
-            if (typeFormatter.getFormatClass() == formatClass) {
-                formatterSet.remove(typeFormatter);
-            }
-        }
+        formatterSet.removeIf(typeFormatter -> typeFormatter.getFormatClass() == formatClass);
     }
 
     /**
@@ -79,12 +70,7 @@ public class MultiTypeFormatter {
      * @return True se puder formatar, ou false caso contrario.
      */
     public boolean canFormat(Class<?> classToFormat) {
-        for (TypeFormatter<?> typeFormatter : formatterSet) {
-            if (typeFormatter.getFormatClass() == classToFormat) {
-                return true;
-            }
-        }
-        return false;
+        return formatterSet.stream().filter(typeFormatter -> typeFormatter.getFormatClass() == classToFormat).findAny().isPresent();
     }
 
     /**
@@ -98,12 +84,11 @@ public class MultiTypeFormatter {
      */
     @SuppressWarnings("unchecked")
     public <T> Optional<T> format(Object value, Class<? extends T> target) {
-        for (TypeFormatter<?> typeFormatter : formatterSet) {
-            if (typeFormatter.getFormatClass().isAssignableFrom(target)) {
-                return (Optional<T>) typeFormatter.formatType(value);
-            }
+        Optional<TypeFormatter<?>> typeFormatterOptional = formatterSet.stream().filter(typeFormatter -> typeFormatter.getFormatClass().isAssignableFrom(target)).findFirst();
+        if(typeFormatterOptional.isPresent()){
+            return (Optional<T>) typeFormatterOptional.get().formatType(value);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     /**
@@ -117,12 +102,12 @@ public class MultiTypeFormatter {
      */
     @SuppressWarnings("unchecked")
     public <T> Optional<T> formatSpecific(Object value, Class<? extends T> target) {
-        for (TypeFormatter<?> typeFormatter : formatterSet) {
-            if (typeFormatter.getFormatClass() == target) {
-                return (Optional<T>) typeFormatter.formatType(value);
-            }
+        Optional<TypeFormatter<?>> typeFormatterOptional = formatterSet.stream().filter(typeFormatter -> typeFormatter.getFormatClass() == target).findFirst();
+        if(typeFormatterOptional.isPresent()){
+            return (Optional<T>) typeFormatterOptional.get().formatType(value);
         }
-        return Optional.absent();
+
+        return Optional.empty();
     }
 
     /**
@@ -141,6 +126,6 @@ public class MultiTypeFormatter {
             } catch (CannotFormatTypeException ignored) {
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }
