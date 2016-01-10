@@ -26,6 +26,8 @@ import java.util.Set;
 import org.apache.commons.lang.NullArgumentException;
 import org.bukkit.entity.Player;
 
+import com.google.common.base.Preconditions;
+
 public class EventHandler {
 
     private final Set<Event> events;
@@ -58,9 +60,7 @@ public class EventHandler {
     }
 
     public void loadEvent(final Event event) {
-        if (event != null) {
-            throw new NullArgumentException("Event is null");
-        }
+        Preconditions.checkNotNull(event, "Event is null");
         events.add(event);
     }
 
