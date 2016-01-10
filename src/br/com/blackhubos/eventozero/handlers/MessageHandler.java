@@ -70,9 +70,11 @@ public enum MessageHandler
 
 	public void send(final CommandSender[] players, final String... replacements)
 	{
+		final MessageRecipient msgRecip = new MessageRecipient(this.getKey());
+		
 		for (final CommandSender player : players)
 		{
-			new MessageRecipient(this.getKey()).sendMessage(player, replacements);
+			msgRecip.sendMessage(player, replacements);
 		}
 	}
 
