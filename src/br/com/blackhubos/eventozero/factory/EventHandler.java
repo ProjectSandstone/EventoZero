@@ -23,45 +23,54 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.lang.NullArgumentException;
-import org.bukkit.entity.Player;
-
 import com.google.common.base.Preconditions;
 
-public class EventHandler {
+import org.bukkit.entity.Player;
 
-    private final Set<Event> events;
+public class EventHandler
+{
 
-    public EventHandler() {
-        this.events = new HashSet<>();
-    }
+	private final Set<Event> events;
 
-    public Optional<Event> getEventByName(final String name) {
-        for (Event e : getEvents()) {
-            if (e.getEventName().equals(name)) {
-                return Optional.of(e);
-            }
-        }
-        return Optional.empty();
-    }
+	public EventHandler()
+	{
+		this.events = new HashSet<>();
+	}
 
-    public Optional<Event> getEventByPlayer(final Player player) {
-        for (Event e : getEvents()) {
-            if (e.hasPlayerJoined(player)) {
-                return Optional.of(e);
-            }
-        }
-        return Optional.empty();
-    }
+	public Optional<Event> getEventByName(final String name)
+	{
+		for (final Event e : this.getEvents())
+		{
+			if (e.getEventName().equals(name))
+			{
+				return Optional.of(e);
+			}
+		}
+		return Optional.empty();
+	}
 
-    public Set<Event> getEvents() {
-        return this.events;
+	public Optional<Event> getEventByPlayer(final Player player)
+	{
+		for (final Event e : this.getEvents())
+		{
+			if (e.hasPlayerJoined(player))
+			{
+				return Optional.of(e);
+			}
+		}
+		return Optional.empty();
+	}
 
-    }
+	public Set<Event> getEvents()
+	{
+		return this.events;
 
-    public void loadEvent(final Event event) {
-        Preconditions.checkNotNull(event, "Event is null");
-        events.add(event);
-    }
+	}
+
+	public void loadEvent(final Event event)
+	{
+		Preconditions.checkNotNull(event, "Event is null");
+		this.events.add(event);
+	}
 
 }
