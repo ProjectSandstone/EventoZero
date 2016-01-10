@@ -45,19 +45,19 @@ public class ShopHandler {
     	final File shopFolder = new File(plugin.getDataFolder() + SEPARATOR + "shop");
         final File file = new File(shopFolder, "shops.yml");
         
-        if (!file.exists())
-        {
-        	try 
-        	{
-        		shopFolder.mkdir();
+		if (!file.exists()) 
+		{
+			try 
+			{
+				shopFolder.mkdir();
 				file.createNewFile();
 			} 
-        	catch (IOException e) 
-        	{
+			catch (IOException e) 
+			{
 				e.printStackTrace();
 			}
-        	return;
-        }
+			return;
+		}
         
         final Configuration configuration = new Configuration(file);
         for (final String key : configuration.getConfigurationSection("shops").getKeys(false)) {

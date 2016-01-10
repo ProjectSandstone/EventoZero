@@ -60,19 +60,19 @@ public final class KitHandler {
     	final File kitFolder = new File(plugin.getDataFolder() + SEPARATOR + "kit");
         final File file = new File(kitFolder, "kits.yml");
         
-        if (!file.exists())
-        {
-        	try 
-        	{
-        		kitFolder.mkdir();
+		if (!file.exists()) 
+		{
+			try 
+			{
+				kitFolder.mkdir();
 				file.createNewFile();
 			} 
-        	catch (IOException e) 
-        	{
+			catch (IOException e) 
+			{
 				e.printStackTrace();
 			}
-        	return;
-        }
+			return;
+		}
         
         final Framework.Configuration configuration = new Framework.Configuration(file);
         for (String key : configuration.getConfigurationSection("kits").getKeys(false)) {
