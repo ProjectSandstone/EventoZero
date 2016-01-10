@@ -20,6 +20,7 @@
 package br.com.blackhubos.eventozero.factory;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang.NullArgumentException;
@@ -33,22 +34,22 @@ public class EventHandler {
         this.events = new HashSet<>();
     }
 
-    public Event getEventByName(final String name) {
+    public Optional<Event> getEventByName(final String name) {
         for (Event e : getEvents()) {
             if (e.getEventName().equals(name)) {
-                return e;
+                return Optional.of(e);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-    public Event getEventByPlayer(final Player player) {
+    public Optional<Event> getEventByPlayer(final Player player) {
         for (Event e : getEvents()) {
             if (e.hasPlayerJoined(player)) {
-                return e;
+                return Optional.of(e);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public Set<Event> getEvents() {

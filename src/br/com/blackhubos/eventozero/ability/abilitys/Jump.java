@@ -19,6 +19,8 @@
  */
 package br.com.blackhubos.eventozero.ability.abilitys;
 
+import java.util.Optional;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -43,8 +45,12 @@ public final class Jump extends Ability implements Listener {
 
     @Override
     public boolean tryUse(final Player player) {
-        Event event = EventoZero.getEventHandler().getEventByPlayer(player);
-        if (this.canUse(player.getName()) && (event != null && (event.getAbilitys().contains(this) || (event.getPlayersRemaining().contains(player) && event.getEventData().getData(player.getName() + ".ability").equals(this))))) {
+        Optional<Event> event = EventoZero.getEventHandler().getEventByPlayer(player);
+        
+        if (!event.isPresent())
+        	return false;
+        
+        if (this.canUse(player.getName()) && ((event.get().getAbilitys().contains(this) || (event.get().getPlayersRemaining().contains(player) && event.get().getEventData().getData(player.getName() + ".ability").equals(this))))) {
             this.forceUse(player);
             this.updateTime(player.getName());
             return true;
