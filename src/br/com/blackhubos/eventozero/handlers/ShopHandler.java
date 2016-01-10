@@ -20,6 +20,7 @@
 package br.com.blackhubos.eventozero.handlers;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 
 import org.bukkit.plugin.Plugin;
@@ -39,7 +40,25 @@ public class ShopHandler {
     }
 
     public void loadShops(final Plugin plugin) {
-        final File file = new File(plugin.getDataFolder() + File.separator + "shop" + File.separator + "shops.yml");
+    	final String SEPARATOR = File.separator;
+    	
+    	final File shopFolder = new File(plugin.getDataFolder() + SEPARATOR + "shop");
+        final File file = new File(shopFolder, "shops.yml");
+        
+        if (!file.exists())
+        {
+        	try 
+        	{
+        		shopFolder.mkdir();
+				file.createNewFile();
+			} 
+        	catch (IOException e) 
+        	{
+				e.printStackTrace();
+			}
+        	return;
+        }
+        
         final Configuration configuration = new Configuration(file);
         for (final String key : configuration.getConfigurationSection("shops").getKeys(false)) {
             final Shop shop = new Shop(configuration.getString("shops." + key + ".name"), new ItemFactory(configuration.getString("shops." + key + ".icon"), null).getPreparedItem());

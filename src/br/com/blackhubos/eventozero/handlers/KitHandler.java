@@ -31,6 +31,7 @@ import com.google.common.base.Optional;
 import br.com.blackhubos.eventozero.kit.Kit;
 import br.com.blackhubos.eventozero.util.Framework;
 import java.io.File;
+import java.io.IOException;
 
 public final class KitHandler {
     
@@ -54,7 +55,25 @@ public final class KitHandler {
     }
     
     public void loadKits(final Plugin plugin) {
-        final File file = new File(plugin.getDataFolder() + File.separator + "kit" + File.separator + "kits.yml");
+    	final String SEPARATOR = File.separator;
+    	
+    	final File kitFolder = new File(plugin.getDataFolder() + SEPARATOR + "kit");
+        final File file = new File(kitFolder, "kits.yml");
+        
+        if (!file.exists())
+        {
+        	try 
+        	{
+        		kitFolder.mkdir();
+				file.createNewFile();
+			} 
+        	catch (IOException e) 
+        	{
+				e.printStackTrace();
+			}
+        	return;
+        }
+        
         final Framework.Configuration configuration = new Framework.Configuration(file);
         for (String key : configuration.getConfigurationSection("kits").getKeys(false)) {
             Kit kit = new Kit(key, new ItemFactory(configuration.getString("kits." + key + ".icon"), null).getPreparedItem());
