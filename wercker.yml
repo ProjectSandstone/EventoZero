@@ -24,8 +24,8 @@ build:
     - script:
         name: Refresh dependencies
         code: |
-          ./gradle --refresh-dependencies
+          ./gradlew --refresh-dependencies
     - script:
         name: Build
         code: |
-          ./gradle
+          ./gradlew
