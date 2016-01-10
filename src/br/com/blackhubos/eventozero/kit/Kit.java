@@ -63,7 +63,7 @@ public class Kit extends ShopItem implements Cloneable {
         return this;
     }
     
-    public Kit giveKit(Player player){
+    public Kit giveTo(Player player){
         player.getInventory().setArmorContents(armorContents);
         for(ItemStack is : contents){
             int empty = player.getInventory().firstEmpty();
