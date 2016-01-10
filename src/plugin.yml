@@ -2,3 +2,7 @@ name: EventoZero
 version: 1.0.1
 main: br.com.blackhubos.eventozero.EventoZero
 depend: [Vault]
+
+commands:
+    eventozero:
+    ez:
