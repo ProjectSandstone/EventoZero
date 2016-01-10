@@ -60,6 +60,9 @@ public class ShopHandler {
 		}
         
         final Configuration configuration = new Configuration(file);
+
+        if (!configuration.contains("shops")) return;
+        
         for (final String key : configuration.getConfigurationSection("shops").getKeys(false)) {
             final Shop shop = new Shop(configuration.getString("shops." + key + ".name"), new ItemFactory(configuration.getString("shops." + key + ".icon"), null).getPreparedItem());
             for (final String s : configuration.getStringList("shops." + key + ".items")) {

@@ -75,6 +75,9 @@ public final class KitHandler {
 		}
         
         final Framework.Configuration configuration = new Framework.Configuration(file);
+        
+        if (!configuration.contains("kits")) return;
+        
         for (String key : configuration.getConfigurationSection("kits").getKeys(false)) {
             Kit kit = new Kit(key, new ItemFactory(configuration.getString("kits." + key + ".icon"), null).getPreparedItem());
             
