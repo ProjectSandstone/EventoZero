@@ -8,7 +8,7 @@ apply plugin: 'eclipse' //Usuarios do eclipse
 
 defaultTasks 'build', 'jar', 'uploadArchives'
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 
 sourceSets {
     main {
