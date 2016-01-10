@@ -92,63 +92,60 @@ public class Downloader {
             final long downloadEndRange = ((x + 1 >= threads) ? (size) : (last.get() + (size / threads)));
             final long downloadStartRange = last.get();
 
-            Thread tr = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        // Cria um nova instancia para o arquivo
-                        File save = new File(path, saveFile);
-                        // Verifica se existe
-                        if (!save.exists()) {
-                            // Cria novo arquivo
-                            save.createNewFile();
-                        }
-                        // Cria uma instancia de acesso aleatorio ao arquivo
-                        RandomAccessFile raf = new RandomAccessFile(save, "rw");
-
-                        // "Anda" com o ponteiro até o inicio do arquivo, este inicio é relativo e definido por conexão
-                        // Cada conexão baixa uma Range (Inico <-> Fim) do arquivo, assim permitindo multiplos threads escrever no mesmo arquivo sem problemas
-                        raf.seek(downloadStartRange);
-
-                        BufferedInputStream bis;
-
-                        // Cria uma nova conexão de URL
-                        URLConnection connection = url.openConnection();
-
-                        // Define a Range que o thread irá baixar
-                        connection.setRequestProperty("Range", "bytes=" + downloadStartRange + "-" + downloadEndRange + "");
-
-                        // Inicia a conexão
-                        connection.connect();
-
-                        // Cria um buffer de 4096 bytes
-                        byte[] data = new byte[4096];
-
-                        // Nova int para armazenar a qunatidade de bytes lidos
-                        int ibyte;
-
-                        // Nova Stream de entrada com os dados da conexão
-                        bis = new BufferedInputStream(connection.getInputStream());
-
-                        // Faz uma leitura dos bytes da conexão, a váriavel ibyte é definida com a quantidade de bytes lidos na stream, quando a quantidade for -1 indica o fim do arquivo
-                        while ((ibyte = bis.read(data, 0, 4096)) != -1) {
-                            // Escreve na instancia de RandomAccess que irá enviar ao arquivo
-                            raf.write(data, 0, ibyte);
-
-                            // Define a quantidade de bytes baixadas
-                            // Pode ser usado também: downloaded.addAndGet(ibyte);
-                            downloaded.set(downloaded.get() + ibyte);
-
-                        }
-
-                        // Quando terminar de ler arquivo totalmente o thread será removido
-                        threadList.remove(Thread.currentThread());
-
-                        // E fechamos a RandomAccessStream
-                        raf.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+            Thread tr = new Thread(() -> {
+                try {
+                    // Cria um nova instancia para o arquivo
+                    File save = new File(path, saveFile);
+                    // Verifica se existe
+                    if (!save.exists()) {
+                        // Cria novo arquivo
+                        save.createNewFile();
                     }
+                    // Cria uma instancia de acesso aleatorio ao arquivo
+                    RandomAccessFile raf = new RandomAccessFile(save, "rw");
+
+                    // "Anda" com o ponteiro até o inicio do arquivo, este inicio é relativo e definido por conexão
+                    // Cada conexão baixa uma Range (Inico <-> Fim) do arquivo, assim permitindo multiplos threads escrever no mesmo arquivo sem problemas
+                    raf.seek(downloadStartRange);
+
+                    BufferedInputStream bis;
+
+                    // Cria uma nova conexão de URL
+                    URLConnection connection = url.openConnection();
+
+                    // Define a Range que o thread irá baixar
+                    connection.setRequestProperty("Range", "bytes=" + downloadStartRange + "-" + downloadEndRange + "");
+
+                    // Inicia a conexão
+                    connection.connect();
+
+                    // Cria um buffer de 4096 bytes
+                    byte[] data = new byte[4096];
+
+                    // Nova int para armazenar a qunatidade de bytes lidos
+                    int ibyte;
+
+                    // Nova Stream de entrada com os dados da conexão
+                    bis = new BufferedInputStream(connection.getInputStream());
+
+                    // Faz uma leitura dos bytes da conexão, a váriavel ibyte é definida com a quantidade de bytes lidos na stream, quando a quantidade for -1 indica o fim do arquivo
+                    while ((ibyte = bis.read(data, 0, 4096)) != -1) {
+                        // Escreve na instancia de RandomAccess que irá enviar ao arquivo
+                        raf.write(data, 0, ibyte);
+
+                        // Define a quantidade de bytes baixadas
+                        // Pode ser usado também: downloaded.addAndGet(ibyte);
+                        downloaded.set(downloaded.get() + ibyte);
+
+                    }
+
+                    // Quando terminar de ler arquivo totalmente o thread será removido
+                    threadList.remove(Thread.currentThread());
+
+                    // E fechamos a RandomAccessStream
+                    raf.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
 

@@ -28,15 +28,20 @@ public final class Party
 
 	private final Vector<Player> joineds;
 	private final Vector<Player> inviteds;
-	private final int max;
+	private final int maxPlayers;
 
-	public Party(final int max)
+	public Party(final int maxPlayers)
 	{
 		this.joineds = new Vector<>();
 		this.inviteds = new Vector<>();
-		this.max = max;
+		this.maxPlayers = maxPlayers;
 	}
 
+	public int getMaxPlayers()
+	{
+		return this.maxPlayers;
+	}
+	
 	public Player getOwner()
 	{
 		return this.joineds.get(0);

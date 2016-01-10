@@ -40,7 +40,15 @@ public final class EventFactory {
 
     public static void loadEvents(final Plugin plugin) {
         final File folder = new File(plugin.getDataFolder() + File.separator + "eventos" + File.separator);
-        for (final File file : folder.listFiles()) {
+
+        File[] fileArray = folder.listFiles();
+        // TODO fazer algo menos artifical caso listFiles retorne nulo, esta é a solução por enquanto!
+        if(fileArray == null) {
+            EventoZero.consoleMessage("Não foi encontrado nenhum evento para carregar!");
+            return;
+        }
+
+        for (final File file : fileArray) {
             if (file.getName().endsWith(".yml")) {
                 final Configuration configuration = new Configuration(file); // Já carrega automaticamente
                 final Event event = new Event(configuration.getString("name"))

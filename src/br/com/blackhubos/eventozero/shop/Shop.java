@@ -2,6 +2,8 @@ package br.com.blackhubos.eventozero.shop;
 
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.factory.Event;
+
+import java.util.Optional;
 import java.util.Vector;
 
 import org.bukkit.Bukkit;
@@ -74,11 +76,11 @@ public class Shop implements Listener {
             e.setCancelled(true);
             for (ShopItem item : items) {
                 if (item.equals(e.getCurrentItem())) {
-                    Event event = EventoZero.getEventHandler().getEventByPlayer(player);
-                    if (event == null) {
+                    Optional<Event> event = EventoZero.getEventHandler().getEventByPlayer(player);
+                    if (!event.isPresent()) {
                         return;
                     }
-                    item.onBuyed(event, player);
+                    item.onBuyed(event.get(), player);
                 }
             }
         }

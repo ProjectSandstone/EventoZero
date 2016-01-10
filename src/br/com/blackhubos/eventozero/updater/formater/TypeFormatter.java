@@ -19,7 +19,7 @@
  */
 package br.com.blackhubos.eventozero.updater.formater;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 import br.com.blackhubos.eventozero.updater.formater.exception.CannotFormatTypeException;
 

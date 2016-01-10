@@ -19,9 +19,9 @@
  */
 package br.com.blackhubos.eventozero.updater.searcher;
 
-import com.google.common.base.Optional;
-
 import java.util.Collection;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import br.com.blackhubos.eventozero.updater.assets.versions.Version;
 
@@ -29,30 +29,53 @@ public interface Searcher {
 
     /**
      * Buscar a ultima versão
-     * @return Versão ou {@link Optional#absent()} se não encontrar nenhuma
+     *
+     * @return Versão ou {@link Optional#empty()} se não encontrar nenhuma
      */
     Optional<Version> getLatestVersion();
 
     /**
      * Buscar a ultima versão para uma versão especifica do Minecraft
      *
-     * @return Versão ou {@link Optional#absent()} se não encontrar nenhuma
+     * @param mcVersion Versão do minecraft
+     * @return Versão ou {@link Optional#empty()} se não encontrar nenhuma
      */
     Optional<Version> getLatestVersionFor(String mcVersion);
 
     /**
+     * Buscar a ultima versão para uma versão especifica do Minecraft
+     *
+     * @param mcVersion Versão do minecraft
+     * @return Versão ou {@link Optional#empty()} se não encontrar nenhuma
+     */
+    default Optional<Version> getLatestVersionFor(Supplier<String> mcVersion) {
+        return getLatestVersionFor(mcVersion.get());
+    }
+
+    /**
      * Buscar a ultima versão estável
      *
-     * @return Versão ou {@link Optional#absent()} se não encontrar nenhuma
+     * @return Versão ou {@link Optional#empty()} se não encontrar nenhuma
      */
     Optional<Version> getLatestStableVersion();
 
     /**
      * Buscar a ultima versão estável para uma versão especifica do Minecraft
      *
-     * @return Versão ou {@link Optional#absent()} se não encontrar nenhuma
+     * @param mcVersion Versão do Minecraft
+     * @return Versão ou {@link Optional#empty()} se não encontrar nenhuma
      */
     Optional<Version> getLatestStableVersionFor(String mcVersion);
+
+    /**
+     * Buscar a ultima versão estável para uma versão especifica do Minecraft
+     *
+     * @param mcVersion Versão do Minecraft
+     * @return Versão ou {@link Optional#empty()} se não encontrar nenhuma
+     */
+    default Optional<Version> getLatestStableVersionFor(Supplier<String> mcVersion) {
+        return this.getLatestStableVersionFor(mcVersion.get());
+    }
 
     /**
      * Buscar todas versões
@@ -65,9 +88,19 @@ public interface Searcher {
      * Encontrar versão especifica
      *
      * @param tag Nome da versão (tag)
-     * @return Versão ou {@link Optional#absent()} se não encontrar nenhuma
+     * @return Versão ou {@link Optional#empty()} se não encontrar nenhuma
      */
     Optional<Version> findVersion(String tag);
+
+    /**
+     * Encontrar versão especifica
+     *
+     * @param tag Nome da versão (tag)
+     * @return Versão ou {@link Optional#empty()} se não encontrar nenhuma
+     */
+    default Optional<Version> findVersion(Supplier<String> tag) {
+        return this.findVersion(tag.get());
+    }
 
     /**
      * Retorna o link onde as releases estão hospedadas

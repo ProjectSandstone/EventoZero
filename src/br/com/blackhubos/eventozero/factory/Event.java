@@ -316,7 +316,7 @@ public class Event extends EventCommand {
         for (Player player : getPlayers()) {
             Kit kit = getEventData().getData(player.getName() + ".kit");
             if (kit != null) {
-                kit.giveKit(player);
+                kit.giveTo(player);
                 if (kit.getAbility() != null) {
                     getEventData().updateData(player.getName() + ".ability", kit.getAbility());
                 }

@@ -21,6 +21,7 @@ package br.com.blackhubos.eventozero.updater;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import br.com.blackhubos.eventozero.updater.downloader.DownloadMonitor;
@@ -29,14 +30,14 @@ final class DefaultDownloadMonitor implements DownloadMonitor {
 
     private static final int INTERVAL = 1;
 
-    private final CallBack<File> callBack;
+    private final Consumer<File> callBack;
     private final File callbackFile;
     private final Logger logger;
     private final String namespace;
     private boolean forceStop = false;
     private double lastProgress = -1;
 
-    DefaultDownloadMonitor(CallBack<File> callBack, File callbackFile, Logger logger, String namespace) {
+    DefaultDownloadMonitor(Consumer<File> callBack, File callbackFile, Logger logger, String namespace) {
         this.callBack = callBack;
         this.callbackFile = callbackFile;
         this.logger = logger;
@@ -67,7 +68,7 @@ final class DefaultDownloadMonitor implements DownloadMonitor {
     public void downloadFinish() {
         forceStop = true;
         print(100, 100);
-        this.callBack.callBack(callbackFile);
+        this.callBack.accept(callbackFile);
     }
 
     @Override

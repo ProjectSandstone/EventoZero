@@ -19,6 +19,8 @@
  */
 package br.com.blackhubos.eventozero.ranking;
 
+import java.util.Optional;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,7 +55,7 @@ public final class BlockStructure
 
 	public void update()
 	{
-		final Event e = EventoZero.getEventHandler().getEventByName(this.evento);
+		final Optional<Event> e = EventoZero.getEventHandler().getEventByName(this.evento);//TODO: precisa tratar caso esteja vazio...
 		final Location pos = this.bloco.getLocation();
 		this.bloco.setType(Material.SKULL);
 		final Skull skull = (Skull) this.bloco;
@@ -90,7 +92,7 @@ public final class BlockStructure
 		for (int i = 0; (i < EventoZero.getRankingConfiguration().getStringList("sign.output").size()) && (i < 3); i++)
 		{
 			final String line = EventoZero.getRankingConfiguration().getStringList("sign.output").get(i);
-			placa.setLine(i, ChatColor.translateAlternateColorCodes('&', line.replace("{evento}", e.getEventDisplayName()).replace("{rank}", this.top + "").replace("{player}", this.name).replace("{tipo}", Ranking.byId(this.tipo))));
+			placa.setLine(i, ChatColor.translateAlternateColorCodes('&', line.replace("{evento}", e.get().getEventDisplayName()).replace("{rank}", this.top + "").replace("{player}", this.name).replace("{tipo}", Ranking.byId(this.tipo))));
 		}
 
 		placa.update(true);

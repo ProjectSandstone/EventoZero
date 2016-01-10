@@ -19,7 +19,7 @@
  */
 package br.com.blackhubos.eventozero.updater.formater;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 import br.com.blackhubos.eventozero.updater.formater.exception.CannotFormatTypeException;
 
@@ -53,7 +53,7 @@ public class BooleanFormatter implements TypeFormatter<Boolean> {
 
     @Override
     public Optional<Boolean> formatType(Object objectToFormat) {
-        return Optional.fromNullable(unsecuredFormatType(objectToFormat));
+        return Optional.ofNullable(unsecuredFormatType(objectToFormat));
     }
 
     @Override

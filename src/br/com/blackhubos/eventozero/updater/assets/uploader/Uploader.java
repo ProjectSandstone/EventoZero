@@ -20,11 +20,11 @@
 package br.com.blackhubos.eventozero.updater.assets.uploader;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 
 import org.json.simple.JSONObject;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import br.com.blackhubos.eventozero.updater.formater.MultiTypeFormatter;
@@ -89,7 +89,7 @@ public class Uploader implements Parser<JSONObject, Uploader> {
             }
         }
         if (id == Long.MIN_VALUE || name == null) {
-            return Optional.absent();
+            return Optional.empty();
         }
         return Optional.of(new Uploader(name, admin, id));
     }
