@@ -66,6 +66,7 @@ public class ShopHandler {
         for (final String key : configuration.getConfigurationSection("shops").getKeys(false)) {
             final Shop shop = new Shop(configuration.getString("shops." + key + ".name"), new ItemFactory(configuration.getString("shops." + key + ".icon"), null).getPreparedItem());
             for (final String s : configuration.getStringList("shops." + key + ".items")) {
+                // TODO: REPLACE está incorreto, corrigir '.replace("{|}", ")'
                 if (EventoZero.getKitHandler().getKitByName(s.replace("{|}", "")).isPresent()) {
                     shop.addItem(EventoZero.getKitHandler().getKitByName(s.replace("{|}", "")).get());
                 } else {
