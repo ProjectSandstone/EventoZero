@@ -2,6 +2,7 @@ package br.com.blackhubos.eventozero.shop;
 
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.factory.Event;
+import java.util.LinkedList;
 
 import java.util.Optional;
 import java.util.Vector;
@@ -20,7 +21,7 @@ public class Shop implements Listener {
 
     private final String name;
     private final ItemStack icon;
-    private final Vector<ShopItem> items;
+    private final LinkedList<ShopItem> items;
 
     private String title;
     private int size;
@@ -30,7 +31,7 @@ public class Shop implements Listener {
         this.title = name;
         this.icon = icon;
         this.size = 9;
-        this.items = new Vector<>();
+        this.items = new LinkedList<>();
     }
 
     public String getName() {
