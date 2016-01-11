@@ -26,6 +26,7 @@ public class Kit extends ShopItem implements Cloneable {
         return this.ability;
     }
 
+    @Override
     public ItemStack getIcon() {
         return this.icon;
     }
@@ -75,7 +76,7 @@ public class Kit extends ShopItem implements Cloneable {
     }
 
     @Override
-    protected Kit clone() {
+    public Kit clone() {
         Kit kit = new Kit(getName(), icon);
         kit.updatePrice(getPrice());
         kit.updateContents(contents)
