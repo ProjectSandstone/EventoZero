@@ -19,66 +19,57 @@
  */
 package br.com.blackhubos.eventozero.party;
 
-import java.util.Vector;
+import java.util.LinkedList;
 
 import org.bukkit.entity.Player;
 
-public final class Party
-{
+public final class Party {
 
-	private final Vector<Player> joineds;
-	private final Vector<Player> inviteds;
-	private final int maxPlayers;
+    private final LinkedList<Player> joineds;
+    private final LinkedList<Player> inviteds;
+    private final int maxPlayers;
 
-	public Party(final int maxPlayers)
-	{
-		this.joineds = new Vector<>();
-		this.inviteds = new Vector<>();
-		this.maxPlayers = maxPlayers;
-	}
+    public Party(final int maxPlayers) {
+        this.joineds = new LinkedList<>();
+        this.inviteds = new LinkedList<>();
+        this.maxPlayers = maxPlayers;
+    }
 
-	public int getMaxPlayers()
-	{
-		return this.maxPlayers;
-	}
-	
-	public Player getOwner()
-	{
-		return this.joineds.get(0);
-	}
+    public int getMaxPlayers() {
+        return this.maxPlayers;
+    }
 
-	public Vector<Player> getJoineds()
-	{
-		return this.joineds;
-	}
+    public Player getOwner() {
+        return this.joineds.get(0);
+    }
 
-	public Vector<Player> getInviteds()
-	{
-		return this.inviteds;
-	}
+    public LinkedList<Player> getJoineds() {
+        return this.joineds;
+    }
 
-	public Party playerJoin(final Player player)
-	{
-		this.joineds.add(player);
-		return this;
-	}
+    public LinkedList<Player> getInviteds() {
+        return this.inviteds;
+    }
 
-	public Party playerQuit(final Player player)
-	{
-		this.joineds.remove(player);
-		return this;
-	}
+    public Party playerJoin(final Player player) {
+        this.joineds.add(player);
+        playerQuitInvited(player);
+        return this;
+    }
 
-	public Party playerJoinInvited(final Player player)
-	{
-		this.inviteds.addElement(player);
-		return this;
-	}
+    public Party playerQuit(final Player player) {
+        this.joineds.remove(player);
+        return this;
+    }
 
-	public Party playerQuitInvited(final Player player)
-	{
-		this.inviteds.remove(player);
-		return this;
-	}
+    public Party playerJoinInvited(final Player player) {
+        this.inviteds.add(player);
+        return this;
+    }
+
+    public Party playerQuitInvited(final Player player) {
+        this.inviteds.remove(player);
+        return this;
+    }
 
 }
