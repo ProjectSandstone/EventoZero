@@ -42,7 +42,7 @@ public class QuestionListener implements Listener {
     public void chat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
 
-        Optional<Interpreter> current = Interpreter.getPlayerCurrent(player);
+        Optional<Interpreter> current = Interpreter.getCurrent(player);
         if (current.isPresent()) {
             if (current.get() == questionario) {
                 AnswerResult result = current.get().answer(player, event.getMessage());

@@ -45,7 +45,7 @@ public class InterpreterCommand implements CommandExecutor {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            Optional<Interpreter> current = Interpreter.getPlayerCurrent(player);
+            Optional<Interpreter> current = Interpreter.getCurrent(player);
             if (current.isPresent() && current.get() == questionario) {
 
             } else {

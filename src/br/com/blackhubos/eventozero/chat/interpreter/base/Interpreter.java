@@ -50,7 +50,7 @@ public class Interpreter {
         interpreters.add(this);
     }
 
-    public static Optional<Interpreter> getPlayerCurrent(Player player) {
+    public static Optional<Interpreter> getCurrent(Player player) {
         if (!playerInterpreter.containsKey(player))
             return Optional.empty();
         return Optional.of(playerInterpreter.get(player).getInterpreter());
