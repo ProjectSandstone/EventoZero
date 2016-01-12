@@ -30,8 +30,7 @@ public class IPattern<T> {
     private final ValueTransformer<T> transformer;
 
     public IPattern(Pattern pattern, ValueTransformer<T> transformer) {
-        this.check = value -> pattern.matcher(value).matches();
-        this.transformer = transformer;
+        this(value -> pattern.matcher(value).matches(), transformer);
     }
 
     public IPattern(Predicate<String> check, ValueTransformer<T> transformer) {
@@ -46,4 +45,5 @@ public class IPattern<T> {
     public ValueTransformer<T> getTransformer() {
         return transformer;
     }
+
 }

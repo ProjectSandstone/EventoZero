@@ -17,17 +17,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package br.com.blackhubos.eventozero.chat.interpreter.pattern;
+package br.com.blackhubos.eventozero.chat.interpreter.state;
 
-import java.util.regex.Pattern;
+import java.util.Optional;
 
-import br.com.blackhubos.eventozero.chat.interpreter.values.ValueTransformer;
+import br.com.blackhubos.eventozero.chat.interpreter.base.QuestionBase;
 
-/**
- * Created by jonathan on 11/01/16.
- */
-public class BaseIPattern<T> extends IPattern<T> {
-    public BaseIPattern(Pattern pattern, ValueTransformer<T> transformer) {
-        super(pattern, transformer);
+public class AnswerState {
+    private final Optional<QuestionBase> next;
+    private final State state;
+
+    public AnswerState(Optional<QuestionBase> next, State state) {
+        this.next = next;
+        this.state = state;
+    }
+
+    public Optional<QuestionBase> getNext() {
+        return next;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public enum State {
+        OK,
+        INVALID_ANSWER_FORMAT,
+        NO_MORE_QUESTIONS,
+        NO_CURRENT_QUESTION
     }
 }

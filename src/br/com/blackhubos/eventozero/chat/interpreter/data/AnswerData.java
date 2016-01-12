@@ -19,6 +19,7 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.data;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,5 +48,9 @@ public class AnswerData {
             return Optional.of((T) answer.get());
         }
         return Optional.empty();
+    }
+
+    public Map<QuestionBase, Object> toMap() {
+        return Collections.unmodifiableMap(answers);
     }
 }

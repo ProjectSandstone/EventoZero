@@ -4,5 +4,7 @@ main: br.com.blackhubos.eventozero.EventoZero
 depend: [Vault]
 
 commands:
-    eventozero:
-    ez:
+  eventozero:
+    description: Not Implemented Yet
+  ez:
+    description: Not Implemented Yet

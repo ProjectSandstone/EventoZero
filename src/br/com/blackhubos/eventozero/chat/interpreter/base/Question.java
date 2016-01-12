@@ -27,51 +27,51 @@ import java.util.function.Predicate;
 public interface Question<T> extends QuestionBase<T> {
 
 
+    // Layout methods
     @SuppressWarnings("unchecked")
-    default Question expect(Predicate<T> expect) {
+    default Question<T> expect(Predicate<T> expect) {
         setExpect(expect);
         return this;
     }
 
-    // Layout methods
-    default Question yes() {
+    default Question<T> yes() {
         return this;
     }
 
-    default Question no() {
+    default Question<T> no() {
         return this;
     }
 
-    default Question yes(QuestionBase ifYes) {
+    default Question<T> yes(QuestionBase ifYes) {
         setYes(ifYes);
         return this;
     }
 
-    default Question no(QuestionBase ifNo) {
+    default Question<T> no(QuestionBase ifNo) {
         setNo(ifNo);
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    default Question yes(BiConsumer<Player, T> ifYesConsumer) {
+    default Question<T> yes(BiConsumer<Player, T> ifYesConsumer) {
         setYes(ifYesConsumer);
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    default Question no(BiConsumer<Player, T> ifNoConsumer) {
+    default Question<T> no(BiConsumer<Player, T> ifNoConsumer) {
         setNo(ifNoConsumer);
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    default Question yes(QuestionBase ifYes, BiConsumer<Player, T> ifYesConsumer) {
+    default Question<T> yes(QuestionBase ifYes, BiConsumer<Player, T> ifYesConsumer) {
         setYes(ifYes, ifYesConsumer);
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    default Question no(QuestionBase ifYes, BiConsumer<Player, T> ifNoConsumer) {
+    default Question<T> no(QuestionBase ifYes, BiConsumer<Player, T> ifNoConsumer) {
         setNo(ifYes, ifNoConsumer);
         return this;
     }

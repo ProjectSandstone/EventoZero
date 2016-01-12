@@ -89,19 +89,35 @@ public interface QuestionBase<Value_Type> {
         return getInterpreter().remove(player, question);
     }
 
-    default Optional<QuestionBase> next(Player player, String inputApply) {
-        boolean approved = approve(inputApply);
+    default boolean hasNext(Player player) {
+        return getInterpreter().hasNext(player);
+    }
 
+    default Optional<QuestionBase> next(Player player, String inputApply) {
         Value_Type value = transform(inputApply);
 
-        Optional<QuestionBase> question = getQuestion(approved);
-        Optional<BiConsumer<Player, Value_Type>> consumer = getConsumer(approved);
+        boolean state = true; //state always = yes
+
+        if (value instanceof Boolean) {
+            state = (Boolean) value;
+        }
+
+        Optional<QuestionBase> question = getQuestion(state);
+        Optional<BiConsumer<Player, Value_Type>> consumer = getConsumer(state);
         consumer.ifPresent(playerConsumer -> playerConsumer.accept(player, value));
 
-        if (question.isPresent())
+        if (question.isPresent()) {
             remove(player, question.get());
-
-        return question.isPresent() ? question : interpreterNext(player);
+            getInterpreter().setCurrent(player, question);
+            return question;
+        } else {
+            if (!hasNext(player)) {
+                getInterpreter().end(player);
+                return Optional.empty();
+            } else {
+                return interpreterNext(player);
+            }
+        }
     }
 
 }

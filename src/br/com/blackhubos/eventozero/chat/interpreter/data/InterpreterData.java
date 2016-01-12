@@ -19,9 +19,12 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.data;
 
+import org.bukkit.entity.Player;
+
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter;
 import br.com.blackhubos.eventozero.chat.interpreter.base.QuestionBase;
@@ -30,11 +33,13 @@ public class InterpreterData {
     private final Interpreter interpreter;
     private final Deque<QuestionBase> questionBaseList;
     private final Map<QuestionBase, Object> answers = new HashMap<>();
+    private final BiConsumer<Player, AnswerData> endListener;
     private QuestionBase current;
 
-    public InterpreterData(Interpreter interpreter, Deque<QuestionBase> questionBaseList) {
+    public InterpreterData(Interpreter interpreter, Deque<QuestionBase> questionBaseList, BiConsumer<Player, AnswerData> endListener) {
         this.interpreter = interpreter;
         this.questionBaseList = questionBaseList;
+        this.endListener = endListener;
     }
 
     public Interpreter getInterpreter() {
@@ -49,6 +54,10 @@ public class InterpreterData {
         return current;
     }
 
+    public void setCurrent(QuestionBase current) {
+        this.current = current;
+    }
+
     public QuestionBase answer(Object answer) {
         answers.put(getCurrent(), answer);
         return getCurrent();
@@ -58,9 +67,17 @@ public class InterpreterData {
         return questionBaseList.remove(questionBase);
     }
 
+    public boolean hasNext() {
+        return !questionBaseList.isEmpty();
+    }
+
+    public void callEnd(Player player) {
+        this.endListener.accept(player, new AnswerData(getAnswers()));
+    }
+
     public Map<QuestionBase, Object> getAnswers() {
         Map<QuestionBase, Object> answersCopy = new HashMap<>(answers);
-
         return answersCopy;
     }
+
 }

@@ -28,11 +28,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import br.com.blackhubos.eventozero.chat.interpreter.base.question.QuestionImpl;
 import br.com.blackhubos.eventozero.chat.interpreter.data.AnswerData;
 import br.com.blackhubos.eventozero.chat.interpreter.data.InterpreterData;
 import br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern;
+import br.com.blackhubos.eventozero.chat.interpreter.state.AnswerState;
 
 public class Interpreter {
 
@@ -64,17 +66,21 @@ public class Interpreter {
     }
 
     public <T> Question<T> question(String id, String question, IPattern<T> pattern) {
-        Question<T> questionAdd = new QuestionImpl<T>(id, question, pattern, this);
+        Question<T> questionAdd = alternativeQuestion(id, question, pattern);
         registeredQuestion.offerLast(questionAdd);
         return questionAdd;
     }
 
-    public boolean apply(Player player) {
+    public <T> Question<T> alternativeQuestion(String id, String question, IPattern<T> pattern) {
+        return new QuestionImpl<T>(id, question, pattern, this);
+    }
+
+    public boolean apply(Player player, BiConsumer<Player, AnswerData> endListener) {
         if (playerInterpreter.containsKey(player))
             return false;
 
         Deque<QuestionBase> copy = new LinkedList<>(registeredQuestion);
-        InterpreterData interpreterData = new InterpreterData(this, copy);
+        InterpreterData interpreterData = new InterpreterData(this, copy, endListener);
 
         playerInterpreter.put(player, interpreterData);
 
@@ -89,17 +95,23 @@ public class Interpreter {
     }
 
     @SuppressWarnings("unchecked")
-    public Optional<QuestionBase> answer(Player player, String answer) {
+    public AnswerState answer(Player player, String answer) {
         Optional<QuestionBase> baseOptional = current(player);
         if (baseOptional.isPresent()) {
             if (!baseOptional.get().isOk(answer)) {
-                return Optional.empty();
+                return new AnswerState(Optional.empty(), AnswerState.State.INVALID_ANSWER_FORMAT);
             } else {
                 QuestionBase questionBase = playerInterpreter.get(player).answer(baseOptional.get().transform(answer));
-                return questionBase.next(player, answer);
+                Optional<QuestionBase> next = questionBase.next(player, answer);
+                if (next.isPresent()) {
+                    player.sendMessage(next.get().question());
+                } else {
+                    return new AnswerState(Optional.empty(), AnswerState.State.NO_MORE_QUESTIONS);
+                }
+                return new AnswerState(next, AnswerState.State.OK);
             }
         } else {
-            return Optional.empty();
+            return new AnswerState(Optional.empty(), AnswerState.State.NO_CURRENT_QUESTION);
         }
     }
 
@@ -122,16 +134,26 @@ public class Interpreter {
 
     protected boolean remove(Player player, QuestionBase questionBase) {
         return playerInterpreter.containsKey(player) && playerInterpreter.get(player).remove(questionBase);
-
     }
 
-    public Optional<AnswerData> end(Player player) {
+    public boolean hasNext(Player player) {
         if (!playerInterpreter.containsKey(player))
-            return Optional.empty();
-        AnswerData data = new AnswerData(playerInterpreter.get(player).getAnswers());
-        playerInterpreter.remove(player);
-
-        return Optional.of(data);
+            return false;
+        return playerInterpreter.get(player).hasNext();
     }
 
+    public boolean end(Player player) {
+        if (!playerInterpreter.containsKey(player))
+            return false;
+        playerInterpreter.get(player).callEnd(player);
+        playerInterpreter.remove(player);
+        return true;
+    }
+
+    protected boolean setCurrent(Player player, Optional<QuestionBase> question) {
+        if (!playerInterpreter.containsKey(player))
+            return false;
+        playerInterpreter.get(player).setCurrent(question.get());
+        return true;
+    }
 }
