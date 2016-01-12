@@ -22,6 +22,7 @@ package br.com.blackhubos.eventozero.chat.interpreter.base;
 import org.bukkit.entity.Player;
 
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface Question<T> extends QuestionBase<T> {
@@ -31,6 +32,11 @@ public interface Question<T> extends QuestionBase<T> {
     @SuppressWarnings("unchecked")
     default Question<T> expect(Predicate<T> expect) {
         setExpect(expect);
+        return this;
+    }
+
+    default Question<T> yesOrNoIf(Function<YesOrNo, T> predicate) {
+        setYesOrNoIf(predicate);
         return this;
     }
 

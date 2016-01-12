@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern;
@@ -37,6 +38,8 @@ public interface QuestionBase<Value_Type> {
     IPattern<Value_Type> pattern();
 
     // Set methods
+
+    void setYesOrNoIf(Function<YesOrNo, Value_Type> predicate);
 
     void setYes(QuestionBase questionBase);
 
@@ -55,6 +58,8 @@ public interface QuestionBase<Value_Type> {
     // Get methods
 
     Optional<BiConsumer<Player, Value_Type>> getConsumer(boolean approved);
+
+    Optional<Function<Value_Type, YesOrNo>> getYesOrNoFunction();
 
     Interpreter getInterpreter();
 
@@ -98,8 +103,11 @@ public interface QuestionBase<Value_Type> {
 
         boolean state = true; //state always = yes
 
-        if (value instanceof Boolean) {
-            state = (Boolean) value;
+        Optional<Function<Value_Type, YesOrNo>> yesOrNo = getYesOrNoFunction();
+        if (yesOrNo.isPresent()) {
+            state = yesOrNo.get().apply(value) == YesOrNo.YES;
+        } else {
+            state = pattern().yesOrNo(value);
         }
 
         Optional<QuestionBase> question = getQuestion(state);

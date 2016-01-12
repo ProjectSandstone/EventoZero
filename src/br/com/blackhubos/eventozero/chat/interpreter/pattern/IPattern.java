@@ -19,6 +19,7 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.pattern;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -28,14 +29,36 @@ public class IPattern<T> {
 
     private final Predicate<String> check;
     private final ValueTransformer<T> transformer;
+    private final Optional<Predicate<T>> yesOrNo;
+
+    public IPattern(Pattern pattern, ValueTransformer<T> transformer, Predicate<T> yesOrNo) {
+        this(value -> pattern.matcher(value).matches(), transformer, Optional.of(yesOrNo));
+    }
 
     public IPattern(Pattern pattern, ValueTransformer<T> transformer) {
-        this(value -> pattern.matcher(value).matches(), transformer);
+        this(value -> pattern.matcher(value).matches(), transformer, Optional.empty());
     }
 
     public IPattern(Predicate<String> check, ValueTransformer<T> transformer) {
+        this(check, transformer, Optional.empty());
+    }
+
+    public IPattern(Predicate<String> check, ValueTransformer<T> transformer, Predicate<T> yesOrNo) {
+        this(check, transformer, Optional.ofNullable(yesOrNo));
+    }
+
+    public IPattern(Predicate<String> check, ValueTransformer<T> transformer, Optional<Predicate<T>> yesOrNo) {
         this.check = check;
         this.transformer = transformer;
+        this.yesOrNo = yesOrNo;
+    }
+
+    public boolean yesOrNo(T value) {
+        if (this.yesOrNo.isPresent()) {
+            return yesOrNo.get().test(value);
+        }
+
+        return true;
     }
 
     public boolean check(String match) {

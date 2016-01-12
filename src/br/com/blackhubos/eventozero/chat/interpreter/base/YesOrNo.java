@@ -17,16 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package br.com.blackhubos.eventozero.chat.interpreter.pattern;
+package br.com.blackhubos.eventozero.chat.interpreter.base;
 
-import java.util.regex.Pattern;
-
-import br.com.blackhubos.eventozero.util.Framework;
-
-public class Patterns {
-
-    public static final IPattern<String> ALL = new IPattern<>(value -> true, java.lang.String::valueOf);
-    public static final IPattern<Boolean> Boolean = new IPattern<>(Framework::tryBoolean, Framework::getBoolean, value -> value);
-    public static final IPattern<Integer> Integer = new IPattern<>(Pattern.compile("\\-?[0-9]+"), java.lang.Integer::parseInt);
-
+public enum YesOrNo {
+    YES,
+    NO
 }
