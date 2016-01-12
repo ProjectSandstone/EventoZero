@@ -32,7 +32,7 @@ public abstract class Ability {
 
     private final ConcurrentMap<String, Long> cooldowns;
 
-    public Ability(String name, final long cooldown) {
+    public Ability(final String name, final long cooldown) {
         this.name = name;
         this.cooldown = cooldown;
         this.cooldowns = new ConcurrentHashMap<>();
