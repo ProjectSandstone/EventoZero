@@ -21,8 +21,13 @@ package br.com.blackhubos.eventozero.chat.interpreter;
 
 import org.bukkit.ChatColor;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
+import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter;
 import br.com.blackhubos.eventozero.chat.interpreter.base.Question;
+import br.com.blackhubos.eventozero.chat.interpreter.base.BooleanResult;
 import br.com.blackhubos.eventozero.chat.interpreter.pattern.Patterns;
 
 public class Register {
@@ -30,7 +35,12 @@ public class Register {
 
     public static final Interpreter questionario1 = new Interpreter("questionario1");
 
-    public void setupInterpreters() {
+    public static void setupCommandsAndListener(EventoZero plugin) {
+        plugin.getCommand("test").setExecutor(new InterpreterCommand(questionario1));
+        plugin.getServer().getPluginManager().registerEvents(new QuestionListener(questionario1), plugin);
+    }
+
+    public static void setupInterpreters() {
         questionario1.question("nome", ChatColor.GREEN + "Qual seu nome (Permitido: somente letras)?", Patterns.ALL)
                 .expect((nome) -> nome.matches("(?i)[A-Z ]+"))
                 .yes((player, i) -> player.sendMessage("Seu nome é: " + i));
@@ -58,5 +68,19 @@ public class Register {
 
                 })
                 .no(irSpawn, (player, i) -> player.sendMessage("Entao ok!"));
+        questionario1.question("data_de_nascimento", ChatColor.GREEN + "Qual sua data de nascimento? (Permitido: Data numerica [DIA/MES/ANO]", Patterns.Date)
+                .booleanResult((data) -> {
+                    long yearsDelta = data.until(LocalDate.now(), ChronoUnit.YEARS);
+                    if(yearsDelta >= 18)
+                        return BooleanResult.YES;
+                    return BooleanResult.NO;
+                })
+                .yes((player, resposta) -> {
+                    player.sendMessage(ChatColor.GREEN + "Você é maior de idade :D");
+
+                })
+                .no((player, resposta) -> {
+                    player.sendMessage(ChatColor.RED + "Você não é maior de idade!");
+                });
     }
 }

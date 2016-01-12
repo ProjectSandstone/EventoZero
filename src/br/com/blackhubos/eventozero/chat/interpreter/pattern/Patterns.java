@@ -19,14 +19,28 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.pattern;
 
+import java.time.LocalDate;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import br.com.blackhubos.eventozero.util.Framework;
 
-public class Patterns {
+public final class Patterns {
 
     public static final IPattern<String> ALL = new IPattern<>(value -> true, java.lang.String::valueOf);
     public static final IPattern<Boolean> Boolean = new IPattern<>(Framework::tryBoolean, Framework::getBoolean, value -> value);
     public static final IPattern<Integer> Integer = new IPattern<>(Pattern.compile("\\-?[0-9]+"), java.lang.Integer::parseInt);
+    public static final IPattern<LocalDate> Date = new IPattern<>(Pattern.compile("([0-9]{2})/([0-9]{2})/([0-9]{4})"), input -> {
+        Matcher matcher = Pattern.compile("([0-9]{2})/([0-9]{2})/([0-9]{4})").matcher(input);
+        if(matcher.matches()){
+            return LocalDate.of(java.lang.Integer.parseInt(matcher.group(3)),
+                    java.lang.Integer.parseInt(matcher.group(2)),
+                    java.lang.Integer.parseInt(matcher.group(1)));
+        }else{
+            return null;
+        }
+
+    });
+
 
 }

@@ -23,14 +23,15 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter;
-import br.com.blackhubos.eventozero.chat.interpreter.base.Question;
 import br.com.blackhubos.eventozero.chat.interpreter.base.QuestionBase;
+import br.com.blackhubos.eventozero.chat.interpreter.base.BooleanResult;
 import br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern;
 
-public class QuestionImpl<T> implements Question<T> {
+public class QuestionImpl<T> implements QuestionBase<T> {
 
     private final String id;
     private final String question;
@@ -44,7 +45,7 @@ public class QuestionImpl<T> implements Question<T> {
     private Optional<BiConsumer<Player, T>> noConsumer = Optional.empty();
 
     private Optional<Predicate<T>> expect = Optional.empty();
-
+    private Optional<Function<T, BooleanResult>> booleanResultFunction = Optional.empty();
 
     public QuestionImpl(String id, String question, IPattern<T> pattern, Interpreter interpreter) {
         this.id = id;
@@ -67,6 +68,11 @@ public class QuestionImpl<T> implements Question<T> {
     @Override
     public IPattern<T> pattern() {
         return this.pattern;
+    }
+
+    @Override
+    public void setBooleanResult(Function<T, BooleanResult> function) {
+        booleanResultFunction = Optional.of(function);
     }
 
     @Override
@@ -115,6 +121,11 @@ public class QuestionImpl<T> implements Question<T> {
             return yesConsumer;
         else
             return noConsumer;
+    }
+
+    @Override
+    public Optional<Function<T, BooleanResult>> getBooleanResult() {
+        return booleanResultFunction;
     }
 
     @Override

@@ -34,7 +34,7 @@ import br.com.blackhubos.eventozero.chat.interpreter.base.question.QuestionImpl;
 import br.com.blackhubos.eventozero.chat.interpreter.data.AnswerData;
 import br.com.blackhubos.eventozero.chat.interpreter.data.InterpreterData;
 import br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern;
-import br.com.blackhubos.eventozero.chat.interpreter.state.AnswerState;
+import br.com.blackhubos.eventozero.chat.interpreter.state.AnswerResult;
 
 public class Interpreter {
 
@@ -67,7 +67,7 @@ public class Interpreter {
 
     public <T> Question<T> question(String id, String question, IPattern<T> pattern) {
         Question<T> questionAdd = alternativeQuestion(id, question, pattern);
-        registeredQuestion.offerLast(questionAdd);
+        registeredQuestion.offerLast((QuestionBase) questionAdd);
         return questionAdd;
     }
 
@@ -95,23 +95,23 @@ public class Interpreter {
     }
 
     @SuppressWarnings("unchecked")
-    public AnswerState answer(Player player, String answer) {
+    public AnswerResult answer(Player player, String answer) {
         Optional<QuestionBase> baseOptional = current(player);
         if (baseOptional.isPresent()) {
             if (!baseOptional.get().isOk(answer)) {
-                return new AnswerState(Optional.empty(), AnswerState.State.INVALID_ANSWER_FORMAT);
+                return new AnswerResult(Optional.empty(), AnswerResult.State.INVALID_ANSWER_FORMAT);
             } else {
                 QuestionBase questionBase = playerInterpreter.get(player).answer(baseOptional.get().transform(answer));
                 Optional<QuestionBase> next = questionBase.next(player, answer);
                 if (next.isPresent()) {
                     player.sendMessage(next.get().question());
                 } else {
-                    return new AnswerState(Optional.empty(), AnswerState.State.NO_MORE_QUESTIONS);
+                    return new AnswerResult(Optional.empty(), AnswerResult.State.NO_MORE_QUESTIONS);
                 }
-                return new AnswerState(next, AnswerState.State.OK);
+                return new AnswerResult(next, AnswerResult.State.OK);
             }
         } else {
-            return new AnswerState(Optional.empty(), AnswerState.State.NO_CURRENT_QUESTION);
+            return new AnswerResult(Optional.empty(), AnswerResult.State.NO_CURRENT_QUESTION);
         }
     }
 

@@ -28,7 +28,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import java.util.Optional;
 
 import br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter;
-import br.com.blackhubos.eventozero.chat.interpreter.state.AnswerState;
+import br.com.blackhubos.eventozero.chat.interpreter.state.AnswerResult;
 
 public class QuestionListener implements Listener {
 
@@ -45,8 +45,8 @@ public class QuestionListener implements Listener {
         Optional<Interpreter> current = Interpreter.getPlayerCurrent(player);
         if (current.isPresent()) {
             if (current.get() == questionario) {
-                AnswerState state = current.get().answer(player, event.getMessage());
-                AnswerState.State answerState = state.getState();
+                AnswerResult result = current.get().answer(player, event.getMessage());
+                AnswerResult.State answerState = result.getState();
 
                 switch (answerState) {
                     case INVALID_ANSWER_FORMAT: {

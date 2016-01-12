@@ -29,7 +29,7 @@ import java.util.function.Predicate;
 import br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern;
 import br.com.blackhubos.eventozero.chat.interpreter.values.ValueTransformer;
 
-public interface QuestionBase<Value_Type> {
+public interface QuestionBase<Value_Type> extends Question<Value_Type> {
 
     String id();
 
@@ -37,9 +37,60 @@ public interface QuestionBase<Value_Type> {
 
     IPattern<Value_Type> pattern();
 
+    // Override Methods
+
+    @Override
+    default Question<Value_Type> expect(Predicate<Value_Type> expect) {
+        setExpect(expect);
+        return this;
+    }
+
+    @Override
+    default Question<Value_Type> booleanResult(Function<Value_Type, BooleanResult> function) {
+        setBooleanResult(function);
+        return this;
+    }
+
+    @Override
+    default Question<Value_Type> yes(Question ifYes) {
+        setYes((QuestionBase) ifYes);
+        return this;
+    }
+
+    @Override
+    default Question<Value_Type> no(Question ifNo) {
+        setNo((QuestionBase) ifNo);
+        return this;
+    }
+
+    @Override
+    default Question<Value_Type> yes(BiConsumer<Player, Value_Type> ifYesConsumer) {
+        setYes(ifYesConsumer);
+        return this;
+    }
+
+    @Override
+    default Question<Value_Type> no(BiConsumer<Player, Value_Type> ifNoConsumer) {
+        setNo(ifNoConsumer);
+        return this;
+    }
+
+    @Override
+    default Question<Value_Type> yes(Question ifYes, BiConsumer<Player, Value_Type> ifYesConsumer) {
+        setYes((QuestionBase) ifYes, ifYesConsumer);
+        return this;
+    }
+
+    @Override
+    default Question<Value_Type> no(Question ifYes, BiConsumer<Player, Value_Type> ifNoConsumer) {
+        setNo((QuestionBase) ifYes, ifNoConsumer);
+        return this;
+    }
+
+
     // Set methods
 
-    void setYesOrNoIf(Function<YesOrNo, Value_Type> predicate);
+    void setBooleanResult(Function<Value_Type, BooleanResult> function);
 
     void setYes(QuestionBase questionBase);
 
@@ -59,7 +110,7 @@ public interface QuestionBase<Value_Type> {
 
     Optional<BiConsumer<Player, Value_Type>> getConsumer(boolean approved);
 
-    Optional<Function<Value_Type, YesOrNo>> getYesOrNoFunction();
+    Optional<Function<Value_Type, BooleanResult>> getBooleanResult();
 
     Interpreter getInterpreter();
 
@@ -103,9 +154,9 @@ public interface QuestionBase<Value_Type> {
 
         boolean state = true; //state always = yes
 
-        Optional<Function<Value_Type, YesOrNo>> yesOrNo = getYesOrNoFunction();
+        Optional<Function<Value_Type, BooleanResult>> yesOrNo = getBooleanResult();
         if (yesOrNo.isPresent()) {
-            state = yesOrNo.get().apply(value) == YesOrNo.YES;
+            state = yesOrNo.get().apply(value) == BooleanResult.YES;
         } else {
             state = pattern().yesOrNo(value);
         }

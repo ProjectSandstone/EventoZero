@@ -25,20 +25,13 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public interface Question<T> extends QuestionBase<T> {
+public interface Question<T> {
 
 
     // Layout methods
-    @SuppressWarnings("unchecked")
-    default Question<T> expect(Predicate<T> expect) {
-        setExpect(expect);
-        return this;
-    }
+    Question<T> expect(Predicate<T> expect);
 
-    default Question<T> yesOrNoIf(Function<YesOrNo, T> predicate) {
-        setYesOrNoIf(predicate);
-        return this;
-    }
+    Question<T> booleanResult(Function<T, BooleanResult> function);
 
     default Question<T> yes() {
         return this;
@@ -48,38 +41,16 @@ public interface Question<T> extends QuestionBase<T> {
         return this;
     }
 
-    default Question<T> yes(QuestionBase ifYes) {
-        setYes(ifYes);
-        return this;
-    }
+    Question<T> yes(Question ifYes);
 
-    default Question<T> no(QuestionBase ifNo) {
-        setNo(ifNo);
-        return this;
-    }
+    Question<T> no(Question ifNo);
 
-    @SuppressWarnings("unchecked")
-    default Question<T> yes(BiConsumer<Player, T> ifYesConsumer) {
-        setYes(ifYesConsumer);
-        return this;
-    }
+    Question<T> yes(BiConsumer<Player, T> ifYesConsumer);
 
-    @SuppressWarnings("unchecked")
-    default Question<T> no(BiConsumer<Player, T> ifNoConsumer) {
-        setNo(ifNoConsumer);
-        return this;
-    }
+    Question<T> no(BiConsumer<Player, T> ifNoConsumer);
 
-    @SuppressWarnings("unchecked")
-    default Question<T> yes(QuestionBase ifYes, BiConsumer<Player, T> ifYesConsumer) {
-        setYes(ifYes, ifYesConsumer);
-        return this;
-    }
+    Question<T> yes(Question ifYes, BiConsumer<Player, T> ifYesConsumer);
 
-    @SuppressWarnings("unchecked")
-    default Question<T> no(QuestionBase ifYes, BiConsumer<Player, T> ifNoConsumer) {
-        setNo(ifYes, ifNoConsumer);
-        return this;
-    }
+    Question<T> no(Question ifYes, BiConsumer<Player, T> ifNoConsumer);
 
 }

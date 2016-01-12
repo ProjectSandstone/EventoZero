@@ -17,33 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package br.com.blackhubos.eventozero.chat.interpreter.state;
+package br.com.blackhubos.eventozero.chat.interpreter.base;
 
-import java.util.Optional;
-
-import br.com.blackhubos.eventozero.chat.interpreter.base.QuestionBase;
-
-public class AnswerState {
-    private final Optional<QuestionBase> next;
-    private final State state;
-
-    public AnswerState(Optional<QuestionBase> next, State state) {
-        this.next = next;
-        this.state = state;
-    }
-
-    public Optional<QuestionBase> getNext() {
-        return next;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public enum State {
-        OK,
-        INVALID_ANSWER_FORMAT,
-        NO_MORE_QUESTIONS,
-        NO_CURRENT_QUESTION
-    }
+public enum BooleanResult {
+    YES,
+    NO
 }
