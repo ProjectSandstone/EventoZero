@@ -19,31 +19,70 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.state;
 
+import org.bukkit.entity.Player;
+
 import java.util.Optional;
 
 import br.com.blackhubos.eventozero.chat.interpreter.base.QuestionBase;
 
+/**
+ * Resultado das chamadas do método {@link br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter#answer(Player,
+ * String)}
+ */
 public class AnswerResult {
+
     private final Optional<QuestionBase> next;
     private final State state;
 
+    /**
+     * Construtor do resultado
+     *
+     * @param next  Próxima questão, o resultado é relativo e dependente do State caso o gerenciador
+     *              seja o {@link br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter}.
+     * @param state Estado
+     */
     public AnswerResult(Optional<QuestionBase> next, State state) {
         this.next = next;
         this.state = state;
     }
 
+    /**
+     * Obtém a próxima questão
+     *
+     * @return Próxima questão
+     */
     public Optional<QuestionBase> getNext() {
         return next;
     }
 
+    /**
+     * Obtém o estado
+     *
+     * @return O estado
+     */
     public State getState() {
         return state;
     }
 
     public enum State {
+        /**
+         * Indica que tudo está certo para prosseguir
+         */
         OK,
+
+        /**
+         * Indica que a resposta é invalida (não passou pelos testes)
+         */
         INVALID_ANSWER_FORMAT,
+
+        /**
+         * Indica que não há mais questões/Fim do questionário
+         */
         NO_MORE_QUESTIONS,
+
+        /**
+         * Indica que não há questão atual para o jogador
+         */
         NO_CURRENT_QUESTION
     }
 }

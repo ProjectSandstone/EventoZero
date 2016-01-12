@@ -24,14 +24,30 @@ import java.util.Map;
 import java.util.Optional;
 
 import br.com.blackhubos.eventozero.chat.interpreter.base.QuestionBase;
+import br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern;
 
+/**
+ * Classe para gerenciar as respotas
+ */
 public class AnswerData {
     private final Map<QuestionBase, Object> answers;
 
+    /**
+     * Construtor dos dados das respostas
+     *
+     * @param answers Mapa das repostas
+     */
     public AnswerData(Map<QuestionBase, Object> answers) {
         this.answers = answers;
     }
 
+    /**
+     * Obtém uma resposta baseada no ID da questão
+     *
+     * @param id Id da questão declarada no {@link br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter#question(String,
+     *           String, IPattern)}
+     * @return Resposta se ela existir, ou {@link Optional#empty()}
+     */
     public Optional<Object> getAnswer(String id) {
         for (QuestionBase questionBase : answers.keySet()) {
             if (questionBase.id().equals(id)) {
@@ -41,6 +57,14 @@ public class AnswerData {
         return Optional.empty();
     }
 
+    /**
+     * Obtém uma resposta baseada no ID da questão e retorna ela como o tipo informado
+     *
+     * @param id  Id da questão declarada no {@link br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter#question(String,
+     *            String, IPattern)}
+     * @param <T> Tipo para castear a resposta
+     * @return Resposta se ela existir, ou {@link Optional#empty()}
+     */
     @SuppressWarnings("unchecked")
     public <T> Optional<T> getAnswerAs(String id) {
         Optional<Object> answer;
@@ -50,6 +74,11 @@ public class AnswerData {
         return Optional.empty();
     }
 
+    /**
+     * Obtém um mapa imutável das questões
+     *
+     * @return Um mapa imutável das questões
+     */
     public Map<QuestionBase, Object> toMap() {
         return Collections.unmodifiableMap(answers);
     }

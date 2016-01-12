@@ -19,10 +19,13 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.values;
 
-/**
- * Created by jonathan on 11/01/16.
- */
 @FunctionalInterface
 public interface ValueTransformer<TYPE> {
+    /**
+     * Transforma os valores
+     *
+     * @param input Texto de entrada
+     * @return Valor traduzido de saida
+     */
     TYPE transform(String input);
 }

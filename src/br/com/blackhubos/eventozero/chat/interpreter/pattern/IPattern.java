@@ -20,51 +20,118 @@
 package br.com.blackhubos.eventozero.chat.interpreter.pattern;
 
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
+import br.com.blackhubos.eventozero.chat.interpreter.base.BooleanResult;
+import br.com.blackhubos.eventozero.chat.interpreter.base.Question;
 import br.com.blackhubos.eventozero.chat.interpreter.values.ValueTransformer;
 
+/**
+ * Classe de avaliação de valores
+ *
+ * @param <T> Tipo do valor
+ */
 public class IPattern<T> {
 
     private final Predicate<String> check;
     private final ValueTransformer<T> transformer;
-    private final Optional<Predicate<T>> yesOrNo;
+    private final Optional<Function<T, BooleanResult>> booleanResult;
 
-    public IPattern(Pattern pattern, ValueTransformer<T> transformer, Predicate<T> yesOrNo) {
-        this(value -> pattern.matcher(value).matches(), transformer, Optional.of(yesOrNo));
+    /**
+     * Cria um novo IPattern
+     *
+     * @param pattern       Pattern regex para avaliar a resposta
+     * @param transformer   Tradutor de valores
+     * @param booleanResult Avaliador responsável por informar qual será as definições que serão
+     *                      consideradas pelo {@link Question}, é subscrito pelo {@link
+     *                      Question#booleanResult(Function)} caso informado
+     */
+    public IPattern(Pattern pattern, ValueTransformer<T> transformer, Function<T, BooleanResult> booleanResult) {
+        this(value -> pattern.matcher(value).matches(), transformer, Optional.of(booleanResult));
     }
 
+    /**
+     * Cria um novo IPattern
+     *
+     * Sempre será considerado as definições yes {@link Question#yes()}
+     *
+     * @param pattern     Pattern regex para avaliar a resposta
+     * @param transformer Tradutor de valores
+     */
     public IPattern(Pattern pattern, ValueTransformer<T> transformer) {
         this(value -> pattern.matcher(value).matches(), transformer, Optional.empty());
     }
 
+    /**
+     * Cria um novo IPattern
+     *
+     * Sempre será considerado as definições yes {@link Question#yes()}
+     *
+     * @param check       Predicato que irá avaliar as respostas
+     * @param transformer Tradutor de valores
+     */
     public IPattern(Predicate<String> check, ValueTransformer<T> transformer) {
         this(check, transformer, Optional.empty());
     }
 
-    public IPattern(Predicate<String> check, ValueTransformer<T> transformer, Predicate<T> yesOrNo) {
-        this(check, transformer, Optional.ofNullable(yesOrNo));
+    /**
+     * Cria um novo IPattern
+     *
+     * @param check         Predicato que irá avaliar as respostas
+     * @param transformer   Tradutor de valores
+     * @param booleanResult Avaliador responsável por informar qual será as definições que serão
+     *                      consideradas pelo {@link Question}, é subscrito pelo {@link
+     *                      Question#booleanResult(Function)} caso informado
+     */
+    public IPattern(Predicate<String> check, ValueTransformer<T> transformer, Function<T, BooleanResult> booleanResult) {
+        this(check, transformer, Optional.ofNullable(booleanResult));
     }
 
-    public IPattern(Predicate<String> check, ValueTransformer<T> transformer, Optional<Predicate<T>> yesOrNo) {
+    /**
+     * Cria um novo IPattern
+     *
+     * @param check         Predicato que irá avaliar as respostas
+     * @param transformer   Tradutor de valores
+     * @param booleanResult Avaliador responsável por informar qual será as definições que serão
+     *                      consideradas pelo {@link Question}, é subscrito pelo {@link
+     *                      Question#booleanResult(Function)} caso informado
+     */
+    public IPattern(Predicate<String> check, ValueTransformer<T> transformer, Optional<Function<T, BooleanResult>> booleanResult) {
         this.check = check;
         this.transformer = transformer;
-        this.yesOrNo = yesOrNo;
+        this.booleanResult = booleanResult;
     }
 
-    public boolean yesOrNo(T value) {
-        if (this.yesOrNo.isPresent()) {
-            return yesOrNo.get().test(value);
+    /**
+     * Obtém quais definições serão consideradas pelo {@link Question}
+     *
+     * @param value Valor
+     * @return Definições a serem consideradas pelo {@link Question}
+     */
+    public BooleanResult booleanResult(T value) {
+        if (this.booleanResult.isPresent()) {
+            return booleanResult.get().apply(value);
         }
-
-        return true;
+        return BooleanResult.YES;
     }
 
+    /**
+     * Verifica se o predicado/pattern aceita o texto informado
+     *
+     * @param match Texto
+     * @return True caso aceite, false caso contrário
+     */
     public boolean check(String match) {
         return check.test(match);
     }
 
+    /**
+     * Obtém o tradutor de valores
+     *
+     * @return Tradutor de valores
+     */
     public ValueTransformer<T> getTransformer() {
         return transformer;
     }

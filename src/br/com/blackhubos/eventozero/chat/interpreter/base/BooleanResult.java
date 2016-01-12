@@ -19,6 +19,11 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.base;
 
+import java.util.function.Function;
+
+/**
+ * Resultado do método {@link Question#booleanResult(Function)}
+ */
 public enum BooleanResult {
     YES,
     NO

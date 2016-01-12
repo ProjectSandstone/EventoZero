@@ -23,20 +23,40 @@ import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import br.com.blackhubos.eventozero.chat.interpreter.base.BooleanResult;
 import br.com.blackhubos.eventozero.util.Framework;
 
+/**
+ * Avaliadores padrões
+ */
 public final class Patterns {
-
+    /**
+     * Avaliador global para textos
+     */
     public static final IPattern<String> ALL = new IPattern<>(value -> true, java.lang.String::valueOf);
-    public static final IPattern<Boolean> Boolean = new IPattern<>(Framework::tryBoolean, Framework::getBoolean, value -> value);
+
+    /**
+     * Avaliador para booleanos
+     */
+    public static final IPattern<Boolean> Boolean = new IPattern<>(Framework::tryBoolean, Framework::getBoolean, value -> value ? BooleanResult.YES : BooleanResult.NO);
+
+    /**
+     * Avaliador para numeros
+     */
     public static final IPattern<Integer> Integer = new IPattern<>(Pattern.compile("\\-?[0-9]+"), java.lang.Integer::parseInt);
+
+    // Avaliadores menos simples
+
+    /**
+     * Avaliador de datas (Tipo: {@link LocalDate})
+     */
     public static final IPattern<LocalDate> Date = new IPattern<>(Pattern.compile("([0-9]{2})/([0-9]{2})/([0-9]{4})"), input -> {
         Matcher matcher = Pattern.compile("([0-9]{2})/([0-9]{2})/([0-9]{4})").matcher(input);
-        if(matcher.matches()){
+        if (matcher.matches()) {
             return LocalDate.of(java.lang.Integer.parseInt(matcher.group(3)),
                     java.lang.Integer.parseInt(matcher.group(2)),
                     java.lang.Integer.parseInt(matcher.group(1)));
-        }else{
+        } else {
             return null;
         }
 

@@ -26,11 +26,16 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import br.com.blackhubos.eventozero.chat.interpreter.base.BooleanResult;
 import br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter;
 import br.com.blackhubos.eventozero.chat.interpreter.base.QuestionBase;
-import br.com.blackhubos.eventozero.chat.interpreter.base.BooleanResult;
 import br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern;
 
+/**
+ * Implementação do QuestionBase
+ *
+ * @param <T> Tipo da resposta
+ */
 public class QuestionImpl<T> implements QuestionBase<T> {
 
     private final String id;
@@ -47,6 +52,15 @@ public class QuestionImpl<T> implements QuestionBase<T> {
     private Optional<Predicate<T>> expect = Optional.empty();
     private Optional<Function<T, BooleanResult>> booleanResultFunction = Optional.empty();
 
+    /**
+     * Construtor de QuestionBase
+     *
+     * @param id          Id da question para obter posteriormente
+     * @param question    Questão
+     * @param pattern     Pattern/Modelo que a resposta deve seguir, também será o que irá
+     *                    transformar a respota em valor
+     * @param interpreter Interpretador
+     */
     public QuestionImpl(String id, String question, IPattern<T> pattern, Interpreter interpreter) {
         this.id = id;
         this.question = question;
@@ -68,11 +82,6 @@ public class QuestionImpl<T> implements QuestionBase<T> {
     @Override
     public IPattern<T> pattern() {
         return this.pattern;
-    }
-
-    @Override
-    public void setBooleanResult(Function<T, BooleanResult> function) {
-        booleanResultFunction = Optional.of(function);
     }
 
     @Override
@@ -129,6 +138,11 @@ public class QuestionImpl<T> implements QuestionBase<T> {
     }
 
     @Override
+    public void setBooleanResult(Function<T, BooleanResult> function) {
+        booleanResultFunction = Optional.of(function);
+    }
+
+    @Override
     public Interpreter getInterpreter() {
         return this.interpreter;
     }
@@ -142,7 +156,4 @@ public class QuestionImpl<T> implements QuestionBase<T> {
     public void setExpect(Predicate<T> expect) {
         this.expect = Optional.of(expect);
     }
-
-    //public QuestionImpl(String id, String question, IPattern)
-
 }
