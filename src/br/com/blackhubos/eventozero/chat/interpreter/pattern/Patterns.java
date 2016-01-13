@@ -20,10 +20,12 @@
 package br.com.blackhubos.eventozero.chat.interpreter.pattern;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import br.com.blackhubos.eventozero.chat.interpreter.base.BooleanResult;
+import br.com.blackhubos.eventozero.chat.interpreter.values.ListTransformer;
 import br.com.blackhubos.eventozero.util.Framework;
 
 /**
@@ -45,7 +47,18 @@ public final class Patterns {
      */
     public static final IPattern<Integer> Integer = new IPattern<>(Pattern.compile("\\-?[0-9]+"), java.lang.Integer::parseInt);
 
+    /**
+     * Avaliador para double
+     */
+    public static final IPattern<Double> Double = new IPattern<>(Pattern.compile("\\-?[0-9]+[.]?[0-9]+"), java.lang.Double::parseDouble);
+
+    /**
+     * Tradutor de listas de Strings (pode conter qualquer caractere)
+     */
+    public static final IPattern<List<String>> StringList = new IPattern<>(value -> true, ListTransformer.STRING_LIST_TRANSFORMER);
+
     // Avaliadores menos simples
+
 
     /**
      * Avaliador de datas (Tipo: {@link LocalDate})
