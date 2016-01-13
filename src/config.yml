@@ -16,6 +16,7 @@
 tasks:
   # Digite a quantia de tempo para fazer flush (=salvar em disco) os logs.
   savelogs: 5m
+  autostart: 55s
 
 # Configurações de mysql.
 mysql:

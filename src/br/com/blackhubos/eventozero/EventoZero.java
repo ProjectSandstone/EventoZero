@@ -37,6 +37,7 @@ import br.com.blackhubos.eventozero.factory.EventState;
 import br.com.blackhubos.eventozero.handlers.KitHandler;
 import br.com.blackhubos.eventozero.handlers.MessageHandler;
 import br.com.blackhubos.eventozero.handlers.ShopHandler;
+import br.com.blackhubos.eventozero.listeners.EventListener;
 import br.com.blackhubos.eventozero.ranking.RankingListener;
 import br.com.blackhubos.eventozero.storage.Storage;
 import br.com.blackhubos.eventozero.updater.Updater;
@@ -92,8 +93,14 @@ public final class EventoZero extends JavaPlugin
 		MessageHandler.loadMessages(EventoZero.config_messages);
 		EventoZero.kitHandler.loadKits(this);
 		EventoZero.shopHandler.loadShops(this);
-
 		this.getServer().getPluginManager().registerEvents(new RankingListener(), this);
+		this.getServer().getPluginManager().registerEvents(new EventListener(), this);
+		this.getServer().getScheduler().runTaskTimerAsynchronously(this, () -> this.checkEventsToStart(), 20L, 20L);
+	}
+
+	public void checkEventsToStart()
+	{
+
 	}
 
 	@Override
