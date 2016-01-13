@@ -19,6 +19,9 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.pattern;
 
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -57,7 +60,28 @@ public final class Patterns {
      */
     public static final IPattern<List<String>> StringList = new IPattern<>(value -> true, ListTransformer.STRING_LIST_TRANSFORMER);
 
+    /**
+     * Tradutor de Encantamento
+     */
+    public static final IPattern<Enchantment> Enchantment =
+            new IPattern<>(value -> org.bukkit.enchantments.Enchantment.getByName(value.toUpperCase()) != null,
+            input -> org.bukkit.enchantments.Enchantment.getByName(input.toUpperCase()));
+
+
+
+
     // Avaliadores menos simples
+
+    /**
+     * Tradutor de Material
+     */
+    public static final IPattern<Material> Material = new IPattern<>(value -> {
+        try{
+            return org.bukkit.Material.valueOf(value.toUpperCase()) != null;
+        }catch(IllegalArgumentException e) {
+            return false;
+        }
+    }, input -> org.bukkit.Material.valueOf(input.toUpperCase()));
 
 
     /**
@@ -66,6 +90,7 @@ public final class Patterns {
     public static final IPattern<LocalDate> Date = new IPattern<>(Pattern.compile("([0-9]{2})/([0-9]{2})/([0-9]{4})"), input -> {
         Matcher matcher = Pattern.compile("([0-9]{2})/([0-9]{2})/([0-9]{4})").matcher(input);
         if (matcher.matches()) {
+
             return LocalDate.of(java.lang.Integer.parseInt(matcher.group(3)),
                     java.lang.Integer.parseInt(matcher.group(2)),
                     java.lang.Integer.parseInt(matcher.group(1)));

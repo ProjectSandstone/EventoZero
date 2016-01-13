@@ -283,6 +283,22 @@ public class Interpreter {
     }
 
     /**
+     * Finaliza o questionário do jogador caso ele não esteja mais presente no servidor,
+     * este método não chama o endListener, todas as respostas do jogador serão perdidas,
+     * para evitar isto use o matodo: {@link #end(Player)}, porém, este metodo poderá
+     * gerar erros caso o listener tente executar ações com o jogador já offline.
+     *
+     * @param player Jogador
+     * @return True caso finalize com sucesso, false caso não haja questionário atual
+     */
+    public boolean endNoData(Player player) {
+        if (!playerInterpreter.containsKey(player))
+            return false;
+        playerInterpreter.remove(player);
+        return true;
+    }
+
+    /**
      * Define o questionário atual, chamado pelo método processAndNext do {@link
      * QuestionBase#processAndNext(Player, String)}, isto permite que o questionário se mantenha
      * sincronizado com as questões alternativas que podem aparecer no decorrer do questionário
