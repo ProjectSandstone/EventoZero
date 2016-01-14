@@ -19,7 +19,6 @@
  */
 package br.com.blackhubos.eventozero;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Vector;
 
@@ -27,10 +26,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public abstract class EventCommand implements Serializable, CommandExecutor
+public abstract class EventCommand implements CommandExecutor
 {
 
-	private static final long serialVersionUID = -3918201243764031687L;
 	private String command;
 	private String commandDesc;
 	private Vector<String> aliases;
