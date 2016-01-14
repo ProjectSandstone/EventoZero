@@ -43,7 +43,6 @@ public final class EventListener implements Listener
 	 * TODO: se o jogador estava em evento, teleportá-lo, verificar se o evento tem punição por dc, e aplicar as punições.
 	 * TODO: se o jogador estava em evento, verificar se quando ele saiu, já há vencedores
 	 * TODO: atualizar clãs no evento, se o hook estiver ativado
-	 * TODO: se o jogador estava em um questionário retirar-lo. {@link br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter#endNoData(Player)}
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void whenPlayerLeft(final PlayerQuitEvent event)

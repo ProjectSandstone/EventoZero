@@ -30,6 +30,7 @@ import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import br.com.blackhubos.eventozero.chat.interpreter.game.register.InterpreterRegister;
 import br.com.blackhubos.eventozero.factory.Event;
 import br.com.blackhubos.eventozero.factory.EventFactory;
 import br.com.blackhubos.eventozero.factory.EventHandler;
@@ -84,7 +85,8 @@ public final class EventoZero extends JavaPlugin
 				this.getLogger().info(c.getFile() + " padrão copiada com sucesso..");
 			}
 		}
-
+		// Registra tudo relacionado ao interpreter
+		InterpreterRegister.registerAll();
 		EventoZero.shopHandler = new ShopHandler();
 		EventoZero.kitHandler = new KitHandler();
 		EventoZero.eventHandler = new EventHandler();
