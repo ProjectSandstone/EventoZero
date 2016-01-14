@@ -1,9 +1,20 @@
 /**
  *
- * This file ("CuboidLoadException.java") is part from EventoZero (Alpha) Project.
+ * EventoZero - Advanced event factory and executor for Bukkit and Spigot.
+ * Copyright © 2016 BlackHub OS and contributors.
  *
- * Copyright (c) 2015 ReedLine Chambers. All rights reserved.
- * REEDLINE CORPORATION, PROPRIETARY/CONFIDENTIAL. Use its subject to license terms (You can see it in license.txt file)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
 package br.com.blackhubos.eventozero.exceptions;
