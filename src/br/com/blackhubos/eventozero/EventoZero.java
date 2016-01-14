@@ -322,7 +322,7 @@ public final class EventoZero extends JavaPlugin
 			sender.sendMessage("§2• §a/ez add entrada <evento> §2= Adiciona uma nova entrada");
 			sender.sendMessage("§2• §a/ez del entrada <evento> <id> §2= Remove uma entrada");
 			sender.sendMessage("§2• §a/ez entradas <evento> §2= Obtém as entradas e suas IDs");
-			sender.sendMessage("§22 §a/ez camarote <evento> §2= Adiciona um novo camarote");
+			sender.sendMessage("§2• §a/ez camarote <evento> §2= Adiciona um novo camarote");
 			sender.sendMessage("§2• §a/ez pvp <evento> <allow/deny> §2= Define o status de pvp");
 			sender.sendMessage("§2• §a/ez mc <evento> <allow/deny> §2= Bloqueia ou permite MC");
 			sender.sendMessage("§2• §a/ez tools §2= Abre a caixa de ferramentas do eventozero");
