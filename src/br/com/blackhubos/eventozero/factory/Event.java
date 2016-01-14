@@ -53,7 +53,7 @@ import br.com.blackhubos.eventozero.util.Framework.Cuboid;
  * 
  * Falta algo? documente aqui com um TODO: mensagem TODO = To Do (a fazer) 
  * TODO: no modo espectador, desativar comandos exceto do eventozero
- *
+ * TODO: remover o EventCommand, isso é uma classe que representa um evento, não um comando. 
  */
 public class Event extends EventCommand
 {
@@ -434,7 +434,7 @@ public class Event extends EventCommand
 		{
 			if (rs.next())
 			{
-				player.setHealth(rs.getInt("vida"));
+				player.setHealth((double) rs.getInt("vida"));
 				player.setFoodLevel(rs.getInt("comida"));
 				player.setExp(rs.getFloat("xp"));
 				player.setLevel(rs.getInt("level"));
