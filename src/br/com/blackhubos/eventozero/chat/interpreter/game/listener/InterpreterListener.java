@@ -33,40 +33,32 @@ import br.com.blackhubos.eventozero.chat.interpreter.state.AnswerResult;
 
 public class InterpreterListener implements Listener {
 
-    private final Interpreter questionario;
-
-    InterpreterListener(Interpreter questionario) {
-        this.questionario = questionario;
-    }
-
     @EventHandler
     public void chat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
 
         Optional<Interpreter> current = Interpreter.getCurrent(player);
         if (current.isPresent()) {
-            if (current.get() == questionario) {
-                AnswerResult result = current.get().answer(player, event.getMessage());
-                AnswerResult.State answerState = result.getState();
+            AnswerResult result = current.get().answer(player, event.getMessage());
+            AnswerResult.State answerState = result.getState();
 
-                switch (answerState) {
-                    case INVALID_ANSWER_FORMAT: {
-                        player.sendMessage(ChatColor.RED + "Resposta inválida, tente novamente!");
-                        break;
-                    }
-                    case NO_MORE_QUESTIONS: {
-                        player.sendMessage(ChatColor.GREEN + "Voce terminou o questionario");
-                        break;
-                    }
-                    case OK: {
-                        break;
-                    }
+            switch (answerState) {
+                case INVALID_ANSWER_FORMAT: {
+                    player.sendMessage(ChatColor.RED + "Resposta inválida, tente novamente!");
+                    break;
+                }
+                case NO_MORE_QUESTIONS: {
+                    player.sendMessage(ChatColor.GREEN + "Voce terminou o questionario");
+                    break;
+                }
+                case OK: {
+                    break;
+                }
 
-                    case NO_CURRENT_QUESTION: {
-                        player.sendMessage(ChatColor.RED + "Sem questionario atual, isto provavelmente é um erro, tentamos corrigir!");
-                        questionario.endNoData(player);
-                        break;
-                    }
+                case NO_CURRENT_QUESTION: {
+                    player.sendMessage(ChatColor.RED + "Sem questionario atual, isto provavelmente é um erro, tentamos corrigir!");
+                    current.get().endNoData(player);
+                    break;
                 }
             }
             event.setCancelled(true);
@@ -79,6 +71,10 @@ public class InterpreterListener implements Listener {
     }
 
     private void handleDC(Player player) {
-        questionario.endNoData(player);
+        Optional<Interpreter> current = Interpreter.getCurrent(player);
+        if(current.isPresent()) {
+            current.get().endNoData(player);
+        }
+
     }
 }

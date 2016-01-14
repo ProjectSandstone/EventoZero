@@ -19,7 +19,9 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.game.register;
 
-import java.lang.reflect.Field;
+import org.bukkit.plugin.Plugin;
+
+import br.com.blackhubos.eventozero.chat.interpreter.game.listener.InterpreterListener;
 
 /**
  * Para melhorar a organização esta classe registrará tudo relacionado ao interpreter
@@ -29,25 +31,24 @@ public class InterpreterRegister {
     /**
      * Registra as questions e os listeners
      */
-    public static void registerAll() {
-        registerQuestions();
-        registerListeners();
+    public static void registerAll(Plugin plugin) {
+        registerQuestions(plugin);
+        registerListeners(plugin);
     }
 
     /**
      * Registrar as questões
      */
-    private static void registerQuestions() {
+    private static void registerQuestions(Plugin plugin) {
 
     }
 
     /**
      * Registrar os listeners
      */
-    private static void registerListeners() {
-
+    private static void registerListeners(Plugin plugin) {
+        plugin.getServer().getPluginManager().registerEvents(new InterpreterListener(), plugin);
     }
-
 
 
 }

@@ -86,7 +86,7 @@ public final class EventoZero extends JavaPlugin
 			}
 		}
 		// Registra tudo relacionado ao interpreter
-		InterpreterRegister.registerAll();
+		InterpreterRegister.registerAll(this);
 		EventoZero.shopHandler = new ShopHandler();
 		EventoZero.kitHandler = new KitHandler();
 		EventoZero.eventHandler = new EventHandler();
