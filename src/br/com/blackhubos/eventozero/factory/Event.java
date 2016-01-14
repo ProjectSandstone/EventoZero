@@ -19,6 +19,7 @@
  */
 package br.com.blackhubos.eventozero.factory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Random;
@@ -46,14 +47,14 @@ import br.com.blackhubos.eventozero.util.Framework.Configuration;
 import br.com.blackhubos.eventozero.util.Framework.Cuboid;
 
 /**
- * TODO: arrumar index do setSign (todos 0) 
- * TODO: adicionar logs (getLoggerService()) nos backups e afins para deixar registrado 
+ * TODO: arrumar index do setSign (todos 0)
+ * TODO: adicionar logs (getLoggerService()) nos backups e afins para deixar registrado
  * TODO: adicionar as mensagens e seus replaces aos respectivos voids necessários
  * TODO: documentar (javadoc) todos os métodos e construtores em Português BR.
- * 
- * Falta algo? documente aqui com um TODO: mensagem TODO = To Do (a fazer) 
+ *
+ * Falta algo? documente aqui com um TODO: mensagem TODO = To Do (a fazer)
  * TODO: no modo espectador, desativar comandos exceto do eventozero
- * TODO: remover o EventCommand, isso é uma classe que representa um evento, não um comando. 
+ * TODO: remover o EventCommand, isso é uma classe que representa um evento, não um comando.
  */
 public class Event extends EventCommand
 {
@@ -434,7 +435,21 @@ public class Event extends EventCommand
 		{
 			if (rs.next())
 			{
-				player.setHealth((double) rs.getInt("vida"));
+				// TODO: isso é para ter compatibilidade de 1.5.2 (health por int) e 1.7+ (health por double)
+				try
+				{
+					player.getClass().getMethod("setHealth", double.class).invoke(player, (double) rs.getInt("vida"));
+				}
+				catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException e1)
+				{
+					try
+					{
+						player.getClass().getMethod("setHealth", int.class).invoke(player, rs.getInt("vida"));
+					}
+					catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | SecurityException e2)
+					{
+					}
+				}
 				player.setFoodLevel(rs.getInt("comida"));
 				player.setExp(rs.getFloat("xp"));
 				player.setLevel(rs.getInt("level"));
@@ -483,7 +498,7 @@ public class Event extends EventCommand
 
 	/**
 	 * TODO: remover isso daqui, colocar em uma classe especifica pra comando;
-	 * 
+	 *
 	 * TODO: mensagens não estão configuráveis
 	 */
 	@Override
