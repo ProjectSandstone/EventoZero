@@ -50,7 +50,7 @@ public final class Jump extends Ability implements Listener {
         if (!event.isPresent())
         	return false;
         
-        if (this.canUse(player.getName()) && ((event.get().getAbilitys().contains(this) || (event.get().getPlayersRemaining().contains(player) && event.get().getEventData().getData(player.getName() + ".ability").equals(this))))) {
+        if (this.canUse(player.getName()) && ((event.get().getAbilitys().contains(this) || (event.get().getPlayersRemaining().contains(player) && event.get().getData().getData(player.getName() + ".ability").equals(this))))) {
             this.forceUse(player);
             this.updateTime(player.getName());
             return true;

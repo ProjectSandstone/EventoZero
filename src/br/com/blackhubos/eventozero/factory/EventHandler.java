@@ -41,7 +41,7 @@ public class EventHandler
 	{
 		for (final Event e : this.getEvents())
 		{
-			if (e.getEventName().equals(name))
+			if (e.getName().equals(name))
 			{
 				return Optional.of(e);
 			}

@@ -19,9 +19,9 @@
  */
 package br.com.blackhubos.eventozero.factory;
 
-import br.com.blackhubos.eventozero.EventCommand;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Random;
 import java.util.Vector;
 
 import org.apache.commons.lang.NullArgumentException;
@@ -30,393 +30,482 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import br.com.blackhubos.eventozero.EventCommand;
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.ability.Ability;
 import br.com.blackhubos.eventozero.kit.Kit;
 import br.com.blackhubos.eventozero.party.Party;
 import br.com.blackhubos.eventozero.storage.Storage;
 import br.com.blackhubos.eventozero.util.Framework;
-import java.util.Random;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import br.com.blackhubos.eventozero.util.Framework.Configuration;
+import br.com.blackhubos.eventozero.util.Framework.Cuboid;
 
 /**
- * TODO: arrumar index do setSign (todos 0) TODO: adicionar logs
- * (getLoggerService()) nos backups e afins para deixar registrado TODO:
- * adicionar as mensagens e seus replaces aos respectivos voids necessários
+ * TODO: arrumar index do setSign (todos 0) 
+ * TODO: adicionar logs (getLoggerService()) nos backups e afins para deixar registrado 
+ * TODO: adicionar as mensagens e seus replaces aos respectivos voids necessários
  * TODO: documentar (javadoc) todos os métodos e construtores em Português BR.
- * Falta algo? documente aqui com um TODO: mensagem TODO = To Do (a fazer) TODO:
- * no modo espectador, desativar comandos exceto do eventozero
- *
+ * 
+ * Falta algo? documente aqui com um TODO: mensagem TODO = To Do (a fazer) 
+ * TODO: no modo espectador, desativar comandos exceto do eventozero
+ * TODO: remover o EventCommand, isso é uma classe que representa um evento, não um comando. 
  */
-public class Event extends EventCommand {
+public class Event extends EventCommand
+{
 
-    private final String eventName;
-    private final EventData eventData;
+	private final String name;
+	private final EventData data;
 
-    private final Vector<Player> joineds;
-    private final Vector<Player> spectators;
-    private final Vector<Party> partys;
-    private final Vector<Ability> abilitys;
+	private final Vector<Player> joineds;
+	private final Vector<Player> spectators;
+	private final Vector<Party> partys;
+	private final Vector<Ability> abilitys;
+	private final Vector<Cuboid> cuboids;
 
-    private String eventDisplayname;
-    private String eventDescription;
-    private EventState eventoState;
+	private String displayName;
+	private String description;
+	private EventState state;
+	private Configuration config;
 
-    public Event(final String name) {
-        this.eventName = name;
-        this.joineds = new Vector<>();
-        this.spectators = new Vector<>();
-        this.partys = new Vector<>();
-        this.abilitys = new Vector<>();
-        this.eventData = new EventData();
-        this.command(eventName).register();
-    }
+	public Event(final String name)
+	{
+		this.name = name;
+		this.joineds = new Vector<>();
+		this.spectators = new Vector<>();
+		this.partys = new Vector<>();
+		this.abilitys = new Vector<>();
+		this.data = new EventData();
+		this.cuboids = new Vector<Cuboid>();
+		this.command(this.name).register();
+	}
 
-    /**
-     *
-     * @return Retorna o nome do evento de forma como configurado (em casos
-     * importantes use lower-case!)
-     */
-    public String getEventName() {
-        return this.eventName;
-    }
+	public Event(final String name, final Configuration config)
+	{
+		this(name);
+		this.config = config;
+	}
 
-    /**
-     *
-     * @return Retorna a descrição do evento.
-     */
-    public String getEventDescription() {
-        return this.eventDescription;
-    }
+	/**
+	 *
+	 * @return Retorna o nome do evento de forma como configurado (em casos
+	 *         importantes use lower-case!)
+	 */
+	public String getName()
+	{
+		return this.name;
+	}
 
-    /**
-     *
-     * @return Retorna o nome customizado do evento.
-     */
-    public String getEventDisplayName() {
-        return this.eventDisplayname;
-    }
+	/**
+	 *
+	 * @return Retorna a lista de cuboids definidos neste evento.
+	 */
+	public Vector<Cuboid> getCuboids()
+	{
+		return this.cuboids;
+	}
 
-    /**
-     *
-     * @return Retorna o {@link EventData} do evento, que contém várias
-     * informações.
-     */
-    public EventData getEventData() {
-        return this.eventData;
-    }
+	/**
+	 *
+	 * @return Retorna a descrição do evento.
+	 */
+	public String getDescription()
+	{
+		return this.description;
+	}
 
-    /**
-     * Os eventos tem vários estados, com este método, é possível identificar o
-     * estado atual do evento. Leia mais na classe EventState.
-     *
-     * @return Retorna o estado do evento.
-     */
-    public EventState getEventState() {
-        return this.eventoState;
-    }
+	/**
+	 *
+	 * @return Retorna o nome customizado do evento.
+	 */
+	public String getDisplayName()
+	{
+		return this.displayName;
+	}
 
-    /**
-     * Atualiza a descrição do evento
-     *
-     * @param desc Nova descrição
-     * @return Retorna a instância do {@link Event} modificada.
-     */
-    public Event updateDescription(final String desc) {
-        this.eventDescription = desc;
-        return this;
-    }
+	/**
+	 *
+	 * @return Retorna o {@link EventData} do evento, que contém várias
+	 *         informações.
+	 */
+	public EventData getData()
+	{
+		return this.data;
+	}
 
-    /**
-     *
-     * @param displayname
-     * @return Retorna a instância do {@link Event} modificada.
-     */
-    public Event updateDisplayName(final String displayname) {
-        this.eventDisplayname = displayname;
-        return this;
-    }
+	/**
+	 * Os eventos tem vários estados, com este método, é possível identificar o
+	 * estado atual do evento. Leia mais na classe EventState.
+	 *
+	 * @return Retorna o estado do evento.
+	 */
+	public EventState getState()
+	{
+		return this.state;
+	}
 
-    /**
-     *
-     * @return Retorna a lista de todas as partys em ação do evento.
-     */
-    public Vector<Party> getPartys() {
-        return this.partys;
-    }
+	/**
+	 * Atualiza a descrição do evento
+	 *
+	 * @param desc Nova descrição
+	 * @return Retorna a instância do {@link Event} modificada.
+	 */
+	public Event updateDescription(final String desc)
+	{
+		this.description = desc;
+		return this;
+	}
 
-    /**
-     *
-     * @return Retorna a lista de todos os participantes do evento.
-     */
-    public Vector<Player> getPlayers() {
-        return this.joineds;
-    }
+	/**
+	 *
+	 * @param displayname
+	 * @return Retorna a instância do {@link Event} modificada.
+	 */
+	public Event updateDisplayName(final String displayname)
+	{
+		this.displayName = displayname;
+		return this;
+	}
 
-    /**
-     *
-     * @return Retorna a lista de todos os jogadores restantes no evento.
-     */
-    public Vector<Player> getPlayersRemaining() {
-        Vector<Player> remaings = new Vector<>();
-        for (Player remaing : getPlayers()) {
-            if (!getSpectators().contains(remaing)) {
-                remaings.add(remaing);
-            }
-        }
-        return remaings;
-    }
+	/**
+	 *
+	 * @return Retorna a lista de todas as partys em ação do evento.
+	 */
+	public Vector<Party> getPartys()
+	{
+		return this.partys;
+	}
 
-    /**
-     *
-     * @return Retorna a lista de todos os es espectadores ativos no evento.
-     */
-    public Vector<Player> getSpectators() {
-        return this.spectators;
-    }
+	/**
+	 *
+	 * @return Retorna a lista de todos os participantes do evento.
+	 */
+	public Vector<Player> getPlayers()
+	{
+		return this.joineds;
+	}
 
-    /**
-     *
-     * @return Retorna as habilidades (Abilitys) do evento.
-     */
-    public Vector<Ability> getAbilitys() {
-        return this.abilitys;
-    }
+	/**
+	 *
+	 * @return Retorna a lista de todos os jogadores restantes no evento.
+	 */
+	public Vector<Player> getPlayersRemaining()
+	{
+		final Vector<Player> remaings = new Vector<>();
+		for (final Player remaing : this.getPlayers())
+		{
+			if (!this.getSpectators().contains(remaing))
+			{
+				remaings.add(remaing);
+			}
+		}
+		return remaings;
+	}
 
-    /**
-     *
-     * @param player
-     * @return
-     */
-    public Event playerJoin(final Player player) {
-        if ((player == null) || ((player != null) && !player.isOnline())) {
-            throw new NullArgumentException("Player is null");
-        }
-        boolean safe = getEventData().getData("options.enables.safe_inventory");
-        if (!this.hasPlayerJoined(player)) {
-            this.joineds.add(player);
-            this.updateSigns();
-            if (safe) {
-                playerBackup(player);
-                player.getInventory().clear();
-                player.getInventory().setArmorContents(new ItemStack[4]);
+	/**
+	 *
+	 * @return Retorna a lista de todos os es espectadores ativos no evento.
+	 */
+	public Vector<Player> getSpectators()
+	{
+		return this.spectators;
+	}
 
-            }
-            Random r = new Random();
-            Vector<Location> lobby = getEventData().getData("teleport.lobby");
+	/**
+	 *
+	 * @return Retorna as habilidades (Abilitys) do evento.
+	 */
+	public Vector<Ability> getAbilitys()
+	{
+		return this.abilitys;
+	}
 
-            player.teleport(lobby.get(r.nextInt(lobby.size() > 0 ? lobby.size() : 0)));
-        }
-        return this;
-    }
+	/**
+	 *
+	 * @param player
+	 * @return
+	 */
+	public Event playerJoin(final Player player)
+	{
+		if ((player == null) || ((player != null) && !player.isOnline()))
+		{
+			throw new NullArgumentException("Player is null");
+		}
+		final boolean safe = this.getData().getData("options.enables.safe_inventory");
+		if (!this.hasPlayerJoined(player))
+		{
+			this.joineds.add(player);
+			this.updateSigns();
+			if (safe)
+			{
+				this.playerBackup(player);
+				player.getInventory().clear();
+				player.getInventory().setArmorContents(new ItemStack[4]);
 
-    /**
-     *
-     * @param player
-     * @return
-     */
-    public Event playerQuit(final Player player) {
-        if ((player == null) || ((player != null) && !player.isOnline())) {
-            throw new NullArgumentException("Player is null");
-        }
-        boolean safe = getEventData().getData("options.enables.safe_inventory");
-        if (this.hasPlayerJoined(player)) {
-            this.joineds.remove(player);
-            this.spectatorQuit(player);
-            this.updateSigns();
-            if (safe) {
-                this.playerRestore(player);
-            }
-        }
-        return this;
-    }
+			}
+			final Random r = new Random();
+			final Vector<Location> lobby = this.getData().getData("teleport.lobby");
 
-    /**
-     * Define um jogador como espectador. TODO: (o jogador deveria ser
-     * teleportado para o lugar do evento por aqui ou pelo comando?)
-     *
-     * @param player Jogador em questão a virar espectador
-     * @return Retorna a instância do {@link Event} modificada.
-     */
-    public Event spectatorJoin(final Player player) {
-        if ((player == null) || ((player != null) && !player.isOnline())) {
-            throw new NullArgumentException("Player is null");
-        }
-        if (!this.spectators.contains(player)) {
-            for (final Player obj : this.getPlayers()) {
-                obj.hidePlayer(player);
-            }
-            player.setAllowFlight(true);
-            player.setFlying(true);
-            this.spectators.add(player);
-        }
-        return this;
-    }
+			player.teleport(lobby.get(r.nextInt(lobby.size() > 0 ? lobby.size() : 0)));
+		}
+		return this;
+	}
 
-    /**
-     * Remove um jogador do modo espectador.
-     *
-     * @param player Jogador que será removido do modo espectador.
-     * @return Retorna a instância do {@link Event} modificada.
-     */
-    public Event spectatorQuit(final Player player) {
-        if ((player == null) || ((player != null) && player.isOnline())) {
-            throw new NullArgumentException("Player is null");
-        }
-        if (this.spectators.contains(player)) {
-            for (final Player obj : this.getPlayers()) {
-                obj.showPlayer(player);
-            }
-            player.setAllowFlight(false);
-            player.setFlying(false);
-            this.spectators.remove(player);
-        }
-        return this;
+	/**
+	 *
+	 * @param player
+	 * @return
+	 */
+	public Event playerQuit(final Player player)
+	{
+		if ((player == null) || ((player != null) && !player.isOnline()))
+		{
+			throw new NullArgumentException("Player is null");
+		}
+		final boolean safe = this.getData().getData("options.enables.safe_inventory");
+		if (this.hasPlayerJoined(player))
+		{
+			this.joineds.remove(player);
+			this.spectatorQuit(player);
+			this.updateSigns();
+			if (safe)
+			{
+				this.playerRestore(player);
+			}
+		}
+		return this;
+	}
 
-    }
+	/**
+	 * Define um jogador como espectador. TODO: (o jogador deveria ser
+	 * teleportado para o lugar do evento por aqui ou pelo comando?)
+	 *
+	 * @param player Jogador em questão a virar espectador
+	 * @return Retorna a instância do {@link Event} modificada.
+	 */
+	public Event spectatorJoin(final Player player)
+	{
+		if ((player == null) || ((player != null) && !player.isOnline()))
+		{
+			throw new NullArgumentException("Player is null");
+		}
+		if (!this.spectators.contains(player))
+		{
+			for (final Player obj : this.getPlayers())
+			{
+				obj.hidePlayer(player);
+			}
+			player.setAllowFlight(true);
+			player.setFlying(true);
+			this.spectators.add(player);
+		}
+		return this;
+	}
 
-    public boolean hasPlayerJoined(final Player player) {
-        return this.joineds.contains(player);
-    }
+	/**
+	 * Remove um jogador do modo espectador.
+	 *
+	 * @param player Jogador que será removido do modo espectador.
+	 * @return Retorna a instância do {@link Event} modificada.
+	 */
+	public Event spectatorQuit(final Player player)
+	{
+		if ((player == null) || ((player != null) && player.isOnline()))
+		{
+			throw new NullArgumentException("Player is null");
+		}
+		if (this.spectators.contains(player))
+		{
+			for (final Player obj : this.getPlayers())
+			{
+				obj.showPlayer(player);
+			}
+			player.setAllowFlight(false);
+			player.setFlying(false);
+			this.spectators.remove(player);
+		}
+		return this;
 
-    public void stop() {
-        // TODO: STOP EVENT, GET WINNERS, ALIVES
-        forceStop();
-        this.updateSigns();
-    }
+	}
 
-    public void start() {
-        // TODO: START THE COUNTDOWN
-        if (this.getEventState() == EventState.OPENED) {
-            // ERRADO FALTA TERMINAR
-            new EventAnnouncement(this, (Integer) this.getEventData().getData("options.countdown.seconds"));
-            this.updateSigns();
-        }
-    }
+	public boolean hasPlayerJoined(final Player player)
+	{
+		return this.joineds.contains(player);
+	}
 
-    public void forceStop() {
-        // TODO: STOP FORCE EVENT
-        for (final Player player : this.joineds) {
-            this.playerQuit(player);
-        }
-        this.updateSigns();
-    }
+	public void stop()
+	{
+		// TODO: STOP EVENT, GET WINNERS, ALIVES
+		this.forceStop();
+		this.updateSigns();
+	}
 
-    public void forceStart() {
-        // TODO: START EVENT
-        if (this.getPlayers().size() < (Integer) this.getEventData().getData("event.min")) {
-            // TODO: STOP
-            // TODO: MESSAGE CANCELED MIN PLAYER
-            this.forceStop();
-        }
-        for (Player player : getPlayers()) {
-            Kit kit = getEventData().getData(player.getName() + ".kit");
-            if (kit != null) {
-                kit.giveTo(player);
-                if (kit.getAbility() != null) {
-                    getEventData().updateData(player.getName() + ".ability", kit.getAbility());
-                }
-            }
-            Random r = new Random();
-            Vector<Location> spawns = getEventData().getData("teleport.spawn");
+	public void start()
+	{
+		// TODO: START THE COUNTDOWN
+		if (this.getState() == EventState.OPENED)
+		{
+			// ERRADO FALTA TERMINAR
+			new EventAnnouncement(this, (Integer) this.getData().getData("options.countdown.seconds"));
+			this.updateSigns();
+		}
+	}
 
-            player.teleport(spawns.get(r.nextInt(spawns.size() > 0 ? spawns.size() : 0)));
-        }
-        // TODO: CODE START
-        this.updateSigns();
-    }
+	public void forceStop()
+	{
+		// TODO: STOP FORCE EVENT
+		for (final Player player : this.joineds)
+		{
+			this.playerQuit(player);
+		}
+		this.updateSigns();
+	}
 
-    /**
-     * Este método irá criar um backup no banco de dados do EventoZero com dados
-     * importantes sobre o jogador, tais como, vida, comida, itens, xp,
-     * localização, armadura, etc. Você poderá restaurar esse backup ao jogador
-     * quando quiser, pois fica salvo em backup. Note que os backups não são
-     * retirados do banco de dados após restaurar, são apenas 'trancados' e não
-     * podem mais ser usados.
-     *
-     * @param player O jogador que deverá ter um novo backup criado para o
-     * evento em questão.
-     */
-    public void playerBackup(final Player player) {
-        this.getEventData().updateData(player.getName() + ".inventory.contents", player.getInventory().getContents());
-        this.getEventData().updateData(player.getName() + ".inventory.armorContents", player.getInventory().getArmorContents());
-        this.getEventData().updateData(player.getName() + ".ability", getEventData().getData("options.ability.fixed_ability"));
-        EventoZero.getStorage().backupPlayer(player, this.eventName.toLowerCase());
-    }
+	public void forceStart()
+	{
+		// TODO: START EVENT
+		if (this.getPlayers().size() < (Integer) this.getData().getData("event.min"))
+		{
+			// TODO: STOP
+			// TODO: MESSAGE CANCELED MIN PLAYER
+			this.forceStop();
+		}
+		for (final Player player : this.getPlayers())
+		{
+			final Kit kit = this.getData().getData(player.getName() + ".kit");
+			if (kit != null)
+			{
+				kit.giveTo(player);
+				if (kit.getAbility() != null)
+				{
+					this.getData().updateData(player.getName() + ".ability", kit.getAbility());
+				}
+			}
+			final Random r = new Random();
+			final Vector<Location> spawns = this.getData().getData("teleport.spawn");
 
-    /**
-     * Este método irá restaurar um backup do jogador, salvo no banco de dados
-     * do EventoZero com dados importantes sobre o jogador, tais como, vida,
-     * comida, itens, xp, localização, armadura, etc. Você poderá restaurar esse
-     * backup ao jogador quando quiser, pois fica salvo em backup. Note que os
-     * backups não são retirados do banco de dados após restaurar, são apenas
-     * 'trancados' e não podem mais ser usados.
-     *
-     * @param player
-     */
-    public void playerRestore(final Player player) {
-        if (player == null || (player != null && !player.isOnline())) {
-            throw new NullArgumentException("Player is null");
-        }
-        final ResultSet rs = EventoZero.getStorage().search("SELECT * FROM `" + Storage.Module.BACKUP.getTable() + "` WHERE `jogador`='" + player.getName().toLowerCase() + "' AND `devolvido`='0' AND `evento`='" + this.eventName.toLowerCase() + "';");
-        try {
-            if (rs.next()) {
-                player.setHealth(rs.getInt("vida"));
-                player.setFoodLevel(rs.getInt("comida"));
-                player.setExp(rs.getFloat("xp"));
-                player.setLevel(rs.getInt("level"));
-                player.teleport(Framework.toLocation(rs.getString("localizacao")));
-                player.getInventory().setContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.contents"));
-                player.getInventory().setArmorContents((ItemStack[]) this.getEventData().getData(player.getName() + ".inventory.armorContents"));
-                getEventData().removeKeyStartWith(player.getName());
-            }
-        } catch (IllegalArgumentException | SQLException e) {
-            e.printStackTrace();
-        }
+			player.teleport(spawns.get(r.nextInt(spawns.size() > 0 ? spawns.size() : 0)));
+		}
+		// TODO: CODE START
+		this.updateSigns();
+	}
 
-    }
+	/**
+	 * Este método irá criar um backup no banco de dados do EventoZero com dados
+	 * importantes sobre o jogador, tais como, vida, comida, itens, xp,
+	 * localização, armadura, etc. Você poderá restaurar esse backup ao jogador
+	 * quando quiser, pois fica salvo em backup. Note que os backups não são
+	 * retirados do banco de dados após restaurar, são apenas 'trancados' e não
+	 * podem mais ser usados.
+	 *
+	 * @param player O jogador que deverá ter um novo backup criado para o
+	 *            evento em questão.
+	 */
+	public void playerBackup(final Player player)
+	{
+		this.getData().updateData(player.getName() + ".inventory.contents", player.getInventory().getContents());
+		this.getData().updateData(player.getName() + ".inventory.armorContents", player.getInventory().getArmorContents());
+		this.getData().updateData(player.getName() + ".ability", this.getData().getData("options.ability.fixed_ability"));
+		EventoZero.getStorage().backupPlayer(player, this.name.toLowerCase());
+	}
 
-    /**
-     * Atualiza todas placas
-     */
-    public void updateSigns() {
-        if (this.getEventData().containsKey("options.signs.locations") && (this.getEventData().getData("options.signs.locations") != null)) {
-            final Vector<Location> locations = this.getEventData().getData("options.signs.locations");
-            for (final Location location : locations) {
-                final Block block = location.getWorld().getBlockAt(location);
-                if ((block.getType() == Material.SIGN_POST) || (block.getType() == Material.WALL_SIGN)) {
-                    final String string = String.valueOf(this.getEventData().getData("options.message." + this.getEventState().getPath()));
-                    final Sign sign = (Sign) block.getState();
-                    sign.setLine(0, String.valueOf(this.getEventData().getData("options.signs.line.1")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(getEventData().getData("options.player_max"))).replace("{name}", this.getEventName()).replaceAll("&", "§"));
-                    sign.setLine(1, String.valueOf(this.getEventData().getData("options.signs.line.2")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(getEventData().getData("options.player_max"))).replace("{name}", this.getEventName()).replaceAll("&", "§"));
-                    sign.setLine(2, String.valueOf(this.getEventData().getData("options.signs.line.3")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(getEventData().getData("options.player_max"))).replace("{name}", this.getEventName()).replaceAll("&", "§"));
-                    sign.setLine(3, String.valueOf(this.getEventData().getData("options.signs.line.4")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(getEventData().getData("options.player_max"))).replace("{name}", this.getEventName()).replaceAll("&", "§"));
-                    sign.update();
-                }
-            }
-        }
-    }
+	/**
+	 * Este método irá restaurar um backup do jogador, salvo no banco de dados
+	 * do EventoZero com dados importantes sobre o jogador, tais como, vida,
+	 * comida, itens, xp, localização, armadura, etc. Você poderá restaurar esse
+	 * backup ao jogador quando quiser, pois fica salvo em backup. Note que os
+	 * backups não são retirados do banco de dados após restaurar, são apenas
+	 * 'trancados' e não podem mais ser usados.
+	 *
+	 * @param player
+	 */
+	public void playerRestore(final Player player)
+	{
+		if ((player == null) || ((player != null) && !player.isOnline()))
+		{
+			throw new NullArgumentException("Player is null");
+		}
+		final ResultSet rs = EventoZero.getStorage().search("SELECT * FROM `" + Storage.Module.BACKUP.getTable() + "` WHERE `jogador`='" + player.getName().toLowerCase() + "' AND `devolvido`='0' AND `evento`='" + this.name.toLowerCase() + "';");
+		try
+		{
+			if (rs.next())
+			{
+				player.setHealth((double) rs.getInt("vida"));
+				player.setFoodLevel(rs.getInt("comida"));
+				player.setExp(rs.getFloat("xp"));
+				player.setLevel(rs.getInt("level"));
+				player.teleport(Framework.toLocation(rs.getString("localizacao")));
+				player.getInventory().setContents((ItemStack[]) this.getData().getData(player.getName() + ".inventory.contents"));
+				player.getInventory().setArmorContents((ItemStack[]) this.getData().getData(player.getName() + ".inventory.armorContents"));
+				this.getData().removeKeyStartWith(player.getName());
+			}
+		}
+		catch (IllegalArgumentException | SQLException e)
+		{
+			e.printStackTrace();
+		}
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 0) {
-            if (sender instanceof Player) {
-                sender.sendMessage("command not allowed to console");
-                return true;
-            }
-            Player player = (Player) sender;
-            if (hasPlayerJoined(player)) {
-                sender.sendMessage("you already entered the event");
-                return true;
-            }
-            playerJoin(player);
-            player.sendMessage("you entered the event");
-        }
-        return false;
-    }
+	}
+
+	/**
+	 * Atualiza todas placas
+	 */
+	public void updateSigns()
+	{
+		if (this.getData().containsKey("options.signs.locations") && (this.getData().getData("options.signs.locations") != null))
+		{
+			final Vector<Location> locations = this.getData().getData("options.signs.locations");
+			for (final Location location : locations)
+			{
+				final Block block = location.getWorld().getBlockAt(location);
+				if ((block.getType() == Material.SIGN_POST) || (block.getType() == Material.WALL_SIGN))
+				{
+					final String string = String.valueOf(this.getData().getData("options.message." + this.getState().getPath()));
+					final Sign sign = (Sign) block.getState();
+					sign.setLine(0, String.valueOf(this.getData().getData("options.signs.line.1")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(this.getData().getData("options.player_max"))).replace("{name}", this.getName()).replaceAll("&", "§"));
+					sign.setLine(1, String.valueOf(this.getData().getData("options.signs.line.2")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(this.getData().getData("options.player_max"))).replace("{name}", this.getName()).replaceAll("&", "§"));
+					sign.setLine(2, String.valueOf(this.getData().getData("options.signs.line.3")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(this.getData().getData("options.player_max"))).replace("{name}", this.getName()).replaceAll("&", "§"));
+					sign.setLine(3, String.valueOf(this.getData().getData("options.signs.line.4")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(this.getData().getData("options.player_max"))).replace("{name}", this.getName()).replaceAll("&", "§"));
+					sign.update();
+				}
+			}
+		}
+	}
+
+	public Configuration getConfig()
+	{
+		return this.config;
+	}
+
+	/**
+	 * TODO: remover isso daqui, colocar em uma classe especifica pra comando;
+	 * 
+	 * TODO: mensagens não estão configuráveis
+	 */
+	@Override
+	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args)
+	{
+		if (args.length == 0)
+		{
+			if (sender instanceof Player)
+			{
+				sender.sendMessage("command not allowed to console");
+				return true;
+			}
+			final Player player = (Player) sender;
+			if (this.hasPlayerJoined(player))
+			{
+				sender.sendMessage("you already entered the event");
+				return true;
+			}
+			this.playerJoin(player);
+			player.sendMessage("you entered the event");
+		}
+		return false;
+	}
 
 }

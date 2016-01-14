@@ -26,29 +26,32 @@ import br.com.blackhubos.eventozero.chat.interpreter.game.listener.InterpreterLi
 /**
  * Para melhorar a organização esta classe registrará tudo relacionado ao interpreter
  */
-public class InterpreterRegister {
+public class InterpreterRegister
+{
 
-    /**
-     * Registra as questions e os listeners
-     */
-    public static void registerAll(Plugin plugin) {
-        registerQuestions(plugin);
-        registerListeners(plugin);
-    }
+	/**
+	 * Registra as questions e os listeners
+	 */
+	public static void registerAll(final Plugin plugin)
+	{
+		InterpreterRegister.registerQuestions(plugin);
+		InterpreterRegister.registerListeners(plugin);
+	}
 
-    /**
-     * Registrar as questões
-     */
-    private static void registerQuestions(Plugin plugin) {
+	/**
+	 * Registrar as questões
+	 */
+	private static void registerQuestions(final Plugin plugin)
+	{
 
-    }
+	}
 
-    /**
-     * Registrar os listeners
-     */
-    private static void registerListeners(Plugin plugin) {
-        plugin.getServer().getPluginManager().registerEvents(new InterpreterListener(), plugin);
-    }
-
+	/**
+	 * Registrar os listeners
+	 */
+	private static void registerListeners(final Plugin plugin)
+	{
+		plugin.getServer().getPluginManager().registerEvents(new InterpreterListener(), plugin);
+	}
 
 }

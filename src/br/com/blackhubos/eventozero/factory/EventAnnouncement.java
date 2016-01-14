@@ -32,7 +32,7 @@ public class EventAnnouncement {
     }
 
     public EventAnnouncement tryAnnouncement() {
-        if (event.getEventState() == EventState.OPENED && (time + (seconds * 1000) < System.currentTimeMillis())) {
+        if (event.getState() == EventState.OPENED && (time + (seconds * 1000) < System.currentTimeMillis())) {
             forceAnnouncement();
             updateTime();
         }

@@ -82,3 +82,16 @@ teleport:
   # Caso coloquei mais de uma localização ele irá escolher aleatóriamente.
   spawn:
   - world 10 10 10
+# Horários do evento.
+# formato:
+#  dia hora:minuto
+#  dia = 0 (domingo), 1 (segunda), 2 (terça), 3 (quarta), 4 (quinta), 5(sexta) e 6 (sábado)
+#  Use somente números conforme mostrado acima, não escreva o nome do dia!
+times:
+  1: '1 13:00'
+  # 2: 'segunda 13:00' <-- ISTO ESTÁ __ERRADO__, dia precisa ser um número!
+# Cuboids (quantos você quiser).
+cuboids:
+  qualquerNome:
+    min: 'Mundo [world] X [1] Y [5] Z [-12]'
+    max: 'Mundo [world] X [5] Y [5] Z [12]'

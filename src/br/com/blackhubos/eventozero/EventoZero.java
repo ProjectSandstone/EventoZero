@@ -20,7 +20,11 @@
 package br.com.blackhubos.eventozero;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.Optional;
+import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -31,6 +35,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.blackhubos.eventozero.chat.interpreter.game.register.InterpreterRegister;
+import br.com.blackhubos.eventozero.events.PlayerInsideCuboidEvent;
+import br.com.blackhubos.eventozero.exceptions.CuboidParsingException;
 import br.com.blackhubos.eventozero.factory.Event;
 import br.com.blackhubos.eventozero.factory.EventFactory;
 import br.com.blackhubos.eventozero.factory.EventHandler;
@@ -38,8 +44,9 @@ import br.com.blackhubos.eventozero.factory.EventState;
 import br.com.blackhubos.eventozero.handlers.KitHandler;
 import br.com.blackhubos.eventozero.handlers.MessageHandler;
 import br.com.blackhubos.eventozero.handlers.ShopHandler;
+import br.com.blackhubos.eventozero.listeners.CuboidListener;
 import br.com.blackhubos.eventozero.listeners.EventListener;
-import br.com.blackhubos.eventozero.ranking.RankingListener;
+import br.com.blackhubos.eventozero.listeners.RankingListener;
 import br.com.blackhubos.eventozero.storage.Storage;
 import br.com.blackhubos.eventozero.updater.Updater;
 import br.com.blackhubos.eventozero.util.Framework;
@@ -50,12 +57,13 @@ import br.com.blackhubos.eventozero.util.ThreadUtils;
 public final class EventoZero extends JavaPlugin
 {
 
+	// 'regex_as' testado, funciona!
+	private static final Pattern regex_as = Pattern.compile("^\\s*([0-6]{1,1}|\\*{1,1})\\s+(?:([0-9]{1,2})\\s*:\\s*([0-9]{1,2}))\\s*$");
 	private static LoggerManager<EventoZero> logger = null;
 	private static Configuration config = null;
 	private static Configuration config_rankings = null;
 	private static Configuration config_points = null;
 	private static Configuration config_bans = null;
-	private static Configuration config_signs = null;
 	private static Configuration config_updater = null;
 	private static Configuration config_messages = null;
 	private static Storage storage = null;
@@ -73,36 +81,75 @@ public final class EventoZero extends JavaPlugin
 		EventoZero.config_rankings = new Configuration(this, new File(this.getDataFolder(), "ranking.yml"));
 		EventoZero.config_points = new Configuration(this, new File(this.getDataFolder(), "points.yml"));
 		EventoZero.config_bans = new Configuration(this, new File(this.getDataFolder(), "bans.yml"));
-		EventoZero.config_signs = new Configuration(this, new File(this.getDataFolder(), "signs.yml"));
 		EventoZero.config_updater = new Configuration(this, new File(this.getDataFolder(), "updater.yml"));
 		EventoZero.config_messages = new Configuration(this, new File(this.getDataFolder(), "mensagens.yml"));
 		EventoZero.logger = new LoggerManager<EventoZero>(this, new File(this.getDataFolder(), "logs")).init(EventoZero.config.getString("tasks.savelogs"));
 
-		for (final Configuration c : new Configuration[] { EventoZero.config, EventoZero.config_rankings, EventoZero.config_points, EventoZero.config_bans, EventoZero.config_signs, EventoZero.config_updater })
+		for (final Configuration c : new Configuration[] { EventoZero.config, EventoZero.config_rankings, EventoZero.config_points, EventoZero.config_bans, EventoZero.config_updater })
 		{
 			if (c.copied())
 			{
 				this.getLogger().info(c.getFile() + " padrão copiada com sucesso..");
 			}
 		}
-		// Registra tudo relacionado ao interpreter
-		InterpreterRegister.registerAll(this);
+
+		MessageHandler.loadMessages(EventoZero.config_messages);
 		EventoZero.shopHandler = new ShopHandler();
 		EventoZero.kitHandler = new KitHandler();
 		EventoZero.eventHandler = new EventHandler();
+		InterpreterRegister.registerAll(this); // Registra tudo relacionado ao interpreter
 		EventoZero.updater = new Updater(this, EventoZero.config_updater);
-		EventFactory.loadEvents(this);
-		MessageHandler.loadMessages(EventoZero.config_messages);
+
+		try
+		{
+			// TODO: falta testar novo sistema de carregar cuboids
+			EventFactory.loadEvents(this);
+		}
+		catch (final CuboidParsingException e)
+		{
+			// CuboidParsingException: chamado se houver falhas ao processar cuboids definidos
+			this.getServer().getPluginManager().disablePlugin(this);
+			e.printStackTrace();
+			return;
+		}
+
 		EventoZero.kitHandler.loadKits(this);
 		EventoZero.shopHandler.loadShops(this);
 		this.getServer().getPluginManager().registerEvents(new RankingListener(), this);
 		this.getServer().getPluginManager().registerEvents(new EventListener(), this);
-		this.getServer().getScheduler().runTaskTimerAsynchronously(this, () -> this.checkEventsToStart(), 20L, 20L);
+		this.getServer().getPluginManager().registerEvents(new CuboidListener(), this);
+		// this.getServer().getPluginManager().registerEvents(new PlayerInsideCuboidEvent(), this); TODO: PlayerInsideCuboidEvent#93
+		this.getServer().getScheduler().runTaskTimerAsynchronously(this, () -> this.checkEventsToStart(), 5 * 20L, this.getConfig().getInt("tasks.autostart", 55) * 20L);
 	}
 
 	public void checkEventsToStart()
 	{
-
+		final TimeZone time = TimeZone.getTimeZone(this.getConfig().getString("timezone", "America/Sao_Paulo"));
+		final Calendar c = Calendar.getInstance(time);
+		final String path = "times";
+		EventoZero.getEventHandler().getEvents().parallelStream().forEach((evento) ->
+		{
+			evento.getConfig().getConfigurationSection(path).getKeys(false).parallelStream().forEach((linha) ->
+			{
+				final Matcher m = EventoZero.regex_as.matcher(linha);
+				if (m.matches())
+				{
+					final int dia = Integer.parseInt(m.group(1));
+					final int hora = Integer.parseInt(m.group(2));
+					final int mins = Integer.parseInt(m.group(3));
+					if (c.get(Calendar.DAY_OF_MONTH) == dia)
+					{
+						if ((c.get(Calendar.HOUR_OF_DAY) == hora) && (c.get(Calendar.MINUTE) == mins))
+						{
+							if (evento.getState() == EventState.CLOSED)
+							{
+								evento.start();
+							}
+						}
+					}
+				}
+			});
+		});
 	}
 
 	@Override
@@ -110,10 +157,8 @@ public final class EventoZero extends JavaPlugin
 	{
 		// TODO: cancelar eventos ocorrendo
 		// TODO: salvar scores se em flatfile; pois é necessário fazer flush do(s) arquivo(s)
-
 		// Remove os listeners do plugin para ter melhor funcionamento com PluginManagers.
 		HandlerList.unregisterAll(this);
-
 		// Para todos threads registrados pelo ThreadUtils
 		ThreadUtils.stopAllThreads();
 	}
@@ -201,15 +246,6 @@ public final class EventoZero extends JavaPlugin
 
 	/**
 	 * @see {@link #getConfiguration()}
-	 * @return Retorna uma {@link Configuration} vinda do arquivo signs.yml
-	 */
-	public static Configuration getSignConfiguration()
-	{
-		return EventoZero.config_signs;
-	}
-
-	/**
-	 * @see {@link #getConfiguration()}
 	 * @return Retorna uma {@link Configuration} vinda do arquivo bans.yml
 	 */
 	public static Configuration getBanConfiguration()
@@ -293,9 +329,10 @@ public final class EventoZero extends JavaPlugin
 							final Optional<Event> event = EventoZero.getEventHandler().getEventByName(name);
 							if (event.isPresent())
 							{
-								if (event.get().getEventState() == EventState.CLOSED) // TODO: verificar se esse 'CLOSED' esta dentro da minha logica
+								if (event.get().getState() == EventState.CLOSED) // TODO: verificar se esse 'CLOSED' esta dentro da minha logica
 								{
 									// TODO: iniciar evento
+									event.get().start();
 								}
 							}
 							else
