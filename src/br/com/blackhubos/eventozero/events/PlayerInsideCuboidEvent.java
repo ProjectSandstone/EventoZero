@@ -22,6 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import br.com.blackhubos.eventozero.EventoZero;
@@ -32,34 +33,24 @@ import br.com.blackhubos.eventozero.util.Framework.Cuboid;
  * @author <a href="https://github.com/ReedFlake/">ReedFlake (reedflake@gmail.com)</a>
  *
  */
-public final class PlayerInsideCuboidEvent extends Event implements Cancellable, Listener
+public final class PlayerInsideCuboidEvent extends PlayerEvent implements Cancellable, Listener
 {
 
 	private final static Map<Event, List<Entry<Player, Cuboid>>> bypass = new ConcurrentHashMap<Event, List<Entry<Player, Cuboid>>>();
 	private final static HandlerList handler = new HandlerList();
 	private boolean cancelled = false;
-	private Optional<Player> player = Optional.empty();
 	private Optional<Cuboid> cuboid = Optional.empty();
 	private Optional<Location> exact = Optional.empty();
 	private Optional<br.com.blackhubos.eventozero.factory.Event> event = Optional.empty();
 
-	public PlayerInsideCuboidEvent()
-	{
-	}
-
 	public PlayerInsideCuboidEvent(final Player player, final Cuboid cuboid, final br.com.blackhubos.eventozero.factory.Event event)
 	{
-		this.player = Optional.of(player);
+		super(player);
 		this.cuboid = Optional.of(cuboid);
 		this.exact = Optional.of(player.getLocation().clone());
 		this.event = Optional.of(event);
 	}
-
-	public Optional<Player> getPlayer()
-	{
-		return this.player;
-	}
-
+	
 	public Optional<Cuboid> getCuboid()
 	{
 		return this.cuboid;
@@ -99,6 +90,8 @@ public final class PlayerInsideCuboidEvent extends Event implements Cancellable,
 	}
 
 	/**
+	 * TODO: remover isso daqui, colocar em uma classe separada de Listeners
+	 * 
 	 * TODO: verificar se o jogador entrou ou se moveu dentro da cuboid; se apenas se moveu, ignorar.
 	 * TODO: se entrou, chamar o insidecuboudevent
 	 * TODO: verificar se ele está de fato participando
