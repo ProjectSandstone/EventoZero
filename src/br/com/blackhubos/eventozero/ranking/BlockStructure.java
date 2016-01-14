@@ -92,7 +92,7 @@ public final class BlockStructure
 		for (int i = 0; (i < EventoZero.getRankingConfiguration().getStringList("sign.output").size()) && (i < 3); i++)
 		{
 			final String line = EventoZero.getRankingConfiguration().getStringList("sign.output").get(i);
-			placa.setLine(i, ChatColor.translateAlternateColorCodes('&', line.replace("{evento}", e.get().getEventDisplayName()).replace("{rank}", this.top + "").replace("{player}", this.name).replace("{tipo}", Ranking.byId(this.tipo))));
+			placa.setLine(i, ChatColor.translateAlternateColorCodes('&', line.replace("{evento}", e.get().getDisplayname()).replace("{rank}", this.top + "").replace("{player}", this.name).replace("{tipo}", Ranking.byId(this.tipo))));
 		}
 
 		placa.update(true);

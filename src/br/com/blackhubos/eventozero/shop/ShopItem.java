@@ -41,7 +41,7 @@ public class ShopItem {
     }
 
     public ShopItem onBuyed(Event event, Player player) {
-        EventoZero.getStorage().withdrawPlayerRankingPoints(player.getName(), event.getEventName(), "vitorias", 1);
+        EventoZero.getStorage().withdrawPlayerRankingPoints(player.getName(), event.getName(), "vitorias", 1);
         return this;
     }
 

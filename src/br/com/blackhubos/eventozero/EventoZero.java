@@ -118,7 +118,7 @@ public final class EventoZero extends JavaPlugin
 		this.getServer().getPluginManager().registerEvents(new RankingListener(), this);
 		this.getServer().getPluginManager().registerEvents(new EventListener(), this);
 		this.getServer().getPluginManager().registerEvents(new CuboidListener(), this);
-		this.getServer().getPluginManager().registerEvents(new PlayerInsideCuboidEvent(), this);
+		// this.getServer().getPluginManager().registerEvents(new PlayerInsideCuboidEvent(), this); TODO: PlayerInsideCuboidEvent#93
 		this.getServer().getScheduler().runTaskTimerAsynchronously(this, () -> this.checkEventsToStart(), 5 * 20L, this.getConfig().getInt("tasks.autostart", 55) * 20L);
 	}
 
@@ -141,7 +141,7 @@ public final class EventoZero extends JavaPlugin
 					{
 						if ((c.get(Calendar.HOUR_OF_DAY) == hora) && (c.get(Calendar.MINUTE) == mins))
 						{
-							if (evento.getEventState() == EventState.CLOSED)
+							if (evento.getState() == EventState.CLOSED)
 							{
 								evento.start();
 							}
@@ -329,7 +329,7 @@ public final class EventoZero extends JavaPlugin
 							final Optional<Event> event = EventoZero.getEventHandler().getEventByName(name);
 							if (event.isPresent())
 							{
-								if (event.get().getEventState() == EventState.CLOSED) // TODO: verificar se esse 'CLOSED' esta dentro da minha logica
+								if (event.get().getState() == EventState.CLOSED) // TODO: verificar se esse 'CLOSED' esta dentro da minha logica
 								{
 									// TODO: iniciar evento
 									event.get().start();

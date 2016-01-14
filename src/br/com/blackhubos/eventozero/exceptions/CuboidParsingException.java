@@ -22,7 +22,7 @@ public final class CuboidParsingException extends Throwable
 
 	public CuboidParsingException(final String min, final String max, final Event event, final String reason, final String action)
 	{
-		super("Failed to parse a Cuboid in " + (event != null ? event.getEventName() : "(event is null)") + " when " + action + "(" + reason + ") at min=" + ((min != null) && !min.isEmpty() ? min : "(min point is null)") + " and max=" + ((max != null) && !max.isEmpty() ? max : "(max point is null)") + ".");
+		super("Failed to parse a Cuboid in " + (event != null ? event.getName() : "(event is null)") + " when " + action + "(" + reason + ") at min=" + ((min != null) && !min.isEmpty() ? min : "(min point is null)") + " and max=" + ((max != null) && !max.isEmpty() ? max : "(max point is null)") + ".");
 		this.min = Optional.of(min);
 		this.max = Optional.of(max);
 		this.event = Optional.of(event);
@@ -33,7 +33,7 @@ public final class CuboidParsingException extends Throwable
 	@Override
 	public String getMessage()
 	{
-		return "Failed to parse a Cuboid in " + (this.event.isPresent() ? this.event.get().getEventName() : "(event is null)") + " when " + this.action + "(" + this.reason + ") at min=" + ((this.min.isPresent()) && !this.min.get().isEmpty() ? this.min : "(min point is null)") + " and max=" + ((this.max.isPresent()) && !this.max.get().isEmpty() ? this.max : "(max point is null)") + ".";
+		return "Failed to parse a Cuboid in " + (this.event.isPresent() ? this.event.get().getName() : "(event is null)") + " when " + this.action + "(" + this.reason + ") at min=" + ((this.min.isPresent()) && !this.min.get().isEmpty() ? this.min : "(min point is null)") + " and max=" + ((this.max.isPresent()) && !this.max.get().isEmpty() ? this.max : "(max point is null)") + ".";
 	}
 
 	public String getAction()
