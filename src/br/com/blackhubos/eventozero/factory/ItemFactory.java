@@ -117,8 +117,10 @@ public final class ItemFactory
 		final StringBuffer buffer = new StringBuffer();
 		buffer.append("item{" + is.getTypeId() + ":" + is.getData().getData() + "}");
 		buffer.append(" ");
-		buffer.append("nome{'" + ChatColor.translateAlternateColorCodes('&', is.getItemMeta().getDisplayName()) + "'}");
-		buffer.append(" ");
+		if (is.hasItemMeta()) {
+			buffer.append("nome{'" + ChatColor.translateAlternateColorCodes('&', is.getItemMeta().getDisplayName()) + "'}");
+			buffer.append(" ");
+		}
 		buffer.append("amount{" + is.getAmount() + "}");
 		buffer.append(" ");
 		buffer.append("dur{" + is.getDurability() + "}");
@@ -182,7 +184,7 @@ public final class ItemFactory
 			buffer.append(" ");
 		}
 
-		if (!is.getItemMeta().getLore().isEmpty())
+		if (is.hasItemMeta() && is.getItemMeta().getLore() != null && !is.getItemMeta().getLore().isEmpty())
 		{
 			buffer.append("desc{");
 			boolean first = true;

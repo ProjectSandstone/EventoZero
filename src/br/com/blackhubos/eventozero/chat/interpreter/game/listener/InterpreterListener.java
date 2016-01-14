@@ -24,12 +24,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Optional;
 
 import br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter;
 import br.com.blackhubos.eventozero.chat.interpreter.state.AnswerResult;
+import br.com.blackhubos.eventozero.factory.ItemFactory;
 
 public class InterpreterListener implements Listener {
 
@@ -75,6 +77,6 @@ public class InterpreterListener implements Listener {
         if(current.isPresent()) {
             current.get().endNoData(player);
         }
-
     }
+
 }
