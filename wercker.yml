@@ -22,10 +22,6 @@ build:
     # http://devcenter.wercker.com/docs/steps/index.html
   steps:
     - script:
-        name: Refresh dependencies
+        name: "Refresh dependencies & Build"
         code: |
           ./gradlew --refresh-dependencies
-    - script:
-        name: Build
-        code: |
-          ./gradlew
