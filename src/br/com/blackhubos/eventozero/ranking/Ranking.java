@@ -31,7 +31,7 @@ public enum Ranking implements Serializable
 	private int id;
 	private String column;
 
-	private Ranking(final String column, final int id)
+	Ranking(final String column, final int id)
 	{
 		this.id = id;
 		this.column = column;
