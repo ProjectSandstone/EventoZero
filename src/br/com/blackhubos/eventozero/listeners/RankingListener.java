@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package br.com.blackhubos.eventozero.ranking;
+package br.com.blackhubos.eventozero.listeners;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,6 +29,8 @@ import org.bukkit.event.Listener;
 
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.events.PlayerRankingUpdateEvent;
+import br.com.blackhubos.eventozero.ranking.BlockStructure;
+import br.com.blackhubos.eventozero.ranking.Ranking;
 import br.com.blackhubos.eventozero.util.Framework;
 
 // id | evento | cabeca
