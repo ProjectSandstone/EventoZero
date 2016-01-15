@@ -989,7 +989,7 @@ public final class Framework
 
 	public static void disablePlugin(final String name)
 	{
-		Framework.disablePlugin(Framework.getPlugin(name));
+		Framework.disablePlugin((Plugin) Framework.getPlugin(name));
 	}
 
 	public static void disablePlugin(final Plugin plugin)

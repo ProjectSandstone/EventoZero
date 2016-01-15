@@ -31,7 +31,7 @@ public enum RankingAction
 
 	private int id;
 
-	private RankingAction(final int id)
+	RankingAction(final int id)
 	{
 		this.id = id;
 	}

@@ -59,11 +59,9 @@ public class Shop implements Listener {
 
     public Shop openShop(Player player) {
         Inventory inventory = Bukkit.createInventory(null, size, title);
-        for (ShopItem items : items) {
-            if (inventory.firstEmpty() != -1) {
-                inventory.setItem(inventory.firstEmpty(), items.getIcon());
-            }
-        }
+        items.stream().filter(item -> inventory.firstEmpty() != -1).forEach(item -> {
+            inventory.setItem(inventory.firstEmpty(), item.getIcon());
+        });
 
         return this;
     }

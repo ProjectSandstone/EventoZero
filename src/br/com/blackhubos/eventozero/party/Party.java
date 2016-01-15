@@ -19,19 +19,20 @@
  */
 package br.com.blackhubos.eventozero.party;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.entity.Player;
 
 public final class Party {
 
-    private final LinkedList<Player> joineds;
-    private final LinkedList<Player> inviteds;
+    private final List<Player> members;
+    private final List<Player> invited;
     private final int maxPlayers;
 
     public Party(final int maxPlayers) {
-        this.joineds = new LinkedList<>();
-        this.inviteds = new LinkedList<>();
+        this.members = new ArrayList<>();
+        this.invited = new ArrayList<>();
         this.maxPlayers = maxPlayers;
     }
 
@@ -40,36 +41,35 @@ public final class Party {
     }
 
     public Player getOwner() {
-        return this.joineds.get(0);
+        return this.members.get(0);
     }
 
-    public LinkedList<Player> getJoineds() {
-        return this.joineds;
+    public List<Player> getMembers() {
+        return this.members;
     }
 
-    public LinkedList<Player> getInviteds() {
-        return this.inviteds;
+    public List<Player> getInvited() {
+        return this.invited;
     }
 
-    public Party playerJoin(final Player player) {
-        this.joineds.add(player);
-        playerQuitInvited(player);
+    public Party addMember(final Player player) {
+        this.members.add(player);
+        cancelInvite(player);
         return this;
     }
 
-    public Party playerQuit(final Player player) {
-        this.joineds.remove(player);
+    public Party removeMember(final Player player) {
+        this.members.remove(player);
         return this;
     }
 
-    public Party playerJoinInvited(final Player player) {
-        this.inviteds.add(player);
+    public Party invite(final Player player) {
+        this.invited.add(player);
         return this;
     }
 
-    public Party playerQuitInvited(final Player player) {
-        this.inviteds.remove(player);
+    public Party cancelInvite(final Player player) {
+        this.invited.remove(player);
         return this;
     }
-
 }
