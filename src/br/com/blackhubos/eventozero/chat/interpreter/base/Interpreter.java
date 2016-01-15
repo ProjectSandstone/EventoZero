@@ -19,6 +19,7 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.base;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -30,7 +31,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-import br.com.blackhubos.eventozero.chat.interpreter.base.question.QuestionImpl;
+import javax.annotation.Nonnull;
+
+import br.com.blackhubos.eventozero.chat.interpreter.base.impl.QuestionImpl;
 import br.com.blackhubos.eventozero.chat.interpreter.data.AnswerData;
 import br.com.blackhubos.eventozero.chat.interpreter.data.InterpreterData;
 import br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern;
@@ -40,15 +43,49 @@ import br.com.blackhubos.eventozero.chat.interpreter.state.AnswerResult;
  * Interpretador, classe responsável por gerenciar tudo!
  *
  * Somente é permitido uma sessão de perguntas por jogador!
+ *
+ * Classes avaliadoras: São sempre chamadas para avaliar os valores que entraram e definir se são
+ * validos ou não, algumas delas são: {@link IPattern} e {@link br.com.blackhubos.eventozero.chat.interpreter.base.expectation.Expectation}
+ *
+ * Classes monitoras: são chamadas somente para mostrarem os valores, estando eles com erro ou não,
+ * elas não poderão avaliar somente monitorar, estas clases são chamadas depois das avaliadoras, e
+ * as avaliadoras definem o método que será chamado das monitoras e monitoras finais, uma delas é a
+ * {@link br.com.blackhubos.eventozero.chat.interpreter.state.input.InputState}
+ *
+ * Classes monitoras finais: são chamadas quando terminar a questão (Obs: antes do questionário ser
+ * concluido). Estas classes somente monitoram as respostas, elas não podem fazer mais nada,
+ * diferente do que as monitoras podem fazer, as monitoras podem analisar todas as entradas do
+ * usuário, já as monitoras finais, somente o valor válido. Elas são chamadas adepois das monitoras
+ * e somente com a permissão das classes avaliadoras, uma delas é: {@link
+ * br.com.blackhubos.eventozero.chat.interpreter.base.booleanresult.BooleanResult} e {@link
+ * IPattern}
+ *
+ * A classe IPattern tem 1 avaliador, 1 monitor final e 1 tradutor de valores, o avaliador é o
+ * {@link IPattern#check}. O monitor final é {@link IPattern#booleanResult} e seu tradutor de
+ * valores, que pode ser considerado um monitor final dependendo do ponto de vista: {@link
+ * IPattern#transformer}.
+ *
+ * Classes Hidden: São as classes principais de suas classes pai, as classes hidden extende sua
+ * classe API. As classes Hidden não estão visiveis para quem for utilizar a API, mas está visivel
+ * para implementação, e a implementação deve ser somente feita a partir das classes Hidden, nunca
+ * de suas classes pai, elas são somente uma interface, as classes hidden tem o nome 'Base' no
+ * final, que é basicamente a Base de suas classes pai. Para o Interpreter trabalhar com
+ * implementação de classes que não implementem a Hidden precisará de uma modificação muito grandle
+ * pois há muitos cast para estas classes. As implementações padrões estão em um pacote 'impl' do
+ * mesmo pacote das classes Hidden Classes Hidden: {@link QuestionBase} {@link
+ * br.com.blackhubos.eventozero.chat.interpreter.base.booleanresult.BooleanResult} {@link
+ * br.com.blackhubos.eventozero.chat.interpreter.base.expectation.ExpectationBase} {@link
+ * br.com.blackhubos.eventozero.chat.interpreter.state.input.InputStateBase}
  */
-public class Interpreter {
+public class Interpreter<T> {
 
-    private static final List<Interpreter> interpreters = new ArrayList<>();
+    private static final List<Interpreter<?>> interpreters = new ArrayList<>();
     private static final Map<Player, InterpreterData> playerInterpreter = new HashMap<>();
-
     private final Deque<QuestionBase> registeredQuestion = new LinkedList<>();
-
-    private final String id;
+    private final T id;
+    private String finalizarQuestionario = "!sair";
+    private String iniciouQuestionario = ChatColor.GREEN + "Voce iniciou o questionário, para sair digite: " + finalizarQuestionario;
+    private String mensagemFinalizouQuestionario = ChatColor.RED + "Voce finalizou o questionário.";
 
     /**
      * Construtor
@@ -57,7 +94,7 @@ public class Interpreter {
      *
      * @param id Id para obter o interpretador posteriormente
      */
-    public Interpreter(String id) {
+    public Interpreter(T id) {
         this.id = id;
         interpreters.add(this);
     }
@@ -82,7 +119,7 @@ public class Interpreter {
      * @param id     Id esperado
      * @return {@link Optional} do interpretador atual do jogador se ele for igual ao id
      */
-    public static Optional<Interpreter> expectCurrent(Player player, String id) {
+    public static <T> Optional<Interpreter> expectCurrent(Player player, T id) {
         if (!playerInterpreter.containsKey(player))
             return Optional.empty();
 
@@ -99,7 +136,7 @@ public class Interpreter {
      * @param id ID do interpretador
      * @return {@link Optional} do interpretador correspondente ao ID
      */
-    public static Optional<Interpreter> getById(String id) {
+    public static <T> Optional<Interpreter<T>> getById(T id) {
         for (Interpreter interpreter : interpreters) {
             if (interpreter.getId().equals(id)) {
                 return Optional.of(interpreter);
@@ -114,15 +151,15 @@ public class Interpreter {
      * @param id       Id da nova questão
      * @param question Questão para ser perguntada ao jogador
      * @param pattern  IPattern para avaliar a resposta
-     * @param <T>      Tipo do valor
+     * @param <E>      Tipo do valor
      * @return Questão para definir as preferencias da mesma
-     * @see #alternativeQuestion(String, String, IPattern) Caso deseje uma questão alternativa que
+     * @see #alternativeQuestion(Object, String, IPattern) Caso deseje uma questão alternativa que
      * não será registrada
      * @see IPattern Verificador de respostas
      * @see Question Questão para definir as preferencias
      */
-    public <T> Question<T> question(String id, String question, IPattern<T> pattern) {
-        Question<T> questionAdd = alternativeQuestion(id, question, pattern);
+    public <E, ID> Question<E, ID> question(ID id, String question, IPattern<E> pattern) {
+        Question<E, ID> questionAdd = alternativeQuestion(id, question, pattern);
         registeredQuestion.offerLast((QuestionBase) questionAdd);
         return questionAdd;
     }
@@ -136,12 +173,12 @@ public class Interpreter {
      * @param pattern  IPattern para avaliar a resposta
      * @param <T>      Tipo do valor
      * @return Questão para definir as preferencias da mesma
-     * @see #question(String, String, IPattern) Caso deseje uma questão registrada
+     * @see #question(Object, String, IPattern) Caso deseje uma questão registrada
      * @see IPattern Verificador de respostas
      * @see Question Questão para definir as preferencias
      */
-    public <T> Question<T> alternativeQuestion(String id, String question, IPattern<T> pattern) {
-        return new QuestionImpl<T>(id, question, pattern, this);
+    public <T, ID> Question<T, ID> alternativeQuestion(ID id, String question, IPattern<T> pattern) {
+        return new QuestionImpl<>(id, question, pattern, this);
     }
 
     /**
@@ -163,6 +200,7 @@ public class Interpreter {
 
         Optional<QuestionBase> baseOptional = next(player);
         if (baseOptional.isPresent()) {
+            player.sendMessage(iniciouQuestionario);
             player.sendMessage(baseOptional.get().question());
         } else {
             return false;
@@ -172,31 +210,130 @@ public class Interpreter {
     }
 
     /**
-     * Envia a reposta do jogador ao gerenciador para ela ser processada
+     * !!! Este método não é sincronizado !!! USE: {@link #answer(Player, String)}
+     *
+     * @since 1.0.1
+     * @deprecated Método não sincronizado nem envia a mensagem de questão ao jogador
+     */
+    @Deprecated
+    public AnswerResult deprecated__answer(Player player, String answer) {
+        if (answer.equalsIgnoreCase(finalizarQuestionario)) {
+            if (endNoData(player)) {
+                warnEnd(player);
+            }
+            return new AnswerResult(Optional.empty(), AnswerResult.State.PLAYER_END);
+        } else {
+            Optional<QuestionBase> baseOptional = current(player);
+            AnswerResult result = hiddenAnswer(baseOptional, player, answer);
+            if (baseOptional.isPresent()) {
+                baseOptional.get().processAnswer(player, answer, result);
+            }
+            return result;
+        }
+    }
+
+    /**
+     * Envia a reposta do jogador ao gerenciador para ela ser processada Se a mensagem for igual a
+     * {@link #finalizarQuestionario} o questionário será finalizado
      *
      * @param player Jogador
      * @param answer Resposta em texto
      * @return {@link AnswerResult} com os dados do ocorrido no processamento
      * @see AnswerResult
      */
-    @SuppressWarnings("unchecked")
     public AnswerResult answer(Player player, String answer) {
-        Optional<QuestionBase> baseOptional = current(player);
+        if (answer.equalsIgnoreCase(finalizarQuestionario)) {
+            if (endNoData(player)) {
+                warnEnd(player);
+            }
+            return new AnswerResult(Optional.empty(), AnswerResult.State.PLAYER_END);
+        } else {
+            Optional<QuestionBase> baseOptional = current(player);
+            AnswerResult result = hiddenAnswer(baseOptional, player, answer);
+            if (baseOptional.isPresent()) {
+                baseOptional.get().processAnswer(player, answer, result);
+            }
+            if (result.getNext().isPresent()) {
+                player.sendMessage(result.getNext().get().question());
+            }
+            return result;
+        }
+    }
+
+    /**
+     * Define o texto que é necessário para finalizar o questionário
+     *
+     * Ao finalizar todas as respostas serão perdidas
+     *
+     * @param finalize Texto necessário para finalizar
+     * @return Este interpretador
+     */
+    public Interpreter<T> finalizeInput(@Nonnull String finalize) {
+        this.finalizarQuestionario = finalize;
+        return this;
+    }
+
+    /**
+     * Mensagem que aparecerá ao finalizar o questionário
+     *
+     * @param finalizeMessage Mensagem
+     * @return Este questionário
+     */
+    public Interpreter<T> finalizeMessage(@Nonnull String finalizeMessage) {
+        this.iniciouQuestionario = finalizeMessage;
+        return this;
+    }
+
+    /**
+     * Mensagem que aparecerá ao iniciar o questionário
+     *
+     * @param startMessage Mensagem
+     * @return Este questionário
+     */
+    public Interpreter<T> startQuestionnaire(@Nonnull String startMessage) {
+        this.finalizarQuestionario = startMessage;
+        return this;
+    }
+
+    /**
+     * Avisa que o jogador finalizou o questionário
+     *
+     * @param player Jogador
+     */
+    private void warnEnd(Player player) {
+        player.sendMessage(mensagemFinalizouQuestionario);
+    }
+
+    /**
+     * Envia a reposta do jogador ao gerenciador para ela ser processada chamar o método {@link
+     * #answer}
+     *
+     * @param baseOptional Questão
+     * @param player       Jogador
+     * @param answer       Resposta em texto
+     * @return {@link AnswerResult} com os dados do ocorrido no processamento
+     * @see #answer(Player, String)
+     * @see AnswerResult
+     * @deprecated Este método não ativa o {@link br.com.blackhubos.eventozero.chat.interpreter.state.input.InputState}
+     * nem envia mensagem ao jogador Use: {@link #answer(Player, String)}
+     */
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    private AnswerResult hiddenAnswer(Optional<QuestionBase> baseOptional, Player player, String answer) {
         if (baseOptional.isPresent()) {
-            if (!baseOptional.get().isOk(answer)) {
+            if (!baseOptional.get().isOk(player, answer)) {
                 return new AnswerResult(Optional.empty(), AnswerResult.State.INVALID_ANSWER_FORMAT);
             } else {
                 QuestionBase questionBase = playerInterpreter.get(player).answer(baseOptional.get().transform(answer));
                 Optional<QuestionBase> next = questionBase.processAndNext(player, answer);
                 if (next.isPresent()) {
-                    player.sendMessage(next.get().question());
+                    return new AnswerResult(next, AnswerResult.State.OK);
                 } else {
                     return new AnswerResult(Optional.empty(), AnswerResult.State.NO_MORE_QUESTIONS);
                 }
-                return new AnswerResult(next, AnswerResult.State.OK);
             }
         } else {
-            return new AnswerResult(Optional.empty(), AnswerResult.State.NO_CURRENT_QUESTION);
+            return new AnswerResult(Optional.empty(), AnswerResult.State.NO_CURRENT_QUESTIONNAIRE);
         }
     }
 
@@ -205,8 +342,26 @@ public class Interpreter {
      *
      * @return O ID do Interpreter
      */
-    public String getId() {
+    public T getId() {
         return id;
+    }
+
+    /**
+     * Obtem uma questão baseado em seu ID
+     *
+     * @param id   Id da questão
+     * @param <T>  Tipo do valor
+     * @param <ID> Tipo do ID
+     * @return Questao se existir, ou {@link Optional#empty()}
+     */
+    @SuppressWarnings("unchecked")
+    public <T, ID> Optional<Question<T, ID>> getQuestionByID(ID id) {
+        for (QuestionBase questionBase : registeredQuestion) {
+            if (questionBase.id().equals(id)) {
+                return Optional.of(questionBase);
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -283,10 +438,10 @@ public class Interpreter {
     }
 
     /**
-     * Finaliza o questionário do jogador caso ele não esteja mais presente no servidor,
-     * este método não chama o endListener, todas as respostas do jogador serão perdidas,
-     * para evitar isto use o matodo: {@link #end(Player)}, porém, este metodo poderá
-     * gerar erros caso o listener tente executar ações com o jogador já offline.
+     * Finaliza o questionário do jogador caso ele não esteja mais presente no servidor, este método
+     * não chama o endListener, todas as respostas do jogador serão perdidas, para evitar isto use o
+     * matodo: {@link #end(Player)}, porém, este metodo poderá gerar erros caso o listener tente
+     * executar ações com o jogador já offline.
      *
      * @param player Jogador
      * @return True caso finalize com sucesso, false caso não haja questionário atual

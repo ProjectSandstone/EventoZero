@@ -19,18 +19,20 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.base;
 
-import org.bukkit.entity.Player;
-
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import br.com.blackhubos.eventozero.chat.interpreter.base.booleanresult.BooleanResult;
+import br.com.blackhubos.eventozero.chat.interpreter.base.expectation.Expectation;
+import br.com.blackhubos.eventozero.chat.interpreter.state.input.InputState;
 
 /**
  * Interface da questão
  *
  * @param <T> Tipo da resposta
  */
-public interface Question<T> {
+public interface Question<T, ID> {
 
 
     // Layout methods
@@ -46,125 +48,56 @@ public interface Question<T> {
      *               lógico.
      * @return Própria questão
      */
-    Question<T> expect(Predicate<T> expect);
+    Expectation<T, ID> expect(Predicate<T> expect);
 
     /**
      * Com este método você poderá definir quais valores serão considerados baseado na sua
      * avaliação, este resultado subscreve o resultado do {@link br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern#booleanResult(Object)},
-     * os valores considerados são os definidos no método {@link #yes()} e {@link #no()}
+     * os valores considerados são os definidos no método {@link BooleanResult#yes()} e {@link
+     * BooleanResult#no()}
      *
-     * @param function Função(lambda) de avaliação, veja os testes para saber melhor como é seu uso
-     *                 lógico.
      * @return Própria questão
-     * @see #yes(BiConsumer) Definição do consumidor que será chamado caso a função retorne yes
-     * @see #yes(Question) Definição da questão que será considerada como a próxima (alternativa)
-     * caso a função retorne yes
-     * @see #yes(Question, BiConsumer) Define ambos, consumidor e questão caso a função retorne yes
-     * @see #no(BiConsumer) Definição do consumidor que será chamado caso a função retorne no
-     * @see #no(Question) Definição da questão que será considerada como a próxima (alternativa)
-     * caso a função retorne no
-     * @see #no(Question, BiConsumer) Define ambos, consumidor e questão caso a função retorne no
+     * @see br.com.blackhubos.eventozero.chat.interpreter.base.booleanresult.BooleanResult#yes(BiConsumer)
+     * Definição do consumidor que será chamado caso a função retorne yes
+     * @see br.com.blackhubos.eventozero.chat.interpreter.base.booleanresult.BooleanResult#yes(Question)
+     * Definição da questão que será considerada como a próxima (alternativa) caso a função retorne
+     * yes
+     * @see br.com.blackhubos.eventozero.chat.interpreter.base.booleanresult.BooleanResult#yes(Question,
+     * BiConsumer) Define ambos, consumidor e questão caso a função retorne yes
+     * @see br.com.blackhubos.eventozero.chat.interpreter.base.booleanresult.BooleanResult#no(BiConsumer)
+     * Definição do consumidor que será chamado caso a função retorne no
+     * @see br.com.blackhubos.eventozero.chat.interpreter.base.booleanresult.BooleanResult#no(Question)
+     * Definição da questão que será considerada como a próxima (alternativa) caso a função retorne
+     * no
+     * @see br.com.blackhubos.eventozero.chat.interpreter.base.booleanresult.BooleanResult#no(Question,
+     * BiConsumer) Define ambos, consumidor e questão caso a função retorne no
      */
-    Question<T> booleanResult(Function<T, BooleanResult> function);
+    BooleanResult<T, ID> booleanResult(Function<T, BooleanResult.Result> booleanResult);
 
     /**
-     * Método yes vazio, não define nada!
+     * Mesma função do {@link #booleanResult(Function)}, porém, utilizado para obter os valores do
+     * {@link br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern}
      *
-     * @return Própria questão
-     * @see #yes(BiConsumer) Definição do consumidor que será chamado caso a função retorne yes
-     * @see #yes(Question) Definição da questão que será considerada como a próxima (alternativa)
-     * caso a função retorne yes
-     * @see #yes(Question, BiConsumer) Define ambos, consumidor e questão caso a função retorne yes
+     * @return Boolean result
      */
-    default Question<T> yes() {
-        return this;
-    }
+    BooleanResult<T, ID> booleanResult();
 
     /**
-     * Método no vazio, não define nada!
+     * Gerenciador de entrada.
      *
-     * @return Própria questão
-     * @see #no(BiConsumer) Definição do consumidor que será chamado caso a função retorne no
-     * @see #no(Question) Definição da questão que será considerada como a próxima (alternativa)
-     * caso a função retorne no
-     * @see #no(Question, BiConsumer) Define ambos, consumidor e questão caso a função retorne no
+     * O método {@link InputState#ok(BiConsumer)} é chamado quando a resposta é válida
+     *
+     * O método {@link InputState#error(BiConsumer)} é chamado quando a resposta é inválida
+     *
+     * @return Gerenciador de entrada
      */
-    default Question<T> no() {
-        return this;
-    }
+    InputState<T, ID> inputState();
 
     /**
-     * Define qual será a próxima questão caso as afirmações sejam {@link BooleanResult#YES}
+     * Converte para texto baseado em um valor
      *
-     * @param ifYes Próxima questão caso as afirmações sejam {@link BooleanResult#YES}
-     * @return Própria questão
-     * @see BooleanResult#YES
-     * @see br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern#booleanResult(Object)
-     * @see #booleanResult(Function)
+     * @param value Valor que será tido com o Tipo do {@link br.com.blackhubos.eventozero.chat.interpreter.values.ValueTransformer}
+     * @return Texto
      */
-    Question<T> yes(Question ifYes);
-
-    /**
-     * Define qual será a próxima questão caso as afirmações sejam {@link BooleanResult#NO}
-     *
-     * @param ifNo Próxima questão caso as afirmações sejam {@link BooleanResult#NO}
-     * @return Própria questão
-     * @see BooleanResult#NO
-     * @see br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern#booleanResult(Object)
-     * @see #booleanResult(Function)
-     */
-    Question<T> no(Question ifNo);
-
-    /**
-     * Define qual será o consumidor que será chamado caso as afirmações sejam {@link
-     * BooleanResult#YES}
-     *
-     * @param ifYesConsumer Consumidor que será chamado caso as afirmações sejam {@link
-     *                      BooleanResult#YES}
-     * @return Própria questão
-     * @see BooleanResult#YES
-     * @see br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern#booleanResult(Object)
-     * @see #booleanResult(Function)
-     */
-    Question<T> yes(BiConsumer<Player, T> ifYesConsumer);
-
-    /**
-     * Define qual será o consumidor que será chamado caso as afirmações sejam {@link
-     * BooleanResult#NO}
-     *
-     * @param ifNoConsumer Consumidor que será chamado caso as afirmações sejam {@link
-     *                     BooleanResult#NO}
-     * @return Própria questão
-     * @see BooleanResult#NO
-     * @see br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern#booleanResult(Object)
-     * @see #booleanResult(Function)
-     */
-    Question<T> no(BiConsumer<Player, T> ifNoConsumer);
-
-    /**
-     * Define ambos, consumidor e questão caso as afirmações sejam {@link BooleanResult#YES}
-     *
-     * @param ifYes         Próxima questão caso as afirmações sejam {@link BooleanResult#YES}
-     * @param ifYesConsumer Consumidor que será chamado caso as afirmações sejam {@link
-     *                      BooleanResult#YES}
-     * @return Própria questão
-     * @see BooleanResult#YES
-     * @see br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern#booleanResult(Object)
-     * @see #booleanResult(Function)
-     */
-    Question<T> yes(Question ifYes, BiConsumer<Player, T> ifYesConsumer);
-
-    /**
-     * Define ambos, consumidor e questão caso as afirmações sejam {@link BooleanResult#NO}
-     *
-     * @param ifNo         Próxima questão caso as afirmações sejam {@link BooleanResult#NO}
-     * @param ifNoConsumer Consumidor que será chamado caso as afirmações sejam {@link
-     *                     BooleanResult#NO}
-     * @return Própria questão
-     * @see BooleanResult#NO
-     * @see br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern#booleanResult(Object)
-     * @see #booleanResult(Function)
-     */
-    Question<T> no(Question ifNo, BiConsumer<Player, T> ifNoConsumer);
-
+    String toText(Object value);
 }

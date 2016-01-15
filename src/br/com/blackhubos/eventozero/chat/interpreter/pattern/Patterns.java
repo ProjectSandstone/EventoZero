@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import br.com.blackhubos.eventozero.chat.interpreter.base.BooleanResult;
+import br.com.blackhubos.eventozero.chat.interpreter.base.booleanresult.BooleanResult;
 import br.com.blackhubos.eventozero.chat.interpreter.values.ListTransformer;
 import br.com.blackhubos.eventozero.util.Framework;
 
@@ -43,7 +43,7 @@ public final class Patterns {
     /**
      * Avaliador para booleanos
      */
-    public static final IPattern<Boolean> Boolean = new IPattern<>(Framework::tryBoolean, Framework::getBoolean, value -> value ? BooleanResult.YES : BooleanResult.NO);
+    public static final IPattern<Boolean> Boolean = new IPattern<>(Framework::tryBoolean, Framework::getBoolean, value -> value ? BooleanResult.Result.YES : BooleanResult.Result.NO);
 
     /**
      * Avaliador para numeros
@@ -65,9 +65,7 @@ public final class Patterns {
      */
     public static final IPattern<Enchantment> Enchantment =
             new IPattern<>(value -> org.bukkit.enchantments.Enchantment.getByName(value.toUpperCase()) != null,
-            input -> org.bukkit.enchantments.Enchantment.getByName(input.toUpperCase()));
-
-
+                    input -> org.bukkit.enchantments.Enchantment.getByName(input.toUpperCase()));
 
 
     // Avaliadores menos simples
@@ -76,9 +74,9 @@ public final class Patterns {
      * Tradutor de Material
      */
     public static final IPattern<Material> Material = new IPattern<>(value -> {
-        try{
+        try {
             return org.bukkit.Material.valueOf(value.toUpperCase()) != null;
-        }catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return false;
         }
     }, input -> org.bukkit.Material.valueOf(input.toUpperCase()));

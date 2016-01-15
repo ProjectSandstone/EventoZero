@@ -19,13 +19,15 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.pattern;
 
+import com.google.common.base.Objects;
+
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import br.com.blackhubos.eventozero.chat.interpreter.base.BooleanResult;
 import br.com.blackhubos.eventozero.chat.interpreter.base.Question;
+import br.com.blackhubos.eventozero.chat.interpreter.base.booleanresult.BooleanResult;
 import br.com.blackhubos.eventozero.chat.interpreter.values.ValueTransformer;
 
 /**
@@ -37,7 +39,7 @@ public class IPattern<T> {
 
     private final Predicate<String> check;
     private final ValueTransformer<T> transformer;
-    private final Optional<Function<T, BooleanResult>> booleanResult;
+    private final Optional<Function<T, BooleanResult.Result>> booleanResult;
 
     /**
      * Cria um novo IPattern
@@ -48,14 +50,14 @@ public class IPattern<T> {
      *                      consideradas pelo {@link Question}, é subscrito pelo {@link
      *                      Question#booleanResult(Function)} caso informado
      */
-    public IPattern(Pattern pattern, ValueTransformer<T> transformer, Function<T, BooleanResult> booleanResult) {
+    public IPattern(Pattern pattern, ValueTransformer<T> transformer, Function<T, BooleanResult.Result> booleanResult) {
         this(value -> pattern.matcher(value).matches(), transformer, Optional.of(booleanResult));
     }
 
     /**
      * Cria um novo IPattern
      *
-     * Sempre será considerado as definições yes {@link Question#yes()}
+     * Sempre será considerado as definições yes {@link BooleanResult#yes()}
      *
      * @param pattern     Pattern regex para avaliar a resposta
      * @param transformer Tradutor de valores
@@ -67,7 +69,7 @@ public class IPattern<T> {
     /**
      * Cria um novo IPattern
      *
-     * Sempre será considerado as definições yes {@link Question#yes()}
+     * Sempre será considerado as definições yes {@link BooleanResult#yes()}
      *
      * @param check       Predicato que irá avaliar as respostas
      * @param transformer Tradutor de valores
@@ -85,7 +87,7 @@ public class IPattern<T> {
      *                      consideradas pelo {@link Question}, é subscrito pelo {@link
      *                      Question#booleanResult(Function)} caso informado
      */
-    public IPattern(Predicate<String> check, ValueTransformer<T> transformer, Function<T, BooleanResult> booleanResult) {
+    public IPattern(Predicate<String> check, ValueTransformer<T> transformer, Function<T, BooleanResult.Result> booleanResult) {
         this(check, transformer, Optional.ofNullable(booleanResult));
     }
 
@@ -98,7 +100,7 @@ public class IPattern<T> {
      *                      consideradas pelo {@link Question}, é subscrito pelo {@link
      *                      Question#booleanResult(Function)} caso informado
      */
-    public IPattern(Predicate<String> check, ValueTransformer<T> transformer, Optional<Function<T, BooleanResult>> booleanResult) {
+    public IPattern(Predicate<String> check, ValueTransformer<T> transformer, Optional<Function<T, BooleanResult.Result>> booleanResult) {
         this.check = check;
         this.transformer = transformer;
         this.booleanResult = booleanResult;
@@ -110,11 +112,11 @@ public class IPattern<T> {
      * @param value Valor
      * @return Definições a serem consideradas pelo {@link Question}
      */
-    public BooleanResult booleanResult(T value) {
+    public BooleanResult.Result booleanResult(T value) {
         if (this.booleanResult.isPresent()) {
             return booleanResult.get().apply(value);
         }
-        return BooleanResult.YES;
+        return BooleanResult.Result.YES;
     }
 
     /**
@@ -136,4 +138,9 @@ public class IPattern<T> {
         return transformer;
     }
 
+    public String toText(Object value) {
+        return Objects.toStringHelper(this)
+                .add("valueTransformer", Objects.toStringHelper(this.transformer).add("type", this.transformer.toType(value)))
+                .toString();
+    }
 }

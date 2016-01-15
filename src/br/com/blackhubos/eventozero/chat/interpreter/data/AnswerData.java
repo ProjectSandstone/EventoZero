@@ -22,6 +22,7 @@ package br.com.blackhubos.eventozero.chat.interpreter.data;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringJoiner;
 
 import br.com.blackhubos.eventozero.chat.interpreter.base.QuestionBase;
 import br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern;
@@ -44,7 +45,7 @@ public class AnswerData {
     /**
      * Obtém uma resposta baseada no ID da questão
      *
-     * @param id Id da questão declarada no {@link br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter#question(String,
+     * @param id Id da questão declarada no {@link br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter#question(Object,
      *           String, IPattern)}
      * @return Resposta se ela existir, ou {@link Optional#empty()}
      */
@@ -60,7 +61,7 @@ public class AnswerData {
     /**
      * Obtém uma resposta baseada no ID da questão e retorna ela como o tipo informado
      *
-     * @param id  Id da questão declarada no {@link br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter#question(String,
+     * @param id  Id da questão declarada no {@link br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter#question(Object,
      *            String, IPattern)}
      * @param <T> Tipo para castear a resposta
      * @return Resposta se ela existir, ou {@link Optional#empty()}
@@ -81,5 +82,15 @@ public class AnswerData {
      */
     public Map<QuestionBase, Object> toMap() {
         return Collections.unmodifiableMap(answers);
+    }
+
+    @Override
+    public String toString() {
+        StringJoiner joiner = new StringJoiner(", ", "{", "}");
+        toMap().forEach((key, value) -> {
+            joiner.add(key.toText(value));
+        });
+
+        return joiner.toString();
     }
 }

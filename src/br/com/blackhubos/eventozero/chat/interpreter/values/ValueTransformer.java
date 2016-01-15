@@ -28,4 +28,12 @@ public interface ValueTransformer<TYPE> {
      * @return Valor traduzido de saida
      */
     TYPE transform(String input);
+
+    @SuppressWarnings("unchecked")
+    default String toType(Object value) {
+        try{
+            return "{Type: "+((TYPE) value).getClass().getCanonicalName()+"}";
+        }catch(Throwable ignored){}
+        return "{Unknown Type}";
+    }
 }

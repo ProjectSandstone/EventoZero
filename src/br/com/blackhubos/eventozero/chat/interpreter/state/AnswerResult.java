@@ -81,8 +81,13 @@ public class AnswerResult {
         NO_MORE_QUESTIONS,
 
         /**
-         * Indica que não há questão atual para o jogador
+         * Indica que não há questionario atual para o jogador
          */
-        NO_CURRENT_QUESTION
+        NO_CURRENT_QUESTIONNAIRE,
+
+        /**
+         * Indica que o jogador finalizou o questionário
+         */
+        PLAYER_END
     }
 }
