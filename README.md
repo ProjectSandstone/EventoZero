@@ -40,16 +40,9 @@ Copyright © 2016 BlackHub OS (http://www.blackhubos.com.br/) e contribuidores.
 
 #### Estado de Desenvolvimento
 Total de Releases: 0   
-Testes realizados: 0   
+Testes realizados: 10   
 Versão atual: 1.0.1 Alpha Stage  
 Compatibilidade: ••••  
-  
-#### Porcentagem de Desenvolvimento
-MessageHandler • 25%  
-EventFactory • ?%  
-Storage • 0%  
-API de Desenvolvimento • 0%  
-Documentação • ?%  
 
 #### Como contribuir
 Para contribuir para nosso projeto, você pode ajudar a traduzir mensagens para o plugin, ou ajudar no desenvolvimento do código. O processo é o mesmo citado acima, na área "Aos desenvolvedores".
