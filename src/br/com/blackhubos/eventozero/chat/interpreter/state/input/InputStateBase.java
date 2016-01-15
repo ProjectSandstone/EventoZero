@@ -46,17 +46,13 @@ public interface InputStateBase<T, ID> extends InputState<T, ID> {
     default void call(Player player, String answer, AnswerResult.State state) {
         switch (state) {
             case INVALID_ANSWER_FORMAT: {
-                if (getError().isPresent()) {
-                    getError().get().accept(player, answer);
-                }
+                getError().ifPresent(error -> error.accept(player, answer));
                 break;
             }
 
             case OK:
             case NO_MORE_QUESTIONS: {
-                if (getOk().isPresent()) {
-                    getOk().get().accept(player, answer);
-                }
+                getOk().ifPresent(ok -> ok.accept(player, answer));
                 break;
             }
         }

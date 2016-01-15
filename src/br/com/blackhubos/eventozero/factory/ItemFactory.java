@@ -230,7 +230,7 @@ public final class ItemFactory
 	{
 		if (replaces == null)
 		{
-			replaces = new ConcurrentHashMap<String, String>();
+			replaces = new ConcurrentHashMap<>();
 		}
 
 		this.serial = script;
