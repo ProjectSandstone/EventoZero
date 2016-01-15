@@ -45,7 +45,7 @@ public class ListTransformer {
                         && pos > -1) {
                     if(sb.charAt(pos) != '\\'){
                         contents.add(sb.toString());
-                        sb = new StringBuilder();
+                        sb.setLength(0);
                     }else{
                         sb.deleteCharAt(pos);
                     }
