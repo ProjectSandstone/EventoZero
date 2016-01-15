@@ -32,6 +32,7 @@ Somos nós, uma pequena equipe de adolescentes, que estamos desenvolvendo e mant
 - Hugo Silva (CrazyDev), Desenvolvedor do Projeto.
 - Jonathan Henrique (JonathanScripter), Desenvolvedor do Projeto.
 - Samuel (DarkCoderPT), Desenvolvedor do Projeto.
+- Leonardo Santos (leonardosc), Desenvolvedor do Projeto.
 
 #### Licenciamento
 Nosso projeto está licenciado sob os termos da GNU General Public License (versão 3) publicada pela Free Software Foundation (http://fsf.org/). Para utilizar, editar, distribuir ou redistribuir o nosso projeto é necessário concordar com os termos da licença citada.  
