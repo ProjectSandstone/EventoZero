@@ -21,6 +21,7 @@ package br.com.blackhubos.eventozero.handlers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 import org.bukkit.plugin.Plugin;
@@ -33,7 +34,7 @@ import br.com.blackhubos.eventozero.util.Framework.Configuration;
 
 public class ShopHandler {
 
-    private final Vector<Shop> shops;
+    private final List<Shop> shops;
 
     public ShopHandler() {
         this.shops = new Vector<>();

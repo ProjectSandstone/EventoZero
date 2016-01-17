@@ -1,11 +1,8 @@
 package br.com.blackhubos.eventozero.shop;
 
-import br.com.blackhubos.eventozero.EventoZero;
-import br.com.blackhubos.eventozero.factory.Event;
 import java.util.LinkedList;
-
+import java.util.List;
 import java.util.Optional;
-import java.util.Vector;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,11 +14,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import br.com.blackhubos.eventozero.EventoZero;
+import br.com.blackhubos.eventozero.factory.Event;
+
 public class Shop implements Listener {
 
     private final String name;
     private final ItemStack icon;
-    private final LinkedList<ShopItem> items;
+    private final List<ShopItem> items;
 
     private String title;
     private int size;

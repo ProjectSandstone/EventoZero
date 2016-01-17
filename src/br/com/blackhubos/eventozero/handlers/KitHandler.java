@@ -19,23 +19,24 @@
  */
 package br.com.blackhubos.eventozero.handlers;
 
-import br.com.blackhubos.eventozero.EventoZero;
-import br.com.blackhubos.eventozero.ability.Ability;
-import br.com.blackhubos.eventozero.factory.ItemFactory;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 import org.bukkit.plugin.Plugin;
 
 import com.google.common.base.Optional;
 
+import br.com.blackhubos.eventozero.EventoZero;
+import br.com.blackhubos.eventozero.ability.Ability;
+import br.com.blackhubos.eventozero.factory.ItemFactory;
 import br.com.blackhubos.eventozero.kit.Kit;
 import br.com.blackhubos.eventozero.util.Framework;
-import java.io.File;
-import java.io.IOException;
 
 public final class KitHandler {
     
-    private final Vector<Kit> kits;
+    private final List<Kit> kits;
     
     public KitHandler() {
         this.kits = new Vector<>();
@@ -50,7 +51,7 @@ public final class KitHandler {
         return Optional.absent();
     }
     
-    public Vector<Kit> getKits() {
+    public List<Kit> getKits() {
         return this.kits;
     }
     

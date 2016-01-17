@@ -6,6 +6,8 @@
 package br.com.blackhubos.eventozero.handlers;
 
 import br.com.blackhubos.eventozero.ability.Ability;
+
+import java.util.List;
 import java.util.Vector;
 
 import com.google.common.base.Optional;
@@ -16,7 +18,7 @@ import com.google.common.base.Optional;
  */
 public class AbilityHandler {
 
-    public static final Vector<Ability> abilitys = new Vector<>();
+    public static final List<Ability> abilitys = new Vector<>();
 
     public static Optional<Ability> getAbilityByName(String name){
         for(Ability ability : abilitys){

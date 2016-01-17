@@ -20,6 +20,7 @@
 package br.com.blackhubos.eventozero;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 
 import org.bukkit.command.Command;
@@ -31,7 +32,7 @@ public abstract class EventCommand implements CommandExecutor
 
 	private String command;
 	private String commandDesc;
-	private Vector<String> aliases;
+	private List<String> aliases;
 
 	public EventCommand command(final String commandName)
 	{
@@ -49,7 +50,7 @@ public abstract class EventCommand implements CommandExecutor
 		return this.commandDesc;
 	}
 
-	public Vector<String> aliases()
+	public List<String> aliases()
 	{
 		return this.aliases;
 	}

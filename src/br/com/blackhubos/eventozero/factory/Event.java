@@ -22,11 +22,11 @@ package br.com.blackhubos.eventozero.factory;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
 import org.apache.commons.lang.NullArgumentException;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -62,11 +62,11 @@ public class Event extends EventCommand
 	private final String name;
 	private final EventData data;
 
-	private final Vector<Player> joineds;
-	private final Vector<Player> spectators;
-	private final Vector<Party> partys;
-	private final Vector<Ability> abilitys;
-	private final Vector<Cuboid> cuboids;
+	private final List<Player> joineds;
+	private final List<Player> spectators;
+	private final List<Party> partys;
+	private final List<Ability> abilitys;
+	private final List<Cuboid> cuboids;
 
 	private String displayName;
 	private String description;
@@ -105,7 +105,7 @@ public class Event extends EventCommand
 	 *
 	 * @return Retorna a lista de cuboids definidos neste evento.
 	 */
-	public Vector<Cuboid> getCuboids()
+	public List<Cuboid> getCuboids()
 	{
 		return this.cuboids;
 	}
@@ -176,7 +176,7 @@ public class Event extends EventCommand
 	 *
 	 * @return Retorna a lista de todas as partys em ação do evento.
 	 */
-	public Vector<Party> getPartys()
+	public List<Party> getPartys()
 	{
 		return this.partys;
 	}
@@ -185,7 +185,7 @@ public class Event extends EventCommand
 	 *
 	 * @return Retorna a lista de todos os participantes do evento.
 	 */
-	public Vector<Player> getPlayers()
+	public List<Player> getPlayers()
 	{
 		return this.joineds;
 	}
@@ -211,7 +211,7 @@ public class Event extends EventCommand
 	 *
 	 * @return Retorna a lista de todos os es espectadores ativos no evento.
 	 */
-	public Vector<Player> getSpectators()
+	public List<Player> getSpectators()
 	{
 		return this.spectators;
 	}
@@ -220,7 +220,7 @@ public class Event extends EventCommand
 	 *
 	 * @return Retorna as habilidades (Abilitys) do evento.
 	 */
-	public Vector<Ability> getAbilitys()
+	public List<Ability> getAbilitys()
 	{
 		return this.abilitys;
 	}

@@ -19,8 +19,9 @@
  */
 package br.com.blackhubos.eventozero.ability;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+
 import org.bukkit.entity.Player;
 
 import br.com.blackhubos.eventozero.handlers.AbilityHandler;
@@ -30,7 +31,7 @@ public abstract class Ability {
     private final String name;
     private final long cooldown;
 
-    private final ConcurrentMap<String, Long> cooldowns;
+    private final Map<String, Long> cooldowns;
 
     public Ability(final String name, final long cooldown) {
         this.name = name;
