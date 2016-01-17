@@ -19,10 +19,12 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.base;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,6 +38,7 @@ import javax.annotation.Nonnull;
 import br.com.blackhubos.eventozero.chat.interpreter.base.impl.QuestionImpl;
 import br.com.blackhubos.eventozero.chat.interpreter.data.AnswerData;
 import br.com.blackhubos.eventozero.chat.interpreter.data.InterpreterData;
+import br.com.blackhubos.eventozero.chat.interpreter.game.events.PlayerStartQuestionnaire;
 import br.com.blackhubos.eventozero.chat.interpreter.pattern.IPattern;
 import br.com.blackhubos.eventozero.chat.interpreter.state.AnswerResult;
 
@@ -193,6 +196,12 @@ public class Interpreter<T> {
         if (playerInterpreter.containsKey(player))
             return false;
 
+        PlayerStartQuestionnaire<T> playerStartQuestionnaire = new PlayerStartQuestionnaire<>(player, this);
+        Bukkit.getPluginManager().callEvent(playerStartQuestionnaire);
+        if (playerStartQuestionnaire.isCancelled()) {
+            return false;
+        }
+
         Deque<QuestionBase> copy = new LinkedList<>(registeredQuestion);
         InterpreterData interpreterData = new InterpreterData(this, copy, endListener);
 
@@ -203,9 +212,9 @@ public class Interpreter<T> {
             player.sendMessage(iniciouQuestionario);
             player.sendMessage(baseOptional.get().question());
         } else {
+            endNoData(player);
             return false;
         }
-
         return true;
     }
 

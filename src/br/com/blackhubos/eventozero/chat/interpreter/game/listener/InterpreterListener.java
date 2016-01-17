@@ -19,33 +19,60 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.game.listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Optional;
 
 import br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter;
+import br.com.blackhubos.eventozero.chat.interpreter.game.events.PlayerInputEvent;
+import br.com.blackhubos.eventozero.chat.interpreter.game.events.PlayerQuestionInput;
 import br.com.blackhubos.eventozero.chat.interpreter.state.AnswerResult;
 
 public class InterpreterListener implements Listener {
 
     @EventHandler
+    public void preprocess(PlayerCommandPreprocessEvent event) {
+        PlayerInputEvent playerInputEvent = new PlayerInputEvent(event.getPlayer(), event.getMessage());
+        Bukkit.getPluginManager().callEvent(playerInputEvent);
+        event.setCancelled(playerInputEvent.isCancelled());
+    }
+
+    @EventHandler
     public void chat(AsyncPlayerChatEvent event) {
+        PlayerInputEvent playerInputEvent = new PlayerInputEvent(event.getPlayer(), event.getMessage());
+        Bukkit.getPluginManager().callEvent(playerInputEvent);
+        event.setCancelled(playerInputEvent.isCancelled());
+    }
+
+    @EventHandler
+    public void handleInput(PlayerInputEvent event) {
+
         Player player = event.getPlayer();
         // Obtem o questionário atual
         Optional<Interpreter> current = Interpreter.getCurrent(player);
         // Se estiver presente processa as mensagens
         if (current.isPresent()) {
             // O método .answer envia as repostas ao processadores e avaliadores, e retorna o estado
-            AnswerResult result = current.get().answer(player, event.getMessage());
+            AnswerResult result = current.get().answer(player, event.getInputText());
             // Estado indica a validação das respostas
             AnswerResult.State answerState = result.getState();
+            // Chama o evento de que o jogador respondeu uma questão
+            PlayerQuestionInput playerQuestionInput = new PlayerQuestionInput(player, event.getInputText(), result, current);
+            Bukkit.getServer().getPluginManager().callEvent(playerQuestionInput);
+            // Se o evento for cancelado iremos ignorar o resto do código
+            if (playerQuestionInput.isCancelled()) {
+                // "Ignoramos"
+                return;
+            }
 
             switch (answerState) {
                 // Respostas com formato inválido
@@ -86,10 +113,7 @@ public class InterpreterListener implements Listener {
 
     private void handleDC(Player player) {
         // Removemos o jogador do questionário quando ele sair do jogo
-        Optional<Interpreter> current = Interpreter.getCurrent(player);
-        if (current.isPresent()) {
-            current.get().endNoData(player);
-        }
+        Interpreter.getCurrent(player).ifPresent(interpreter -> interpreter.endNoData(player));
     }
 
     @EventHandler
