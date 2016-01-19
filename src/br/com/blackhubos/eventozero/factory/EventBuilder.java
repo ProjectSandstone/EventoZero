@@ -20,8 +20,8 @@
 
 package br.com.blackhubos.eventozero.factory;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Location;
 
@@ -156,7 +156,7 @@ public interface EventBuilder {
 	 * 
 	 * @see AbilityHandler#getAbilityByName(String)
 	 */
-	EventBuilder abilitys(List<String> abilitys );
+	EventBuilder abilitys(Set<String> abilitys );
 	
 	/**
 	 * Define os shops disponiveis no evento.
@@ -164,19 +164,24 @@ public interface EventBuilder {
 	 * @param shops
 	 *            Lista com o nome das habilidades disponiveis no evento.
 	 */
-	EventBuilder shops(List<String> shops);
+	EventBuilder shops(Set<String> shops);
 	
 	/**
 	 * Define a localização do lobby do evento.
 	 * 
-	 * @param loc Localização do lobby
+	 * @param locations Lista de localização do lobby
 	 */
-	EventBuilder setLobbyLocation(Location loc);
+	EventBuilder setLobbyLocations(Set<Location> locations);
 	
 	/**
 	 * Define a localização do spawn do evento.
 	 * 
-	 * @param loc Localização do spawn.
+	 * @param locations Lista de localização do spawn.
 	 */
-	EventBuilder setSpawnLocation(Location loc);
+	EventBuilder setSpawnLocations(Set<Location> locations);
+	
+	/**
+	 * @return O Evento construido
+	 */
+	Event build();
 }
