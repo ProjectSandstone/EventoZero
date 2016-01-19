@@ -25,10 +25,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
 import java.util.Vector;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.bukkit.Location;
-import org.bukkit.Material;	
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -190,15 +192,10 @@ public class Event
 	 */
 	public Vector<Player> getPlayersRemaining()
 	{
-		final Vector<Player> remaings = new Vector<>();
-		for (final Player remaing : this.getPlayers())
-		{
-			if (!this.getSpectators().contains(remaing))
-			{
-				remaings.add(remaing);
-			}
-		}
-		return remaings;
+		return getPlayers()
+				.stream()
+				.filter(spec -> !getSpectators().contains(spec))
+				.collect(Vector::new, Vector::add, Vector::addAll);
 	}
 
 	/**
