@@ -29,8 +29,11 @@ import br.com.blackhubos.eventozero.handlers.AbilityHandler;
 
 /*
  * TODO: Adicionar método para os "cuboIds" (example.yml#94) 
+ * 
  * TODO: Adicionar método para adicionar um horario do evento, não achei um nome adequado pra
  * isso ainda.
+ * 
+ * TODO: Adicionar métodos para configurar as mensagens.
  */
 
 /**
@@ -171,14 +174,21 @@ public interface EventBuilder {
 	 * 
 	 * @param locations Lista de localização do lobby
 	 */
-	EventBuilder setLobbyLocations(Set<Location> locations);
+	EventBuilder lobbyLocations(Set<Location> locations);
 	
 	/**
 	 * Define a localização do spawn do evento.
 	 * 
 	 * @param locations Lista de localização do spawn.
 	 */
-	EventBuilder setSpawnLocations(Set<Location> locations);
+	EventBuilder spawnLocations(Set<Location> locations);
+	
+	//TODO: documentar
+	/**
+	 * @param saveInventory
+	 * @return
+	 */
+	EventBuilder safeInventory(boolean saveInventory);
 	
 	/**
 	 * @return O Evento construido
