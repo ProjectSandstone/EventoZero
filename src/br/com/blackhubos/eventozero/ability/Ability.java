@@ -54,15 +54,16 @@ public abstract class Ability {
     }
 
     public long getRemaingTime(final String name) {
-        return (getLastTime(name) - (getCooldown() * 1000));
+        return (cooldowns.containsKey(name) 
+        		? getLastTime(name) - (getCooldown() * 1000) : 0);
     }
 
-    public long getRemaingTimePostive(final String name) {
+    public long getRemaingTimePositive(final String name) {
         return (this.getRemaingTime(name) >= 0 ? this.getRemaingTime(name) : 0);
     }
 
     public boolean canUse(final String name) {
-        return (this.getRemaingTimePostive(name) == 0);
+        return (this.getRemaingTimePositive(name) == 0);
     }
 
     public Ability updateTime(final String name) {
