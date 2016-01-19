@@ -54,11 +54,9 @@ import br.com.blackhubos.eventozero.util.Framework.Cuboid;
  *
  * Falta algo? documente aqui com um TODO: mensagem TODO = To Do (a fazer)
  * TODO: no modo espectador, desativar comandos exceto do eventozero
- * TODO: remover o EventCommand, isso é uma classe que representa um evento, não um comando.
  */
-public class Event extends EventCommand
+public class Event
 {
-
 	private final String name;
 	private final EventData data;
 
@@ -82,7 +80,6 @@ public class Event extends EventCommand
 		this.abilitys = new Vector<>();
 		this.data = new EventData();
 		this.cuboids = new Vector<Cuboid>();
-		this.command(this.name).register();
 	}
 
 	public Event(final String name, final Configuration config)
@@ -495,32 +492,4 @@ public class Event extends EventCommand
 	{
 		return this.config;
 	}
-
-	/**
-	 * TODO: remover isso daqui, colocar em uma classe especifica pra comando;
-	 *
-	 * TODO: mensagens não estão configuráveis
-	 */
-	@Override
-	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args)
-	{
-		if (args.length == 0)
-		{
-			if (sender instanceof Player)
-			{
-				sender.sendMessage("command not allowed to console");
-				return true;
-			}
-			final Player player = (Player) sender;
-			if (this.hasPlayerJoined(player))
-			{
-				sender.sendMessage("you already entered the event");
-				return true;
-			}
-			this.playerJoin(player);
-			player.sendMessage("you entered the event");
-		}
-		return false;
-	}
-
 }
