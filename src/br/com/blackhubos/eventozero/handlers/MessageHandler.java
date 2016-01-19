@@ -32,21 +32,18 @@ import br.com.blackhubos.eventozero.util.Framework.Configuration;
 public enum MessageHandler
 {
 
-	PLAYER_WITHOUT_PERMISSION(
-			"without_permission",
-			"&7Você não está autorizado a fazer isto."),
-	EVENT_ANNOUNCEMENT_OPENED(
-			"announces_open",
-			"&7Evento {nome} está aberto, participe!"),
-	EVENT_ANNOUNCEMENT_FINISHED(
-			"announces_finished",
-			"&7Evento {nome} terminou!"),
-	EVENT_ANNOUNCEMENT_CANCELLED(
-			"announces_cancelled",
-			"&cEvento {nome} cancelado por um admin!"),
-	EVENT_ANNOUNCEMENT_CANCELLED_PLAYERS(
-			"announces_cancelled_players",
-			"&cEvento {nome} cancelado devido a falta de jogadores!");
+	JA_PARTICIPANDO("JA_PARTICIPANDO", "§7Você já está participando de um evento."),
+	EVENTO_ESPECIAL("EVENTO_ESPECIAL", "§7Este é um evento especial, você não tem permissão para participar dele."),
+	SEM_PERMISSAO("SEM_PERMISSÃO", "&7Você não está autorizado a fazer isto."),
+	EVENTO_ENTROU("EVENTO_ENTROU", "§7Você entrou no eveto {evento}!"),
+	ANUNCIOS_ABERTO("ANUNCIOS_ABERTO", "&7Evento {evento} está aberto, participe!"),
+	ANUNCIOS_INICIADO("ANUNCIOS_INICIADO", "§7O evento {evento} está iniciando agora!"),
+	ANUNCIOS_FINALIZADO_COM_UM_VENCEDOR("ANUNCIOS_FINALIZADO_COM_UM_VENCEDOR", "&7Evento {player} terminou!"),
+	ANUNCIOS_VITORIA_POR_COLOCADO("ANUNCIOS_VITORIA_POR_COLOCADO", "&7O jogador {player} ganhou no evento {evento} e ficou no {posicao}° lugar."),
+	ANUNCIOS_FINALIZADO_COM_COLOCACAO("ANUNCIOS_FINALIZADO_COM_COLOCACAO", "&7O evento {evento} foi finalizado. Vencedores: {vencedores}"),
+	ANUNCIOS_CANCELADO_POR_ADMIN("ANUNCIOS_CANCELADO_POR_ADMIN", "&cEvento {player} cancelado por um admin!"),
+	ANUNCIOS_CANCELADO_SEM_PLAYERS("ANUNCIOS_CANCELADO_SEM_PLAYERS", "&cEvento {evento} cancelado devido a falta de jogadores!"),
+	EVENTO_NÃO_ENCONTRADO("EVENTO_NÃO_ENCONTRADO", "§7O evento {evento} não existe!");
 
 	private String key, padrao;
 
@@ -68,10 +65,15 @@ public enum MessageHandler
 		return this.padrao;
 	}
 
+	public void send(final CommandSender player, final String... replacements)
+	{
+		this.send(new CommandSender[] { player }, replacements);
+	}
+
 	public void send(final CommandSender[] players, final String... replacements)
 	{
 		final MessageRecipient msgRecip = new MessageRecipient(this.getKey());
-		
+
 		for (final CommandSender player : players)
 		{
 			msgRecip.sendMessage(player, replacements);
@@ -158,9 +160,16 @@ public enum MessageHandler
 			{
 				if (MessageRecipient.flatfile.isList(this.key))
 				{
-					for (final String line : MessageRecipient.flatfile.getStringList(this.key))
+					try
 					{
-						messages.add(line);
+						for (final String line : MessageRecipient.flatfile.getStringList(this.key))
+						{
+							messages.add(line);
+						}
+					}
+					catch (final Exception e)
+					{
+						messages.add(MessageRecipient.flatfile.getString(this.key));
 					}
 				}
 				else

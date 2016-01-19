@@ -12,8 +12,12 @@
 
 SEM_PERMISSÃO: '&7Você não tem permissão para fazer isto.'
 
+EVENTO_NÃO_ENCONTRADO: '&cO evento {evento} não existe.'
+
 JA_PARTICIPANDO: "&eVocê já está participando de um evento!"
+
 EVENTO_ESPECIAL: "&eEste é um evento especial, apenas certos jogadores podem participar."
+
 EVENTO_ENTROU:
   - "&7Você entrou no evento {evento}:"
   - "&7Jogadores até agora: &a{jogadores}"
@@ -23,16 +27,33 @@ EVENTO_ENTROU:
 
 ANUNCIOS_ABERTO:
   - "&d-------------------------------"
-  - "&7Evento {nome} aberto agora"
+  - "&7Evento {evento} aberto agora"
   - "&7PvP [{pvp}] - Use /{comando}!"
   - "&d-------------------------------"
 
 ANUNCIOS_INICIADO:
   - "Iniciado"
 
-ANUNCIOS_FINALIZADO:
-  - "Finalizado"
+ANUNCIOS_FINALIZADO_COM_UM_VENCEDOR:
+  - "&2[{evento}] &aO evento terminou!"
+  - "&2[{evento}] &aO vencedor foi o jogador {nome}"
+  - "&2[{evento}] &aEle já venceu {vitorias} eventos!"
 
-ANUNCIOS_CANCELADO: "Cancelado"
+ANUNCIOS_VITORIA_POR_COLOCADO:
+  - "&2[{evento}] &aO jogador {player} venceu em {posicao}° lugar no evento!"
 
-ANUNCIOS_CANCELADO_MINIMUM_PLAYERS: "Sem jogadores necessarios"
+# Configure a '{vencedores'} no fim deste arquivo em 'OUTPUT_VENCEDORES'
+ANUNCIOS_FINALIZADO_COM_COLOCACAO:
+  - "&2[{evento}] &aO evento terminou!"
+  - "&2[{evento}] &aVencedores: {vencedores}"
+
+ANUNCIOS_CANCELADO_POR_ADMIN:
+  - "&5[{evento}] &dO evento acaba de ser cancelado por um administrador do servidor."
+
+ANUNCIOS_CANCELADO_SEM_PLAYERS:
+  - "&5[{evento}] &dO evento acaba de ser cancelado!"
+  - "&5[{evento}] &dNão havia players suficientes!"
+
+OUTPUT_VENCEDORES:
+  value: '&2({posicao}° lugar) &a{player}'
+  separator: ', '
