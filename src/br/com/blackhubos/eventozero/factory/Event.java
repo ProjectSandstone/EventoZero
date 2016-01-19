@@ -28,15 +28,12 @@ import java.util.Vector;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.Material;	
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import br.com.blackhubos.eventozero.EventCommand;
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.ability.Ability;
 import br.com.blackhubos.eventozero.kit.Kit;
