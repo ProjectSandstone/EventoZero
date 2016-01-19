@@ -40,60 +40,60 @@ class EventBuilderImpl implements EventBuilder {
 	 * Chaves que iniciem com 'eventdata.' são para o EventData.
 	 */
 	private Map<String, Object> data;
-	
+
 	public EventBuilderImpl() {
 		data = Maps.newHashMap();
 	}
-	
+
 	@Override
 	public EventBuilder name(String name) {
 		checkArgument(!isNullOrEmpty(name), "name cannot be null or empty");
-		
+
 		data.put("name", name);
-		
+
 		return this;
 	}
 
 	@Override
 	public EventBuilder partyEnabled(boolean enabled) {
 		data.put("partyEnabled", enabled);
-		
+
 		return this;
 	}
 
 	@Override
 	public EventBuilder maxPlayers(int maxPlayers) {
-		checkArgument( maxPlayers > 0, "maxPlayers must be greater than zero." );
-		
+		checkArgument(maxPlayers > 0, "maxPlayers must be greater than zero.");
+
 		data.put("maxPlayers", maxPlayers);
-		
+
 		return this;
 	}
 
 	@Override
 	public EventBuilder minPlayers(int minPlayers) {
-		checkArgument( minPlayers > 0, "minPlayers must be greater than zero." );
-		
+		checkArgument(minPlayers > 0, "minPlayers must be greater than zero.");
+
 		data.put("minPlayers", minPlayers);
-		
+
 		return this;
 	}
 
 	@Override
 	public EventBuilder partySize(int partySize) {
-		checkArgument( partySize > 0, "partySize must be greater than zero." );
-		
+		checkArgument(partySize > 0, "partySize must be greater than zero.");
+
 		data.put("partySize", partySize);
-		
+
 		return this;
 	}
 
 	@Override
 	public EventBuilder displayName(String displayName) {
 		checkArgument(!isNullOrEmpty(displayName), "displayName cannot be null or empty");
-		
+
 		data.put("displayName", displayName);
-		
+
 		return this;
 	}
 
@@ -102,16 +102,16 @@ class EventBuilderImpl implements EventBuilder {
 		checkArgument(!isNullOrEmpty(desc), "desc cannot be null or empty");
 
 		data.put("description", desc);
-		
+
 		return this;
 	}
 
 	@Override
 	public EventBuilder timeToStop(int seconds) {
-		checkArgument( seconds > 0, "seconds must be greater than zero." );
-		
+		checkArgument(seconds > 0, "seconds must be greater than zero.");
+
 		data.put("timeToStop", seconds);
-		
+
 		return this;
 	}
 
@@ -120,7 +120,7 @@ class EventBuilderImpl implements EventBuilder {
 		checkNotNull(points, "points cannot be null");
 
 		data.put("points", points);
-		
+
 		return this;
 	}
 
@@ -129,86 +129,86 @@ class EventBuilderImpl implements EventBuilder {
 		checkNotNull(money, "money cannot be null");
 
 		data.put("money", money);
-		
+
 		return this;
 	}
 
 	@Override
 	public EventBuilder placements(int placements) {
-		checkArgument( placements > 0, "placements must be greater than zero." );
-		
+		checkArgument(placements > 0, "placements must be greater than zero.");
+
 		data.put("placements", placements);
-		
+
 		return this;
 	}
 
 	@Override
 	public EventBuilder abilitys(Set<String> abilitys) {
-		checkNotNull(abilitys, "abilitys cannot be null." );
-		
+		checkNotNull(abilitys, "abilitys cannot be null.");
+
 		data.put("abilitys", abilitys);
-		
+
 		return this;
 	}
 
 	@Override
 	public EventBuilder shops(Set<String> shops) {
-		checkNotNull(shops, "shops cannot be null." );
-		
+		checkNotNull(shops, "shops cannot be null.");
+
 		data.put("shops", shops);
-		
+
 		return this;
 	}
 
 	@Override
 	public EventBuilder lobbyLocations(Set<Location> locations) {
-		checkNotNull(locations, "locations cannot be null." );
-		
+		checkNotNull(locations, "locations cannot be null.");
+
 		data.put("eventdata.teleport.lobby", new Vector<>(locations));
-		
+
 		return this;
 	}
 
 	@Override
 	public EventBuilder spawnLocations(Set<Location> locations) {
-		checkNotNull(locations, "locations cannot be null." );
-		
+		checkNotNull(locations, "locations cannot be null.");
+
 		data.put("eventdata.teleport.spawn", new Vector<>(locations));
-		
-		return this;
-	}
-	
-	@Override
-	public EventBuilder safeInventory(boolean safeInventory) {
-		data.put("eventdata.options.enables.safe_inventory", safeInventory);
-		
+
 		return this;
 	}
 
 	@Override
-	public Event build()  {
-		final Event ret = new Event(this.<String>getDataOrDefault("key", "undefinedName"));
+	public EventBuilder safeInventory(boolean safeInventory) {
+		data.put("eventdata.options.enables.safe_inventory", safeInventory);
+
+		return this;
+	}
+
+	@Override
+	public Event build() {
+		final Event ret = new Event(this.<String> getDataOrDefault("key", "undefinedName"));
 		final EventData eventData = ret.getData();
-		
-		ret.updateDescription(this.<String>getDataOrDefault("description", ""));
-		ret.updateDescription(this.<String>getDataOrDefault("displayName", ret.getName()));
-		
-		data.forEach( (k, v) ->  {
+
+		ret.updateDescription(this.<String> getDataOrDefault("description", ""));
+		ret.updateDescription(this.<String> getDataOrDefault("displayName", ret.getName()));
+
+		data.forEach((k, v) -> {
 			if (k.startsWith("eventdata.")) {
 				eventData.updateData(k.substring(10), v);
 			}
 		});
-		
+
 		return ret;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private <T> T getData( String key ) {
+	private <T> T getData(String key) {
 		return (T) data.get("key");
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private <T> T getDataOrDefault( String key, T defaultValue ){
+	private <T> T getDataOrDefault(String key, T defaultValue) {
 		return (T) data.getOrDefault(key, defaultValue);
 	}
 }
