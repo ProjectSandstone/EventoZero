@@ -46,7 +46,8 @@ public final class EventFactory
 		final File folder = new File(plugin.getDataFolder() + File.separator + "eventos" + File.separator);
 		final File[] fileArray = folder.listFiles();
 		// TODO fazer algo menos artifical caso listFiles retorne nulo, esta é a solução por enquanto!
-		if (fileArray == null)
+		// TODO: Não sei qual o retorno caso não tenha nenhum arquivo, mas caso for 0 deixa o código, mas caso for null remover
+		if (fileArray == null || (fileArray != null && fileArray.length == 0))
 		{
 			EventoZero.consoleMessage("Não foi encontrado nenhum evento para carregar!");
 			return;
