@@ -32,6 +32,7 @@ import br.com.blackhubos.eventozero.exceptions.CuboidParsingException;
 import br.com.blackhubos.eventozero.handlers.AbilityHandler;
 import br.com.blackhubos.eventozero.util.Framework;
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public final class EventFactory
 {
@@ -106,6 +107,11 @@ public final class EventFactory
 			}
 		}
 		return vector;
+	}
+	
+	public static EventBuilder newBuilder()
+	{
+		throw new NotImplementedException();//TODO return new EventBuildeImpl();
 	}
 
 }
