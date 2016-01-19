@@ -108,11 +108,11 @@ public interface EventBuilder {
 	 * 
 	 * <pre>
 	 * {@code
-	 * 	Map<Integer, Integer> points = Maps.newHashMap();
-	 * 	points.put(1, 10); // primeiro colocado irá ganhar 10 pontos
-	 * 	points.put(2, 7); // segundo irá ganhar 7 pontos
-	 * 	points.put(3, 3); // terceiro irá ganhar 3 pontos
-	 * 	// e assim por diante
+	 * Map<Integer, Integer> points = Maps.newHashMap();
+	 * points.put(1, 10); // primeiro colocado irá ganhar 10 pontos
+	 * points.put(2, 7); // segundo irá ganhar 7 pontos
+	 * points.put(3, 3); // terceiro irá ganhar 3 pontos
+	 * // e assim por diante
 	 * }
 	 * </pre>
 	 * 
