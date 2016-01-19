@@ -42,7 +42,6 @@ public interface EventBuilder {
 	 * Define o nome do evento
 	 * 
 	 * @param name
-	 * @return
 	 */
 	EventBuilder name(String name);
 
@@ -50,7 +49,6 @@ public interface EventBuilder {
 	 * Define se será ativado o sistema de partys no evento
 	 * 
 	 * @param enabled
-	 * @return
 	 */
 	EventBuilder partyEnabled(boolean enabled);
 
@@ -58,7 +56,6 @@ public interface EventBuilder {
 	 * Define a quantidade máxima de jogadores permitido no evento.
 	 * 
 	 * @param maxPlayers
-	 * @return
 	 */
 	EventBuilder maxPlayers(int maxPlayers);
 
@@ -66,7 +63,6 @@ public interface EventBuilder {
 	 * Define a quantidade mínima de jogadores permitido no evento.
 	 * 
 	 * @param minPlayers
-	 * @return
 	 */
 	EventBuilder minPlayers(int minPlayers);
 
@@ -74,7 +70,6 @@ public interface EventBuilder {
 	 * Define o limite de jogadores permitido em uma party.
 	 * 
 	 * @param partySize Numero de jogadores permitido em uma party.
-	 * @return
 	 */
 	EventBuilder partySize(int partySize);
 
@@ -83,7 +78,6 @@ public interface EventBuilder {
 	 * etc...
 	 * 
 	 * @param name Nome de exibição.
-	 * @return
 	 */
 	EventBuilder displayName(String name);
 
@@ -91,7 +85,6 @@ public interface EventBuilder {
 	 * Define a descrição do evento.
 	 * 
 	 * @param desc Descrição do evento
-	 * @return
 	 */
 	EventBuilder description(String desc);
 
@@ -100,12 +93,12 @@ public interface EventBuilder {
 	 * ganhadores.
 	 * 
 	 * @param seconds Tempo em segundos.
-	 * @return
 	 */
 	EventBuilder timeToStop(int seconds);
 
 	/**
 	 * Define a quantidade de pontos que cada colocado irá ganhar.
+	 * 
 	 * <p>
 	 * Exemplo:
 	 * <p>
@@ -122,7 +115,6 @@ public interface EventBuilder {
 	 * 
 	 * @param points
 	 *            Mapa com a quantidade de pontos que cada colocado irá ganhar
-	 * @return
 	 */
 	EventBuilder points(Map<Integer, Integer> points);
 
@@ -144,7 +136,6 @@ public interface EventBuilder {
 	 * 
 	 * @param money
 	 *            Mapa com a quantidade de dinheiro que cada colocado irá ganhar
-	 * @return
 	 */
 	EventBuilder money(Map<Integer, Integer> money);
 
@@ -154,7 +145,6 @@ public interface EventBuilder {
 	 * 
 	 * @param placements
 	 *            Quantidade de colocações
-	 * @return
 	 */
 	EventBuilder placements(int placements);
 	
@@ -163,7 +153,7 @@ public interface EventBuilder {
 	 * 
 	 * @param abilitys
 	 *            Lista com o nome das habilidades disponiveis no evento.
-	 * @return
+	 * 
 	 * @see AbilityHandler#getAbilityByName(String)
 	 */
 	EventBuilder abilitys(List<String> abilitys );
@@ -173,7 +163,6 @@ public interface EventBuilder {
 	 * 
 	 * @param shops
 	 *            Lista com o nome das habilidades disponiveis no evento.
-	 * @return
 	 */
 	EventBuilder shops(List<String> shops);
 	
@@ -181,7 +170,6 @@ public interface EventBuilder {
 	 * Define a localização do lobby do evento.
 	 * 
 	 * @param loc Localização do lobby
-	 * @return
 	 */
 	EventBuilder setLobbyLocation(Location loc);
 	
@@ -189,7 +177,6 @@ public interface EventBuilder {
 	 * Define a localização do spawn do evento.
 	 * 
 	 * @param loc Localização do spawn.
-	 * @return
 	 */
 	EventBuilder setSpawnLocation(Location loc);
 }
