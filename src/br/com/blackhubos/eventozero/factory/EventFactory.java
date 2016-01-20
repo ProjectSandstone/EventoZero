@@ -111,7 +111,7 @@ public final class EventFactory
 	
 	public static EventBuilder newBuilder()
 	{
-		throw new NotImplementedException();//TODO return new EventBuildeImpl();
+		return new EventBuilderImpl();
 	}
 
 }

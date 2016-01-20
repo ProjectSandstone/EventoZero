@@ -191,7 +191,7 @@ class EventBuilderImpl implements EventBuilder {
 		final EventData eventData = ret.getData();
 
 		ret.updateDescription(this.<String> getDataOrDefault("description", ""));
-		ret.updateDescription(this.<String> getDataOrDefault("displayName", ret.getName()));
+		ret.updateDisplayName(this.<String> getDataOrDefault("displayName", ret.getName()));
 
 		data.forEach((k, v) -> {
 			if (k.startsWith("eventdata.")) {
