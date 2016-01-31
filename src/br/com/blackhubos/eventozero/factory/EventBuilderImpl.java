@@ -26,10 +26,10 @@ import java.util.Vector;
 
 import org.bukkit.Location;
 
+import com.google.common.collect.Maps;
+
 import static com.google.common.base.Preconditions.*;
 import static com.google.common.base.Strings.*;
-
-import net.minecraft.util.com.google.common.collect.Maps;
 
 /**
  * Implementação default do {@link EventBuilder}
