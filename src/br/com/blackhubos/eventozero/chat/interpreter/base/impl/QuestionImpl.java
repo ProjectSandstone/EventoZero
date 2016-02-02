@@ -19,14 +19,14 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.base.impl;
 
+import com.google.common.base.Objects;
+
+import org.bukkit.entity.Player;
+
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
-
-import org.bukkit.entity.Player;
-
-import com.google.common.base.MoreObjects;
 
 import br.com.blackhubos.eventozero.chat.interpreter.base.Interpreter;
 import br.com.blackhubos.eventozero.chat.interpreter.base.QuestionBase;
@@ -147,7 +147,7 @@ public class QuestionImpl<T, ID> implements QuestionBase<T, ID> {
 
     @Override
     public String toText(Object value) {
-        return MoreObjects.toStringHelper(this)
+        return Objects.toStringHelper(this)
                 .add("id", id())
                 .add("question", question())
                 .add("pattern", pattern().toText(value))
