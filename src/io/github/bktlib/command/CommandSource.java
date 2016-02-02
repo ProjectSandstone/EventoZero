@@ -1,32 +1,29 @@
 /*
- *  Copyright (C) 2016 Leonardosc
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ * Copyright (C) 2016 Leonardosc
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 
 package io.github.bktlib.command;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Preconditions;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Preconditions;
 
 import io.github.bktlib.command.annotation.Command;
 
@@ -37,11 +34,16 @@ public class CommandSource
 {
 	private static final char SECT_CH = '\u00a7';
 
-	private CommandSender wrappedSender;
+	private final CommandSender wrappedSender;
 
-	CommandSource(CommandSender wrappedSender)
+	CommandSource(final CommandSender wrappedSender)
 	{
 		this.wrappedSender = wrappedSender;
+	}
+
+	public CommandSender getSender()
+	{
+		return this.wrappedSender;
 	}
 
 	public static CommandSource getConsoleSource()
@@ -49,99 +51,98 @@ public class CommandSource
 		return LazyConsoleSourceHolder.INSTANCE;
 	}
 
-	public void sendMessages( String... messages )
+	public void sendMessages(final String... messages)
 	{
-		if ( messages == null )
+		if (messages == null)
+		{
 			return;
+		}
 
-		Stream.of( messages )
-				.map( msg -> CharMatcher.anyOf( "&" ).collapseFrom( msg, SECT_CH ) )
-				.forEach( wrappedSender::sendMessage );
+		Stream.of(messages).map(msg -> CharMatcher.anyOf("&").collapseFrom(msg, CommandSource.SECT_CH)).forEach(this.wrappedSender::sendMessage);
 	}
 
-	public void sendMessage( String message, Object... args )
+	public void sendMessage(final String message, final Object... args)
 	{
-		wrappedSender.sendMessage(
-				String.format(
-						CharMatcher.anyOf( "&" ).collapseFrom( message, SECT_CH ),
-						args ) );
+		this.wrappedSender.sendMessage(String.format(CharMatcher.anyOf("&").collapseFrom(message, CommandSource.SECT_CH), args));
 	}
 
-	public void sendMessage( String message )
+	public void sendMessage(final String message)
 	{
-		sendMessage( message, new Object[0] );
+		this.sendMessage(message, new Object[0]);
 	}
 
-	public void sendMessage( Object rawMessage )
+	public void sendMessage(final Object rawMessage)
 	{
 		String message;
 
-		if ( rawMessage instanceof String )
+		if (rawMessage instanceof String)
+		{
 			message = (String) rawMessage;
+		}
 		else
-			message = String.valueOf( rawMessage );
+		{
+			message = String.valueOf(rawMessage);
+		}
 
-		sendMessage( message );
+		this.sendMessage(message);
 	}
 
 	public String getName()
 	{
-		return wrappedSender.getName();
+		return this.wrappedSender.getName();
 	}
 
 	public boolean isOp()
 	{
-		return wrappedSender.isOp();
+		return this.wrappedSender.isOp();
 	}
 
 	public boolean isPlayer()
 	{
-		return wrappedSender instanceof Player;
+		return this.wrappedSender instanceof Player;
 	}
 
 	public boolean isConsole()
 	{
-		return !isPlayer();
+		return !this.isPlayer();
 	}
 
-	public void setOp( boolean op )
+	public void setOp(final boolean op)
 	{
-		wrappedSender.setOp( op );
+		this.wrappedSender.setOp(op);
 	}
 
-	public boolean hasPermission( String permission )
+	public boolean hasPermission(final String permission)
 	{
-		return wrappedSender.hasPermission( permission );
+		return this.wrappedSender.hasPermission(permission);
 	}
 
-	public boolean canUse( CommandBase command )
+	public boolean canUse(final CommandBase command)
 	{
-		Optional<String> commandPermission = command.getPermission();
+		final Optional<String> commandPermission = command.getPermission();
 
-		return commandPermission.isPresent() &&
-				hasPermission( commandPermission.get() );
+		return commandPermission.isPresent() && this.hasPermission(commandPermission.get());
 	}
 
-	public boolean canUse( Command annotation )
+	public boolean canUse(final Command annotation)
 	{
-		return hasPermission( annotation.permission() );
+		return this.hasPermission(annotation.permission());
 	}
 
 	public CommandSender toCommandSender()
 	{
-		return wrappedSender;
+		return this.wrappedSender;
 	}
 
 	public Player toPlayer()
 	{
-		Preconditions.checkState( isPlayer(),
-				"Cannot cast console to player!" );
+		Preconditions.checkState(this.isPlayer(), "Cannot cast console to player!");
 
-		return (Player) wrappedSender;
+		return (Player) this.wrappedSender;
 	}
 
 	private static class LazyConsoleSourceHolder
 	{
-		public static final CommandSource INSTANCE = new CommandSource( Bukkit.getConsoleSender() );
+		public static final CommandSource INSTANCE = new CommandSource(Bukkit.getConsoleSender());
 	}
 }
