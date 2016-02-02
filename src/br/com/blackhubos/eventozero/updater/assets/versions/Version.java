@@ -19,13 +19,13 @@
  */
 package br.com.blackhubos.eventozero.updater.assets.versions;
 
-import com.google.common.base.Objects;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.google.common.base.MoreObjects;
 
 import br.com.blackhubos.eventozero.updater.assets.Asset;
 
@@ -166,7 +166,7 @@ public class Version implements Comparable<Version> {
      */
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("name", this.name)
                 .add("version", this.version)
                 .add("assets", this.assets)

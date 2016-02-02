@@ -19,13 +19,13 @@
  */
 package br.com.blackhubos.eventozero.updater.assets.uploader;
 
-import com.google.common.base.Objects;
-
-import org.json.simple.JSONObject;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import org.json.simple.JSONObject;
+
+import com.google.common.base.MoreObjects;
 
 import br.com.blackhubos.eventozero.updater.formater.MultiTypeFormatter;
 import br.com.blackhubos.eventozero.updater.parser.Parser;
@@ -126,7 +126,7 @@ public class Uploader implements Parser<JSONObject, Uploader> {
      */
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("name", this.name)
                 .add("id", this.id)
                 .add("admin", this.admin)

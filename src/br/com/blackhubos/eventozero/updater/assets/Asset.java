@@ -19,14 +19,14 @@
  */
 package br.com.blackhubos.eventozero.updater.assets;
 
-import com.google.common.base.Objects;
-
-import org.json.simple.JSONObject;
-
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import org.json.simple.JSONObject;
+
+import com.google.common.base.MoreObjects;
 
 import br.com.blackhubos.eventozero.updater.assets.uploader.Uploader;
 import br.com.blackhubos.eventozero.updater.formater.MultiTypeFormatter;
@@ -295,7 +295,7 @@ public class Asset implements Parser<JSONObject, Asset> {
      */
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("url", this.url)
                 .add("name", this.name)
                 .add("downloadUrl", this.downloadUrl)

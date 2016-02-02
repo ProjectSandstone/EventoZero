@@ -19,12 +19,12 @@
  */
 package br.com.blackhubos.eventozero.chat.interpreter.pattern;
 
-import com.google.common.base.Objects;
-
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+
+import com.google.common.base.MoreObjects;
 
 import br.com.blackhubos.eventozero.chat.interpreter.base.Question;
 import br.com.blackhubos.eventozero.chat.interpreter.base.booleanresult.BooleanResult;
@@ -139,8 +139,8 @@ public class IPattern<T> {
     }
 
     public String toText(Object value) {
-        return Objects.toStringHelper(this)
-                .add("valueTransformer", Objects.toStringHelper(this.transformer).add("type", this.transformer.toType(value)))
+        return MoreObjects.toStringHelper(this)
+                .add("valueTransformer", MoreObjects.toStringHelper(this.transformer).add("type", this.transformer.toType(value)))
                 .toString();
     }
 }
