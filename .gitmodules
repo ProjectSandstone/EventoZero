@@ -1,0 +1,3 @@
+[submodule "BktLib"]
+	path = BktLib
+	url = https://github.com/BktLib/BktLib.git
