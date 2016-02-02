@@ -1,17 +1,20 @@
 /*
- * Copyright (C) 2016 Leonardosc
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
+ *  Copyright (C) 2016 Leonardosc
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
 
 package io.github.bktlib.command;
 
@@ -41,11 +44,6 @@ public class CommandSource
 		this.wrappedSender = wrappedSender;
 	}
 
-	public CommandSender getSender()
-	{
-		return this.wrappedSender;
-	}
-
 	public static CommandSource getConsoleSource()
 	{
 		return LazyConsoleSourceHolder.INSTANCE;
@@ -58,13 +56,15 @@ public class CommandSource
 			return;
 		}
 
-		Stream.of(messages).map(msg -> CharMatcher.anyOf("&").collapseFrom(msg, CommandSource.SECT_CH)).forEach(this.wrappedSender::sendMessage);
+		Stream.of( messages )
+			.map( msg -> CharMatcher.anyOf( "&" ).collapseFrom( msg, SECT_CH ) )
+			.forEach( wrappedSender::sendMessage );
 	}
 
 	public void sendMessage(final String message, final Object... args)
 	{
-		this.wrappedSender.sendMessage(String.format(CharMatcher.anyOf("&").collapseFrom(message, CommandSource.SECT_CH), args));
-	}
+		this.wrappedSender.sendMessage(
+				String.format( CharMatcher.anyOf( "&" ).collapseFrom( message, SECT_CH ), args ) );	}
 
 	public void sendMessage(final String message)
 	{
@@ -121,7 +121,8 @@ public class CommandSource
 	{
 		final Optional<String> commandPermission = command.getPermission();
 
-		return commandPermission.isPresent() && this.hasPermission(commandPermission.get());
+		return commandPermission.isPresent() && 
+				this.hasPermission(commandPermission.get());
 	}
 
 	public boolean canUse(final Command annotation)
