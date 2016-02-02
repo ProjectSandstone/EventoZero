@@ -48,6 +48,7 @@ import br.com.blackhubos.eventozero.util.Framework;
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
 import br.com.blackhubos.eventozero.util.Framework.LoggerManager;
 import br.com.blackhubos.eventozero.util.ThreadUtils;
+import io.github.bktlib.command.CommandManager;
 
 public final class EventoZero extends JavaPlugin
 {
@@ -66,6 +67,7 @@ public final class EventoZero extends JavaPlugin
 	private static ShopHandler shopHandler;
 	private static KitHandler kitHandler;
 	private static EventHandler eventHandler;
+	private static CommandManager commandManager;
 
 	@Override
 	public void onEnable()
@@ -79,7 +81,8 @@ public final class EventoZero extends JavaPlugin
 		EventoZero.config_updater = new Configuration(this, new File(this.getDataFolder(), "updater.yml"));
 		EventoZero.config_messages = new Configuration(this, new File(this.getDataFolder(), "mensagens.yml"));
 		EventoZero.logger = new LoggerManager<EventoZero>(this, new File(this.getDataFolder(), "logs")).init(EventoZero.config.getString("tasks.savelogs"));
-
+		EventoZero.commandManager = CommandManager.newInstance( this );
+		
 		for (final Configuration c : new Configuration[] { EventoZero.config, EventoZero.config_rankings, EventoZero.config_points, EventoZero.config_bans, EventoZero.config_updater })
 		{
 			if (c.copied())
@@ -94,7 +97,13 @@ public final class EventoZero extends JavaPlugin
 		EventoZero.eventHandler = new EventHandler();
 		InterpreterRegister.registerAll(this); // Registra tudo relacionado ao interpreter
 		EventoZero.updater = new Updater(this, EventoZero.config_updater);
-
+		
+		/*
+		 * por enquanto só tem essa classe de comando, caso adicionei outros
+		 * comandos é só mudar pra registerAll
+		 */
+		EventoZero.commandManager.register( EZCommand.class );
+		
 		try
 		{
 			// TODO: falta testar novo sistema de carregar cuboids
