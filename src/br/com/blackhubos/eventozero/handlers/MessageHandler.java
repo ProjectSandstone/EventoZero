@@ -24,8 +24,11 @@ import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.base.CharMatcher;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
 
@@ -80,6 +83,11 @@ public enum MessageHandler
 		}
 	}
 
+	public MessageRecipient getRecipient()
+	{
+		return new MessageRecipient(this.getKey());
+	}
+
 	public static void loadMessages(final Configuration file)
 	{
 		MessageRecipient.flatfile = file;
@@ -115,8 +123,12 @@ public enum MessageHandler
 		{
 			this.replacements(replacements);
 			final Vector<String> prepared = this.getText();
-			for (final String line : prepared)
+			for (String line : prepared)
 			{
+				if (!(player instanceof Player))
+				{
+					line = CharMatcher.ASCII.negate().removeFrom(line);
+				}
 				player.sendMessage(line);
 			}
 		}
