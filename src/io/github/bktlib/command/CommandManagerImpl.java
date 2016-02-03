@@ -65,11 +65,13 @@ import io.github.bktlib.reflect.util.ReflectUtil;
 /**
  * Implementacao default do {@link CommandManager}
  */
+@SuppressWarnings("unchecked")
 class CommandManagerImpl implements CommandManager
 {	
 	private File cachedRegisterAllFile;
 	private LoadingCache<String, Optional<CommandBase>> byNameCache;
 	private LoadingCache<Class<?>, Optional<CommandBase>> byClassCache;
+    private LoadingCache<Class<?>, Object> classToInstanceCache;
 
 	private final SimpleCommandMap commandMap;
 	private final Logger logger;
@@ -107,15 +109,15 @@ class CommandManagerImpl implements CommandManager
 		checkArgument( (methodClass.getModifiers() & Modifier.ABSTRACT) == 0,
 				"methodClass cannot be abstract." );
 
-		try
-		{
-			registerMethod( methodClass.newInstance(), methodName );
-		}
-		catch ( InstantiationException | IllegalAccessException e )
-		{
-			e.printStackTrace();
-		}
-	}
+        try
+        {
+            registerMethod( classToInstanceCache.get( methodClass ), methodName );
+        }
+        catch ( ExecutionException e )
+        {
+            e.printStackTrace();
+        }
+    }
 
 	@Override
 	public void registerMethod( Object instance, String methodName )
@@ -171,7 +173,7 @@ class CommandManagerImpl implements CommandManager
 			{
 				try
 				{
-					Object enclosingInst = enclosingClass.newInstance();
+					Object enclosingInst = classToInstanceCache.get(enclosingClass);
 
 					Object nestedClassInst = commandClass.getConstructor( enclosingClass )
 							.newInstance( enclosingInst );
@@ -190,15 +192,14 @@ class CommandManagerImpl implements CommandManager
 
 		try
 		{
-			register( commandClass.newInstance() );
+			register( (CommandBase) classToInstanceCache.get(commandClass) );
 		}
-		catch ( InstantiationException | IllegalAccessException e )
+		catch ( ExecutionException e )
 		{
 			e.printStackTrace();
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void registerAll()
 	{
@@ -259,7 +260,6 @@ class CommandManagerImpl implements CommandManager
     		.forEach( method -> registerMethod( klass, method.getName() ) );
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends CommandBase> Optional<T> getCommandByClass( Class<T> klass )
 	{
@@ -366,6 +366,15 @@ class CommandManagerImpl implements CommandManager
 			}
 		};
 
+        final CacheLoader<Class<?>, Object> classToInstanceLoader = new CacheLoader<Class<?>, Object>()
+        {
+            @Override
+            public Object load( @Nonnull Class<?> aClass ) throws Exception
+            {
+                return aClass.newInstance();
+            }
+        };
+
 		final CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
 				.weakValues()
 				.weakKeys()
@@ -374,6 +383,7 @@ class CommandManagerImpl implements CommandManager
 
 		byNameCache = cacheBuilder.build( byNameLoader );
 		byClassCache = cacheBuilder.build( byClassLoader );
+        classToInstanceCache = cacheBuilder.build( classToInstanceLoader );
 	}
 
 	/**
@@ -438,7 +448,7 @@ class CommandManagerImpl implements CommandManager
 
 				try
 				{
-					klassInstance = klass.newInstance();
+					klassInstance = classToInstanceCache.get(klass);
 				}
 				catch ( Exception e )
 				{
@@ -446,6 +456,8 @@ class CommandManagerImpl implements CommandManager
 					 * Isso é pra nunca acontecer pois as verificaçoes ja
 					 * foram feitas a cima, o que pode acontecer é um erro
 					 * de segurança por exemplo.
+                     *
+                     * Agora pode acontecer, por causa do cache.
 					 */
 					e.printStackTrace();
 				}
