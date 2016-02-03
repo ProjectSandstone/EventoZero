@@ -46,7 +46,7 @@ public enum MessageHandler
 	ANUNCIOS_FINALIZADO_COM_COLOCACAO("ANUNCIOS_FINALIZADO_COM_COLOCACAO", "&7O evento {evento} foi finalizado. Vencedores: {vencedores}"),
 	ANUNCIOS_CANCELADO_POR_ADMIN("ANUNCIOS_CANCELADO_POR_ADMIN", "&cEvento {player} cancelado por um admin!"),
 	ANUNCIOS_CANCELADO_SEM_PLAYERS("ANUNCIOS_CANCELADO_SEM_PLAYERS", "&cEvento {evento} cancelado devido a falta de jogadores!"),
-	EVENTO_NÃO_ENCONTRADO("EVENTO_NÃO_ENCONTRADO", "§7O evento {evento} não existe!");
+	EVENTO_NAO_ENCONTRADO("EVENTO_NÃO_ENCONTRADO", "§7O evento {evento} não existe!");
 
 	private String key, padrao;
 
