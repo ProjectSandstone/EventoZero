@@ -21,6 +21,8 @@ package br.com.blackhubos.eventozero.listeners;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -40,37 +42,33 @@ public final class RankingListener implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	private void onRankingUpdate(final PlayerRankingUpdateEvent event)
 	{
-		if (event.hasBlockUpdateEnabled())
-		{
-			new Thread()
+		if (!event.hasBlockUpdateEnabled()) return;
+		
+		final ExecutorService executor = Executors.newSingleThreadExecutor();
+		
+		executor.execute(() -> {
+			final ResultSet ranking = EventoZero.getStorage().search("SELECT * FROM evento WHERE ? = ? ORDER BY ?", Ranking.VITORIAS.getTable(), event.getEvent().getName().toLowerCase(), Ranking.VITORIAS.getColuna());
+			int id = 0;
+			try
 			{
-				@Override
-				public void run()
+				while (ranking.next()) // -- id | tipo | evento | index | mundo | localizacao
 				{
-					final ResultSet ranking = EventoZero.getStorage().search("SELECT * FROM evento WHERE ? = ? ORDER BY ?", Ranking.VITORIAS.getTable(), event.getEvent().getName().toLowerCase(), Ranking.VITORIAS.getColuna());
-					int id = 0;
-					try
+					id++;
+					final ResultSet signs = EventoZero.getStorage().search("SELECT * FROM ? WHERE evento = ? AND tipo = 1 AND ? = ?", Ranking.VITORIAS.getTable(), event.getEvent().getName().toLowerCase(), "index", id);
+					while (signs.next())
 					{
-						while (ranking.next()) // -- id | tipo | evento | index | mundo | localizacao
-						{
-							id++;
-							final ResultSet signs = EventoZero.getStorage().search("SELECT * FROM ? WHERE evento = ? AND tipo = 1 AND ? = ?", Ranking.VITORIAS.getTable(), event.getEvent().getName().toLowerCase(), "index", id);
-							while (signs.next())
-							{
-								final String pos = signs.getString(6);
-								final Location loc = Framework.toLocation(pos);
-								final BlockStructure block = new BlockStructure(null, loc.getBlock(), event.getPlayer().getName(), event.getEventName(), Ranking.VITORIAS.getId(), event.getPlayerRankingPosition());
-								block.update();
-							}
-						}
-					}
-					catch (final SQLException e)
-					{
-						e.printStackTrace();
+						final String pos = signs.getString(6);
+						final Location loc = Framework.toLocation(pos);
+						final BlockStructure block = new BlockStructure(null, loc.getBlock(), event.getPlayer().getName(), event.getEventName(), Ranking.VITORIAS.getId(), event.getPlayerRankingPosition());
+						block.update();
 					}
 				}
-			}.start();
-		}
+			}
+			catch (final SQLException e)
+			{
+				e.printStackTrace();
+			}
+		});
 	}
 
 }
