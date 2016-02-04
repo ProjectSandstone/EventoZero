@@ -51,6 +51,6 @@ public class MethodRef
 	@Override
 	public String toString()
 	{
-		return Strings.of( owner, "#", method == null ? "null" : method.getName() );
+		return Strings.of( owner.getClass(), "#", method == null ? "null" : method.getName() );
 	}
 }

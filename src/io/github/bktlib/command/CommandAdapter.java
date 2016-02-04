@@ -31,7 +31,7 @@ import com.google.common.collect.Lists;
  */
 final class CommandAdapter extends org.bukkit.command.Command
 {
-	private CommandBase base;
+	CommandBase base;
 
 	CommandAdapter(final CommandBase base)
 	{
@@ -50,11 +50,6 @@ final class CommandAdapter extends org.bukkit.command.Command
 
 		if ( aliases.size() > 0 )
 			setAliases( Lists.newArrayList( aliases ) );
-	}
-
-	public CommandBase getCommandBase()
-	{
-		return base;
 	}
 
 	@Override

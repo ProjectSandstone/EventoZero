@@ -22,8 +22,6 @@ import java.util.stream.Stream;
 
 public final class Strings
 {
-    private Strings() {}
-
     public static String of( final Object ... parts )
     {
     	if ( parts == null ) return "null";
@@ -49,5 +47,10 @@ public final class Strings
     public static String nullToEmpty( final String str )
     {
     	return str == null ? "" : str;
+    }
+    
+    private Strings() 
+    {
+    	throw new UnsupportedOperationException();
     }
 }

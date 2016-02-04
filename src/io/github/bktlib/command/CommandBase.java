@@ -30,7 +30,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -218,7 +218,7 @@ public abstract class CommandBase
 	@Override
 	public String toString()
 	{
-		return MoreObjects.toStringHelper( this )
+		return Objects.toStringHelper( this )
 				.add( "name", getName() )
 				.toString();
 	}

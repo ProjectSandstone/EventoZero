@@ -24,8 +24,6 @@ import org.bukkit.Bukkit;
 
 public final class MCReflectUtil
 {
-	private MCReflectUtil() {}
-
 	/**
 	 * Pega uma classe do CRAFTBUKKIT 
 	 * {@code org.bukkit.craftbukkit.(versao).(*)}
@@ -64,5 +62,10 @@ public final class MCReflectUtil
 		final String craftServerPkg = Bukkit.getServer().getClass().getPackage().getName();
 
 		return craftServerPkg.substring( craftServerPkg.lastIndexOf( '.' ) + 1 );
+	}
+	
+	private MCReflectUtil() 
+	{
+		throw new UnsupportedOperationException();
 	}
 }

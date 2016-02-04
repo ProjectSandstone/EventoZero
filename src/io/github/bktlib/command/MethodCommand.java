@@ -34,6 +34,7 @@ class MethodCommand extends CommandBase
 	MethodCommand(final MethodRef ref)
 	{
 		super( ref.getMethod().getAnnotation( Command.class ) );
+		
 		this.ref = ref;
 		this.ref.getMethod().setAccessible( true );
 	}
@@ -41,18 +42,18 @@ class MethodCommand extends CommandBase
 	MethodCommand(final MethodRef ref, Command commandAnnotation)
 	{
 		super( commandAnnotation );
+		
 		this.ref = ref;
 		this.ref.getMethod().setAccessible( true );
 	}
 
 	@Override
-	public CommandResult onExecute( CommandSource src, CommandArgs args )
+	public CommandResult onExecute( final CommandSource src, final CommandArgs args )
 	{
 		try
 		{
 			return (CommandResult) ref.getMethod().invoke(
-					ref.getOwner(),
-					src, args );
+					ref.getOwner(), src, args );
 		}
 		catch ( InvocationTargetException e )
 		{

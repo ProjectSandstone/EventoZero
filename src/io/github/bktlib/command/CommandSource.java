@@ -21,12 +21,13 @@ package io.github.bktlib.command;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Preconditions;
-
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Preconditions;
 
 import io.github.bktlib.command.annotation.Command;
 
@@ -35,115 +36,113 @@ import io.github.bktlib.command.annotation.Command;
  */
 public class CommandSource
 {
-	private static final char SECT_CH = '\u00a7';
+	private static CommandSource consoleSource;
 
-	private final CommandSender wrappedSender;
+	private CommandSender wrappedSender;
 
-	CommandSource(final CommandSender wrappedSender)
+	CommandSource(CommandSender wrappedSender)
 	{
 		this.wrappedSender = wrappedSender;
 	}
 
 	public static CommandSource getConsoleSource()
 	{
-		return LazyConsoleSourceHolder.INSTANCE;
+		if ( consoleSource == null ) 
+		{
+			consoleSource = new CommandSource( Bukkit.getConsoleSender() );
+		}
+		
+		return consoleSource;
 	}
 
-	public void sendMessages(final String... messages)
+	public void sendMessages( String... messages )
 	{
-		if (messages == null)
-		{
+		if ( messages == null )
 			return;
-		}
 
 		Stream.of( messages )
-			.map( msg -> CharMatcher.anyOf( "&" ).collapseFrom( msg, SECT_CH ) )
-			.forEach( wrappedSender::sendMessage );
+				.map( msg -> ChatColor.translateAlternateColorCodes( '&', msg ) )
+				.forEach( wrappedSender::sendMessage );
 	}
 
-	public void sendMessage(final String message, final Object... args)
+	public void sendMessage( String message, Object... args )
 	{
-		this.wrappedSender.sendMessage(
-				String.format( CharMatcher.anyOf( "&" ).collapseFrom( message, SECT_CH ), args ) );	}
-
-	public void sendMessage(final String message)
-	{
-		this.sendMessage(message, new Object[0]);
+		wrappedSender.sendMessage(
+				String.format( ChatColor.translateAlternateColorCodes( '&', message ), args ) );
 	}
 
-	public void sendMessage(final Object rawMessage)
+	public void sendMessage( String message )
+	{
+		sendMessage( message, new Object[0] );
+	}
+
+	public void sendMessage( Object rawMessage )
 	{
 		String message;
 
-		if (rawMessage instanceof String)
-		{
+		if ( rawMessage instanceof String )
 			message = (String) rawMessage;
-		}
 		else
-		{
-			message = String.valueOf(rawMessage);
-		}
+			message = String.valueOf( rawMessage );
 
-		this.sendMessage(message);
+		sendMessage( message );
 	}
 
 	public String getName()
 	{
-		return this.wrappedSender.getName();
+		return wrappedSender.getName();
 	}
 
 	public boolean isOp()
 	{
-		return this.wrappedSender.isOp();
+		return wrappedSender.isOp();
 	}
 
 	public boolean isPlayer()
 	{
-		return this.wrappedSender instanceof Player;
+		return wrappedSender instanceof Player;
 	}
 
 	public boolean isConsole()
 	{
-		return !this.isPlayer();
+		return !isPlayer();
 	}
 
-	public void setOp(final boolean op)
+	public void setOp( boolean op )
 	{
-		this.wrappedSender.setOp(op);
+		wrappedSender.setOp( op );
 	}
 
-	public boolean hasPermission(final String permission)
+	public boolean hasPermission( String permission )
 	{
-		return this.wrappedSender.hasPermission(permission);
+		return wrappedSender.hasPermission( permission );
 	}
 
-	public boolean canUse(final CommandBase command)
+	public boolean canUse( CommandBase command )
 	{
-		final Optional<String> commandPermission = command.getPermission();
+		Optional<String> commandPermission = command.getPermission();
 
-		return commandPermission.isPresent() && 
-				this.hasPermission(commandPermission.get());
+		return commandPermission.isPresent() &&
+				hasPermission( commandPermission.get() );
 	}
 
-	public boolean canUse(final Command annotation)
+	public boolean canUse( Command annotation )
 	{
-		return this.hasPermission(annotation.permission());
+		return hasPermission( annotation.permission() );
 	}
 
 	public CommandSender toCommandSender()
 	{
-		return this.wrappedSender;
+		return wrappedSender;
 	}
 
 	public Player toPlayer()
 	{
-		Preconditions.checkState(this.isPlayer(), "Cannot cast console to player!");
-
-		return (Player) this.wrappedSender;
-	}
-
-	private static class LazyConsoleSourceHolder
-	{
-		public static final CommandSource INSTANCE = new CommandSource(Bukkit.getConsoleSender());
+		if ( !isPlayer() )
+		{
+			throw new UnsupportedOperationException( "Cannot cast console to player!" );
+		}
+		
+		return (Player) wrappedSender;
 	}
 }

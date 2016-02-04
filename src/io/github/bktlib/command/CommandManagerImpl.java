@@ -63,6 +63,16 @@ import io.github.bktlib.reflect.util.MCReflectUtil;
 import io.github.bktlib.reflect.util.ReflectUtil;
 
 /**
+ * <p>
+ * 
+ * ATENÇÃO: Caso você esteja usando uma versão mais antiga do craftbukkit/bukkit
+ * você terá que fazer algumas alterações.
+ * 
+ * 1º Mudar os caches, de LoadingCache para Cache.
+ * 2º Cabou!
+ * 
+ * </p>
+ * 
  * Implementacao default do {@link CommandManager}
  */
 @SuppressWarnings("unchecked")
@@ -71,7 +81,7 @@ class CommandManagerImpl implements CommandManager
 	private File cachedRegisterAllFile;
 	private LoadingCache<String, Optional<CommandBase>> byNameCache;
 	private LoadingCache<Class<?>, Optional<CommandBase>> byClassCache;
-    private LoadingCache<Class<?>, Object> classToInstanceCache;
+	private LoadingCache<Class<?>, Object> classToInstanceCache;
 
 	private final SimpleCommandMap commandMap;
 	private final Logger logger;
@@ -79,9 +89,9 @@ class CommandManagerImpl implements CommandManager
 
 	CommandManagerImpl(final Plugin plugin)
 	{
-		logger 		= plugin.getLogger();
-		owner 		= plugin;
-		commandMap 	= getCommandMap();
+		logger		= plugin.getLogger();
+		owner		= plugin;
+		commandMap	= getCommandMap();
 
 		initCaches();
 	}
@@ -91,8 +101,7 @@ class CommandManagerImpl implements CommandManager
 	{
 		checkNotNull( command, "command cannot be null" );
 
-		commandMap.register(
-				owner.getName(),
+		commandMap.register( owner.getName(), 
 				new CommandAdapter( command ) );
 
 		command.subCommands = parseSubCommands( command );
@@ -102,22 +111,20 @@ class CommandManagerImpl implements CommandManager
 	public void registerMethod( Class<?> methodClass, String methodName )
 	{
 		checkNotNull( methodClass, "methodClass cannot be null " );
-
-		checkArgument( hasPublicConstructor( methodClass ),
+		checkArgument( hasPublicConstructor( methodClass ), 
 				"methodClass must have at least one public constructor." );
-
 		checkArgument( (methodClass.getModifiers() & Modifier.ABSTRACT) == 0,
 				"methodClass cannot be abstract." );
 
-        try
-        {
-            registerMethod( classToInstanceCache.get( methodClass ), methodName );
-        }
-        catch ( ExecutionException e )
-        {
-            e.printStackTrace();
-        }
-    }
+		try
+		{
+			registerMethod( classToInstanceCache.get( methodClass ), methodName );
+		}
+		catch ( ExecutionException e )
+		{
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void registerMethod( Object instance, String methodName )
@@ -130,12 +137,13 @@ class CommandManagerImpl implements CommandManager
 		try
 		{
 			final Method method = instClass.getDeclaredMethod(
-                                    methodName,
-                                    CommandSource.class,
-                                    CommandArgs.class );
+					methodName,
+					CommandSource.class,
+					CommandArgs.class 
+			);
 
-            if ( method.getReturnType() != CommandResult.class )
-                throw new NoSuchMethodException();
+			if ( method.getReturnType() != CommandResult.class )
+				throw new NoSuchMethodException();
 
 			if ( !method.isAnnotationPresent( Command.class ) )
 			{
@@ -174,7 +182,6 @@ class CommandManagerImpl implements CommandManager
 				try
 				{
 					Object enclosingInst = classToInstanceCache.get(enclosingClass);
-
 					Object nestedClassInst = commandClass.getConstructor( enclosingClass )
 							.newInstance( enclosingInst );
 
@@ -346,7 +353,7 @@ class CommandManagerImpl implements CommandManager
 				if ( !(bukkitCommand instanceof CommandAdapter) )
 					return Optional.empty();
 
-				return Optional.of( ((CommandAdapter) bukkitCommand).getCommandBase() );
+				return Optional.of( ((CommandAdapter) bukkitCommand).base );
 			}
 		};
 
@@ -355,27 +362,25 @@ class CommandManagerImpl implements CommandManager
 			@Override
 			public Optional<CommandBase> load( @Nonnull Class<?> key )
 			{
-				Optional<CommandBase> optCommand = commandMap.getCommands()
+				return commandMap.getCommands()
 						.parallelStream()
 						.filter( cmd -> cmd.getClass().equals( key ) )
 						.filter( cmd -> cmd instanceof CommandAdapter )
-						.map( cmd -> ((CommandAdapter) cmd).getCommandBase() )
+						.map( cmd -> ((CommandAdapter) cmd).base )
 						.findAny();
-
-				return Optional.ofNullable( optCommand.orElse( null ) );
 			}
 		};
 
-        final CacheLoader<Class<?>, Object> classToInstanceLoader = new CacheLoader<Class<?>, Object>()
-        {
-            @Override
-            public Object load( @Nonnull Class<?> aClass ) throws Exception
-            {
+		final CacheLoader<Class<?>, Object> classToInstanceLoader = new CacheLoader<Class<?>, Object>() 
+		{
+			@Override
+			public Object load( @Nonnull Class<?> aClass ) throws Exception
+			{
 				if ( aClass == owner.getClass() )
-                    return owner;
-                return aClass.newInstance();
-            }
-        };
+					return owner;
+				return aClass.newInstance();
+			}
+		};
 
 		final CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
 				.weakValues()
@@ -385,7 +390,7 @@ class CommandManagerImpl implements CommandManager
 
 		byNameCache = cacheBuilder.build( byNameLoader );
 		byClassCache = cacheBuilder.build( byClassLoader );
-        classToInstanceCache = cacheBuilder.build( classToInstanceLoader );
+		classToInstanceCache = cacheBuilder.build( classToInstanceLoader );
 	}
 
 	/**
@@ -425,8 +430,11 @@ class CommandManagerImpl implements CommandManager
 				{
 					if ( !className.contains( "." ) )
 					{
-						className = Strings.of( command.getClass().getPackage().getName(),
-								".", className );
+						className = Strings.of( 
+								command.getClass().getPackage().getName(),
+								".", 
+								className 
+						);
 					}
 
 					try
@@ -458,8 +466,8 @@ class CommandManagerImpl implements CommandManager
 					 * Isso é pra nunca acontecer pois as verificaçoes ja
 					 * foram feitas a cima, o que pode acontecer é um erro
 					 * de segurança por exemplo.
-                     *
-                     * Agora pode acontecer, por causa do cache.
+					 *
+					 * Agora pode acontecer, por causa do cache.
 					 */
 					e.printStackTrace();
 				}
@@ -596,11 +604,9 @@ class CommandManagerImpl implements CommandManager
 		return subCommands;
 	}
 
-    private static void invalidSubCmd( final String reason, final Object ... args )
-    {
-        throw new IllegalArgumentException( String.format(
-                "Invalid subCommand '%s' in '%s' command. " + reason,
-                args
-        ));
-    }
+	private static void invalidSubCmd( final String reason, final Object ... args )
+	{
+		throw new IllegalArgumentException( String.format(
+			"Invalid subCommand '%s' in '%s' command. " + reason, args ));
+	}
 }

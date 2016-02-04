@@ -133,7 +133,7 @@ public interface CommandManager
 	 * Retorna uma nova instancia da implementacao dessa interface.
 	 * 
 	 * @param plugin
-	 *            O plugin que est� rodando.
+	 *            O plugin que está rodando.
 	 * 
 	 * @return Uma nova instancia da implementacao dessa interface.
 	 * 
