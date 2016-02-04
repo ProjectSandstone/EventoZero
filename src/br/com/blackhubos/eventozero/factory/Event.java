@@ -42,7 +42,6 @@ import br.com.blackhubos.eventozero.storage.Storage;
 import br.com.blackhubos.eventozero.util.Framework;
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
 import br.com.blackhubos.eventozero.util.Framework.Cuboid;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
