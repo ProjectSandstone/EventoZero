@@ -371,6 +371,8 @@ class CommandManagerImpl implements CommandManager
             @Override
             public Object load( @Nonnull Class<?> aClass ) throws Exception
             {
+				if ( aClass == owner.getClass() )
+                    return owner;
                 return aClass.newInstance();
             }
         };
