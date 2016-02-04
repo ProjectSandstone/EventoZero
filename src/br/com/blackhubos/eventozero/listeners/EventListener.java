@@ -121,9 +121,7 @@ public final class EventListener implements Listener {
             if (event1.isPresent() && event1.get().hasPlayerJoined((Player) damaged)) {
 
             }
-            
         }
-
     }
 
     /**
@@ -159,8 +157,7 @@ public final class EventListener implements Listener {
     public void whenKicked(final PlayerKickEvent event) {
         final Player sender = event.getPlayer();
         final Optional<Event> event1 = EventoZero.getEventHandler().getEventByPlayer(sender);
-        if (event1.isPresent())
-            event1.get().playerQuit(sender);
+        event1.ifPresent(e -> e.playerQuit(sender));
     }
 
 }
