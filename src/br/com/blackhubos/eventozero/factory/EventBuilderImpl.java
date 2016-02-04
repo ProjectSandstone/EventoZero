@@ -187,11 +187,11 @@ class EventBuilderImpl implements EventBuilder {
 
 	@Override
 	public Event build() {
-		final Event ret = new Event(this.<String> getDataOrDefault("key", "undefinedName"));
+		final Event ret = new Event(this.<String>getDataOrDefault("key", "undefinedName"));
 		final EventData eventData = ret.getData();
 
-		ret.updateDescription(this.<String> getDataOrDefault("description", ""));
-		ret.updateDisplayName(this.<String> getDataOrDefault("displayName", ret.getName()));
+		ret.updateDescription(this.<String>getDataOrDefault("description", ""));
+		ret.updateDisplayName(this.<String>getDataOrDefault("displayName", ret.getName()));
 
 		data.forEach((k, v) -> {
 			if (k.startsWith("eventdata.")) {

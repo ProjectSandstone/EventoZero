@@ -18,23 +18,23 @@ import com.google.common.base.Optional;
  */
 public class AbilityHandler {
 
-    public static final List<Ability> abilitys = new Vector<>();
+	public static final List<Ability> abilitys = new Vector<>();
 
-    public static Optional<Ability> getAbilityByName(String name){
-        for(Ability ability : abilitys){
-            if(ability.getName().equals(name)){
-                return Optional.of(ability);
-            }
-        }
-        return Optional.absent();
-    }
-    
-    public static boolean hasAbilityByName(String name){
-        return getAbilityByName(name).isPresent();
-    }
-    
-    public static void loadAbility(Ability ability) {
-        abilitys.add(ability);
-    }
+	public static Optional<Ability> getAbilityByName(String name) {
+		for (Ability ability : abilitys) {
+			if (ability.getName().equals(name)) {
+				return Optional.of(ability);
+			}
+		}
+		return Optional.absent();
+	}
+
+	public static boolean hasAbilityByName(String name) {
+		return getAbilityByName(name).isPresent();
+	}
+
+	public static void loadAbility(Ability ability) {
+		abilitys.add(ability);
+	}
 
 }

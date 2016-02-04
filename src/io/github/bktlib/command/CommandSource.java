@@ -26,9 +26,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Preconditions;
-
 import io.github.bktlib.command.annotation.Command;
 
 /**
