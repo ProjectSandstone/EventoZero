@@ -18,9 +18,8 @@
 
 package io.github.bktlib.command;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static io.github.bktlib.reflect.util.ReflectUtil.hasPublicConstructor;
+import static com.google.common.base.Preconditions.*;
+import static io.github.bktlib.reflect.util.ReflectUtil.*;
 import static java.lang.String.format;
 
 import java.io.File;
@@ -235,7 +234,7 @@ class CommandManagerImpl implements CommandManager
 				Class<?> klass = Class.forName(
 						entry.getName().replace( '/', '.' ).substring( 0, entry.getName().length() - 6 ) );
 
-				if ( klass != MethodCommand.class && klass != CommandBase.class &&
+				if ( klass.getPackage() != Package.getPackage( "io.github.bktlib.command" ) && 
 						CommandBase.class.isAssignableFrom( klass ) )
 				{
 					register( (Class<? extends CommandBase>) klass );
@@ -399,7 +398,7 @@ class CommandManagerImpl implements CommandManager
 	 * {@link Command#name() nome} do sub comando, e como valor, a instancia do
 	 * sub comando em sí.
 	 */
-	Map<String, CommandBase> parseSubCommands( CommandBase command )
+	private Map<String, CommandBase> parseSubCommands( CommandBase command )
 	{
 		final Map<String, CommandBase> subCommands = Maps.newHashMap();
 
@@ -503,63 +502,16 @@ class CommandManagerImpl implements CommandManager
 								rawSubCommand, command, methodName );
 					}
 
-					/**
-					 * "Converte" a anotação SubCommand para Command para
-					 * ser usada no construtor do MethodCommand, as duas
-					 * anotações são exatamente iguais, porem, como o java
-					 * não permite herança com anotações eu tive que fazer
-					 * isso.
-					 */
-					final Command commandAnnotation = new Command()
-					{
-						@Override
-						public Class<? extends Annotation> annotationType()
-						{
-							return Command.class;
-						}
-
-						@Override
-						public String name()
-						{
-							return subCmdAnnotation.name();
-						}
-
-						@Override
-						public String permission()
-						{
-							return subCmdAnnotation.permission();
-						}
-
-						@Override
-						public String description()
-						{
-							return subCmdAnnotation.description();
-						}
-
-						@Override
-						public String usage()
-						{
-							return subCmdAnnotation.usage();
-						}
-
-						@Override
-						public String[] aliases()
-						{
-							return subCmdAnnotation.aliases();
-						}
-
-						@Override
-						public String[] subCommands()
-						{
-							return subCmdAnnotation.subCommands();
-						}
-
-						@Override
-						public UsageTarget usageTarget()
-						{
-							return subCmdAnnotation.usageTarget();
-						}
-					};
+					
+					final Command commandAnnotation = createCommandAnnotation(
+							subCmdAnnotation.name(),
+							subCmdAnnotation.permission(),
+							subCmdAnnotation.description(),
+							subCmdAnnotation.usage(),
+							subCmdAnnotation.aliases(),
+							subCmdAnnotation.subCommands(),
+							subCmdAnnotation.usageTarget()
+					);
 
 					/**
 					 * Por equanto os subcomandos poderão ser apenas
@@ -608,5 +560,56 @@ class CommandManagerImpl implements CommandManager
 	{
 		throw new IllegalArgumentException( String.format(
 			"Invalid subCommand '%s' in '%s' command. " + reason, args ));
+	}
+	
+	static Command createCommandAnnotation( final String name,
+											final String permission,
+											final String description,
+											final String usage,
+											final String[] aliases,
+											final String[] subCommands,
+											final UsageTarget usageTarget ) {
+		return new Command()
+		{
+			public Class<? extends Annotation> annotationType()
+			{
+				return Command.class;
+			}
+			
+			public String name()
+			{
+				return name;
+			}
+			
+			public String permission()
+			{
+				return permission;
+			}
+			
+			public String description()
+			{
+				return description;
+			}
+
+			public String usage()
+			{
+				return usage;
+			}
+
+			public String[] aliases()
+			{
+				return aliases;
+			}
+
+			public String[] subCommands()
+			{
+				return subCommands;
+			}
+
+			public UsageTarget usageTarget()
+			{
+				return usageTarget;
+			}
+		};
 	}
 }
