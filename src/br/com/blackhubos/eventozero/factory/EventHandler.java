@@ -24,12 +24,12 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 import org.bukkit.entity.Player;
 
 public class EventHandler
 {
-
 	private final Set<Event> events;
 
 	public EventHandler()
@@ -39,26 +39,21 @@ public class EventHandler
 
 	public Optional<Event> getEventByName(final String name)
 	{
-		for (final Event e : this.getEvents())
-		{
-			if (e.getName().equals(name))
-			{
-				return Optional.of(e);
-			}
-		}
-		return Optional.empty();
+		Preconditions.checkArgument(!Strings.isNullOrEmpty(name), 
+				"name cannot be null or empty");
+		
+		return getEvents()
+				.parallelStream()
+				.filter(e -> e.getName().equals(name))
+				.findAny();
 	}
 
 	public Optional<Event> getEventByPlayer(final Player player)
 	{
-		for (final Event e : this.getEvents())
-		{
-			if (e.hasPlayerJoined(player))
-			{
-				return Optional.of(e);
-			}
-		}
-		return Optional.empty();
+		return getEvents()
+				.parallelStream()
+				.filter(e -> e.hasPlayerJoined(player))
+				.findAny();
 	}
 
 	public Set<Event> getEvents()
@@ -72,5 +67,4 @@ public class EventHandler
 		Preconditions.checkNotNull(event, "Event is null");
 		this.events.add(event);
 	}
-
 }

@@ -22,11 +22,13 @@ package br.com.blackhubos.eventozero.handlers;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Vector;
 
 import org.bukkit.plugin.Plugin;
 
-import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.ability.Ability;
@@ -43,12 +45,12 @@ public final class KitHandler {
     }
     
     public Optional<Kit> getKitByName(final String name) {
-        for (final Kit kit : this.getKits()) {
-            if (kit.getName().equals(name)) {
-                return Optional.of(kit);
-            }
-        }
-        return Optional.absent();
+		Preconditions.checkArgument(!Strings.isNullOrEmpty(name), 
+				"name cannot be null or empty");
+		
+		return kits.parallelStream()
+				.filter(a -> a.getName().equals(name))
+				.findAny();
     }
     
     public List<Kit> getKits() {

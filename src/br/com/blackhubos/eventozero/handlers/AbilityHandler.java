@@ -5,12 +5,14 @@
  */
 package br.com.blackhubos.eventozero.handlers;
 
-import br.com.blackhubos.eventozero.ability.Ability;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.Vector;
 
-import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
+import br.com.blackhubos.eventozero.ability.Ability;
 
 /**
  *
@@ -21,12 +23,12 @@ public class AbilityHandler {
 	public static final List<Ability> abilitys = new Vector<>();
 
 	public static Optional<Ability> getAbilityByName(String name) {
-		for (Ability ability : abilitys) {
-			if (ability.getName().equals(name)) {
-				return Optional.of(ability);
-			}
-		}
-		return Optional.absent();
+		Preconditions.checkArgument(!Strings.isNullOrEmpty(name), 
+				"name cannot be null or empty");
+		
+		return abilitys.parallelStream()
+				.filter(a -> a.getName().equals(name))
+				.findAny();
 	}
 
 	public static boolean hasAbilityByName(String name) {
