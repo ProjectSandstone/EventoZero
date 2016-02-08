@@ -26,12 +26,6 @@ public class EventFlags {
 	public int getFlags() {
 		return flags;
 	}
-	
-	public static void main(String[] args) {
-		int f = Flag.NONE.val;
-		
-		System.out.println(Integer.toBinaryString(f));
-	}
 
 	public boolean hasFlag(Flag flag) {
 		return (flags & flag.val) != 0;
