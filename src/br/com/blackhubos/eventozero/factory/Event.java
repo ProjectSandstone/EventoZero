@@ -254,7 +254,7 @@ public class Event {
      * @return
      */
     public Event playerJoin(final Player player) {
-        if ((player == null) || ((player != null) && !player.isOnline()))
+        if ((player == null) || !player.isOnline())
             throw new NullArgumentException("Player is null");
         if (!this.hasPlayerJoined(player)) {
             this.joineds.add(player);
@@ -280,7 +280,7 @@ public class Event {
      * @return
      */
     public Event playerQuit(final Player player) {
-        if ((player == null) || ((player != null) && !player.isOnline()))
+        if ((player == null) || !player.isOnline())
             throw new NullArgumentException("Player is null");
         if (this.hasPlayerJoined(player)) {
             this.joineds.remove(player);
@@ -300,7 +300,7 @@ public class Event {
      * @return Retorna a instância do {@link Event} modificada.
      */
     public Event spectatorJoin(final Player player) {
-        if ((player == null) || ((player != null) && !player.isOnline()))
+        if ((player == null) || !player.isOnline())
             throw new NullArgumentException("Player is null");
         if (!this.spectators.contains(player)) {
             for (final Player obj : this.getPlayers()) {
@@ -320,7 +320,7 @@ public class Event {
      * @return Retorna a instância do {@link Event} modificada.
      */
     public Event spectatorQuit(final Player player) {
-        if ((player == null) || ((player != null) && player.isOnline()))
+        if ((player == null) || player.isOnline())
             throw new NullArgumentException("Player is null");
         if (this.spectators.contains(player)) {
             for (final Player obj : this.getPlayers()) {
