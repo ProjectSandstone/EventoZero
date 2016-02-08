@@ -20,6 +20,8 @@
 
 package br.com.blackhubos.eventozero.hook.hooks;
 
+import java.util.Optional;
+
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Preconditions;
@@ -33,6 +35,7 @@ public class MagicCarpetHook extends Hook {
 	private static final String MAGICCARPET_CLASS = "net.digiex.magiccarpet.MagicCarpet";
 
 	private MethodAccessor<Void> removeCarpetMethod;
+	private MethodAccessor<Object> getCarpetMethod;
 
 	public MagicCarpetHook() {
 		super("MagicCarpet");
@@ -55,6 +58,18 @@ public class MagicCarpetHook extends Hook {
 		Preconditions.checkNotNull(player, "player cannot be null");
 		removeCarpetMethod.invoke(player);
 	}
+	
+	public boolean isCarpetEnabled(final Player player)
+	{
+		Preconditions.checkNotNull(player, "player cannot be null");
+		Optional<Object> optCarpet = getCarpetMethod.invoke(player);
+		
+		if (!optCarpet.isPresent())
+			return false;
+		
+		Object carpet = optCarpet.get();
+		return MethodAccessor.<Boolean>access(carpet, "isVisible").invoke().get();
+	}
 
 	@Override
 	public void hook() throws Exception {
@@ -62,6 +77,8 @@ public class MagicCarpetHook extends Hook {
 		FieldAccessor<Object> carpetsField = FieldAccessor.access(magicCarpetCls, "carpets");
 
 		Object storageInstance = carpetsField.getValue().get();
+		
 		removeCarpetMethod = MethodAccessor.access(storageInstance, "remove", Player.class);
+		getCarpetMethod = MethodAccessor.access(storageInstance, "getCarpet", Player.class);
 	}
 }
