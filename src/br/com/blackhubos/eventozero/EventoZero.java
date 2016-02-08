@@ -55,15 +55,15 @@ public final class EventoZero extends JavaPlugin
 
 	// 'regex_as' testado, funciona!
 	private static final Pattern regex_as = Pattern.compile("^\\s*([0-6]{1,1}|\\*{1,1})\\s+(?:([0-9]{1,2})\\s*:\\s*([0-9]{1,2}))\\s*$");
-	private static LoggerManager<EventoZero> logger = null;
-	private static Configuration config = null;
-	private static Configuration config_rankings = null;
-	private static Configuration config_points = null;
-	private static Configuration config_bans = null;
-	private static Configuration config_updater = null;
-	private static Configuration config_messages = null;
-	private static Storage storage = null;
-	private static Updater updater = null;
+	private static LoggerManager<EventoZero> logger;
+	private static Configuration config ;
+	private static Configuration rankingsConfig;
+	private static Configuration pointsConfig;
+	private static Configuration bansConfig;
+	private static Configuration updaterConfig;
+	private static Configuration messagesConfig;
+	private static Storage storage;
+	private static Updater updater;
 	private static ShopHandler shopHandler;
 	private static KitHandler kitHandler;
 	private static EventHandler eventHandler;
@@ -72,18 +72,18 @@ public final class EventoZero extends JavaPlugin
 	@Override
 	public void onEnable()
 	{
-
 		new Framework(); // Apenas carrega o WorldGuard e WorldEdit
-		EventoZero.config = new Configuration(this, new File(this.getDataFolder(), "config.yml"));
-		EventoZero.config_rankings = new Configuration(this, new File(this.getDataFolder(), "ranking.yml"));
-		EventoZero.config_points = new Configuration(this, new File(this.getDataFolder(), "points.yml"));
-		EventoZero.config_bans = new Configuration(this, new File(this.getDataFolder(), "bans.yml"));
-		EventoZero.config_updater = new Configuration(this, new File(this.getDataFolder(), "updater.yml"));
-		EventoZero.config_messages = new Configuration(this, new File(this.getDataFolder(), "mensagens.yml"));
-		EventoZero.logger = new LoggerManager<EventoZero>(this, new File(this.getDataFolder(), "logs")).init(EventoZero.config.getString("tasks.savelogs"));
-		EventoZero.commandManager = CommandManager.newInstance( this );
 		
-		for (final Configuration c : new Configuration[] { EventoZero.config, EventoZero.config_rankings, EventoZero.config_points, EventoZero.config_bans, EventoZero.config_updater })
+		config = new Configuration(this, new File(this.getDataFolder(), "config.yml"));
+		rankingsConfig = new Configuration(this, new File(this.getDataFolder(), "ranking.yml"));
+		pointsConfig = new Configuration(this, new File(this.getDataFolder(), "points.yml"));
+		bansConfig = new Configuration(this, new File(this.getDataFolder(), "bans.yml"));
+		updaterConfig = new Configuration(this, new File(this.getDataFolder(), "updater.yml"));
+		messagesConfig = new Configuration(this, new File(this.getDataFolder(), "mensagens.yml"));
+		logger = new LoggerManager<EventoZero>(this, new File(this.getDataFolder(), "logs")).init(EventoZero.config.getString("tasks.savelogs"));
+		commandManager = CommandManager.newInstance( this );
+		
+		for (final Configuration c : new Configuration[] { EventoZero.config, EventoZero.rankingsConfig, EventoZero.pointsConfig, EventoZero.bansConfig, EventoZero.updaterConfig })
 		{
 			if (c.copied())
 			{
@@ -91,18 +91,18 @@ public final class EventoZero extends JavaPlugin
 			}
 		}
 
-		MessageHandler.loadMessages(EventoZero.config_messages);
-		EventoZero.shopHandler = new ShopHandler();
-		EventoZero.kitHandler = new KitHandler();
-		EventoZero.eventHandler = new EventHandler();
+		MessageHandler.loadMessages(EventoZero.messagesConfig);
 		InterpreterRegister.registerAll(this); // Registra tudo relacionado ao interpreter
-		EventoZero.updater = new Updater(this, EventoZero.config_updater);
+		shopHandler = new ShopHandler();
+		kitHandler = new KitHandler();
+		eventHandler = new EventHandler();
+		updater = new Updater(this, EventoZero.updaterConfig);
 		
 		/*
 		 * por enquanto só tem essa classe de comando, caso adicionei outros
 		 * comandos é só mudar pra registerAll
 		 */
-		EventoZero.commandManager.register( EZCommand.class );
+		commandManager.register( EZCommand.class );
 		
 		try
 		{
@@ -117,8 +117,8 @@ public final class EventoZero extends JavaPlugin
 			return;
 		}
 
-		EventoZero.kitHandler.loadKits(this);
-		EventoZero.shopHandler.loadShops(this);
+		kitHandler.loadKits(this);
+		shopHandler.loadShops(this);
 		this.getServer().getPluginManager().registerEvents(new RankingListener(), this);
 		this.getServer().getPluginManager().registerEvents(new EventListener(), this);
 		this.getServer().getPluginManager().registerEvents(new CuboidListener(), this);
@@ -173,8 +173,9 @@ public final class EventoZero extends JavaPlugin
 	}
 
 	/**
-	 * Dentro da classe EventoZero há uma variável estática carregada no <code>onEnable()</code> que representa a configuração do plugin, aceitando e usando o formato/charset
-	 * utf8.
+	 * Dentro da classe EventoZero há uma variável estática carregada no
+	 * <code>onEnable()</code> que representa a configuração do plugin,
+	 * aceitando e usando o formato/charset utf8.
 	 *
 	 * @return Retorna uma {@link Configuration} vinda do arquivo config.yml
 	 */
@@ -220,8 +221,9 @@ public final class EventoZero extends JavaPlugin
 	}
 
 	/**
-	 * Dentro da classe EventoZero há uma variável estática carregada no <code>onEnable()</code> que representa a configuração do plugin, aceitando e usando o formato/charset
-	 * utf8.
+	 * Dentro da classe EventoZero há uma variável estática carregada no
+	 * <code>onEnable()</code> que representa a configuração do plugin,
+	 * aceitando e usando o formato/charset utf8.
 	 *
 	 * @return Retorna uma {@link Configuration} vinda do arquivo config.yml
 	 */
@@ -236,7 +238,7 @@ public final class EventoZero extends JavaPlugin
 	 */
 	public static Configuration getPointsConfiguration()
 	{
-		return EventoZero.config_points;
+		return EventoZero.pointsConfig;
 	}
 
 	/**
@@ -245,7 +247,7 @@ public final class EventoZero extends JavaPlugin
 	 */
 	public static Configuration getRankingConfiguration()
 	{
-		return EventoZero.config_rankings;
+		return EventoZero.rankingsConfig;
 	}
 
 	/**
@@ -254,11 +256,12 @@ public final class EventoZero extends JavaPlugin
 	 */
 	public static Configuration getBanConfiguration()
 	{
-		return EventoZero.config_bans;
+		return EventoZero.bansConfig;
 	}
 
 	/**
-	 * Os logs ficam salvos em <code>EventoZero/logs/{data aqui}.txt</code>. Com esta variável, você pode adicionar novos informações aos logs.
+	 * Os logs ficam salvos em <code>EventoZero/logs/{data aqui}.txt</code>. Com
+	 * esta variável, você pode adicionar novos informações aos logs.
 	 *
 	 * @return A instância única de {@link LoggerManager} para tratar logs.
 	 */
@@ -305,7 +308,6 @@ public final class EventoZero extends JavaPlugin
 		{
 			return null;
 		}
-
 	}
 
 }
