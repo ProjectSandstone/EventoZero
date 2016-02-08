@@ -21,7 +21,7 @@
 package br.com.blackhubos.eventozero.factory;
 
 public class EventFlags {
-	private int flags = Flag.DISABLE_PVP.val;
+	private int flags = Flag.NONE.val;
 
 	public int getFlags() {
 		return flags;
