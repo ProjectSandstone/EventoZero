@@ -44,6 +44,7 @@ import br.com.blackhubos.eventozero.util.Framework.Configuration;
 import br.com.blackhubos.eventozero.util.Framework.Cuboid;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * TODO: arrumar index do setSign (todos 0) TODO: adicionar logs
@@ -171,6 +172,10 @@ public class Event {
         return this;
     }
 
+    public Configuration getConfig() {
+        return this.config;
+    }
+    
     /**
      *
      * @return Retorna a lista de todas as partys em ação do evento.
@@ -259,17 +264,15 @@ public class Event {
         if (!this.hasPlayerJoined(player)) {
             this.joineds.add(player);
             this.updateSigns();
+            
             if (safeInventory()) {
                 this.playerBackup(player);
                 player.getInventory().clear();
                 player.getInventory().setArmorContents(new ItemStack[4]);
-
             }
-            final Random r = new Random();
-            final Vector<Location> lobby = this.getData().getData("teleport.lobby");
-
-            if (lobby.size() > 0)
-                player.teleport(lobby.get(r.nextInt(lobby.size() - 1)));
+            
+            //TODO: getRandomTeleport pode retornar nulo, temos que tratar caso aconteça
+            player.teleport(getRandomTeleport("lobby"));
         }
         return this;
     }
@@ -303,9 +306,7 @@ public class Event {
         if ((player == null) || !player.isOnline())
             throw new NullArgumentException("Player is null");
         if (!this.spectators.contains(player)) {
-            for (final Player obj : this.getPlayers()) {
-                obj.hidePlayer(player);
-            }
+        	getPlayers().forEach( p -> p.hidePlayer(player) );
             player.setAllowFlight(true);
             player.setFlying(true);
             this.spectators.add(player);
@@ -331,7 +332,6 @@ public class Event {
             this.spectators.remove(player);
         }
         return this;
-
     }
 
     /**
@@ -355,7 +355,7 @@ public class Event {
      * 
      * @return {@code true} se as party estão ativado
      */
-    public boolean enablePartys(){
+    public boolean enablePartys() {
         return this.getData().getData("options.enables.party");
     }
 
@@ -404,22 +404,26 @@ public class Event {
 
     public void forceStart() {
         // TODO: START EVENT
-        if (this.getPlayers().size() < (Integer) this.getData().getData("event.min"))
+        if (this.getPlayers().size() < this.getData().<Integer>getData("event.min"))
             // TODO: STOP
             // TODO: MESSAGE CANCELED MIN PLAYER
             this.forceStop();
-        for (final Player player : this.getPlayers()) {
-            final Kit kit = this.getData().getData(player.getName() + ".kit");
-            if (kit != null) {
-                kit.giveTo(player);
-                if (kit.getAbility() != null)
-                    this.getData().updateData(player.getName() + ".ability", kit.getAbility());
-            }
-            final Random r = new Random();
-            final Vector<Location> spawns = this.getData().getData("teleport.spawn");
-
-            player.teleport(spawns.get(r.nextInt(spawns.size() > 0 ? spawns.size() : 0)));
-        }
+        
+        final EventData data = this.getData();
+        
+        getPlayers().forEach( player -> {
+        	final Kit kit = data.getData(player.getName() + ".kit");
+        	
+        	if (kit != null ) {
+        		kit.giveTo(player);
+        		if (kit.hasAbility()) {
+        			data.updateData(player.getName() + ".ability", kit.getAbility());
+        		}
+        	}
+        	//TODO: getRandomTeleport pode retornar nulo, temos que tratar caso aconteça
+        	player.teleport(getRandomTeleport("spawn"));
+        });
+        
         // TODO: CODE START
         this.updateSigns();
     }
@@ -501,8 +505,29 @@ public class Event {
             }
         }
     }
-
-    public Configuration getConfig() {
-        return this.config;
+    
+	/**
+	 * Pega um teleporte aleatorio de uma lista de teleportes.
+	 * 
+	 * @param teleport Nome do teleport, por exemplo {@code lobby} ou {@code spawn}
+	 * @return Uma localização caso encontre, null caso não existe a key
+	 *         'teleport.{@code teleport}' nos {@link #getData() dados} do
+	 *         evento, ou o numero de Locations seja 0
+	 */
+    private Location getRandomTeleport(final String teleport) {
+    	final Random random = new Random();
+    	final EventData data = getData();
+    	
+    	if (!data.containsKey("teleport." + teleport)) {
+    		return null;
+    	}
+    	
+    	final List<Location> locations = getData().getData("teleport." + teleport);
+    	
+    	if (locations.size() == 0 ) {
+    		return null;
+    	}
+    	
+    	return locations.get(random.nextInt(locations.size()));
     }
 }
