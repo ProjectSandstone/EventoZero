@@ -71,9 +71,11 @@ public class Event {
     private String displayName;
     private String description;
     private EventState state;
+    private EventFlags flags;
     private Configuration config;
 
     public Event(final String name) {
+    	this.flags = new EventFlags();
         this.name = name;
         this.joineds = new Vector<>();
         this.spectators = new Vector<>();
@@ -99,6 +101,10 @@ public class Event {
         return this.name;
     }
 
+    public EventFlags getFlags() {
+		return flags;
+	}
+    
     /**
      *
      * @return Retorna a lista de cuboids definidos neste evento.
