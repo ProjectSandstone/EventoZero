@@ -94,7 +94,7 @@ public class EZCommand extends CommandBase {
 	@SubCommand(
 		name = "entradas", 
 		usage = "<evento> ", 
-		description = "Obt©m as entradas e suas IDs"
+		description = "Obtém as entradas e suas IDs"
 	)
 	private CommandResult entradas(final CommandSource src, final CommandArgs args) {
 		return CommandResult.success();
