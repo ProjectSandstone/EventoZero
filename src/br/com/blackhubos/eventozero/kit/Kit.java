@@ -22,6 +22,10 @@ public class Kit extends ShopItem implements Cloneable {
         this.armorContents = new ItemStack[4];
     }
 
+    public boolean hasAbility() {
+    	return getAbility() != null;
+    }
+    
     public Ability getAbility() {
         return this.ability;
     }
