@@ -82,17 +82,16 @@ public final class KitHandler {
         if (!configuration.contains("kits")) return;
         
         for (String key : configuration.getConfigurationSection("kits").getKeys(false)) {
-            Kit kit = new Kit(key, new ItemFactory(configuration.getString("kits." + key + ".icon"), null).getPreparedItem());
+            final Kit kit = new Kit(key, new ItemFactory(configuration.getString("kits." + key + ".icon"), null).getPreparedItem());
+            final Optional<Ability> optAbility = AbilityHandler.getAbilityByName(configuration.getString("kits." + key + ".ability"));
             
-            Optional<Ability> ability = AbilityHandler.getAbilityByName(configuration.getString("kits." + key + ".ability"));
-            
-            if (ability.isPresent()) {
-            	kit.updateAbility(ability.get()).
-                setArmorContents(3, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.helmet"), null).getPreparedItem()).
-                setArmorContents(2, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.armor"), null).getPreparedItem()).
-                setArmorContents(1, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.leggings"), null).getPreparedItem()).
-                setArmorContents(0, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.boots"), null).getPreparedItem());
-            }
+            optAbility.ifPresent( ability -> {
+            	kit.updateAbility(ability).
+	                setArmorContents(3, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.helmet"), null).getPreparedItem()).
+	                setArmorContents(2, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.armor"), null).getPreparedItem()).
+	                setArmorContents(1, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.leggings"), null).getPreparedItem()).
+	                setArmorContents(0, new ItemFactory(configuration.getString("kits." + key + ".inventory.armor_contents.boots"), null).getPreparedItem());
+            });
             
             int count = 0;
             for (String otherKey : configuration.getStringList("kits." + key + ".inventory.contents")) {
