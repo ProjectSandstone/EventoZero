@@ -39,6 +39,7 @@ import br.com.blackhubos.eventozero.factory.EventState;
 import br.com.blackhubos.eventozero.handlers.KitHandler;
 import br.com.blackhubos.eventozero.handlers.MessageHandler;
 import br.com.blackhubos.eventozero.handlers.ShopHandler;
+import br.com.blackhubos.eventozero.hook.Hooks;
 import br.com.blackhubos.eventozero.listeners.CuboidListener;
 import br.com.blackhubos.eventozero.listeners.EventListener;
 import br.com.blackhubos.eventozero.listeners.RankingListener;
@@ -67,11 +68,14 @@ public final class EventoZero extends JavaPlugin
 	private static ShopHandler shopHandler;
 	private static KitHandler kitHandler;
 	private static EventHandler eventHandler;
+	private static EventoZero instance;
 	private static CommandManager commandManager;
 
 	@Override
 	public void onEnable()
 	{
+		instance = this;
+		
 		new Framework(); // Apenas carrega o WorldGuard e WorldEdit
 		
 		config = new Configuration(this, new File(this.getDataFolder(), "config.yml"));
@@ -82,6 +86,8 @@ public final class EventoZero extends JavaPlugin
 		messagesConfig = new Configuration(this, new File(this.getDataFolder(), "mensagens.yml"));
 		logger = new LoggerManager<EventoZero>(this, new File(this.getDataFolder(), "logs")).init(EventoZero.config.getString("tasks.savelogs"));
 		commandManager = CommandManager.newInstance( this );
+		
+		Hooks.hookAll();
 		
 		for (final Configuration c : new Configuration[] { EventoZero.config, EventoZero.rankingsConfig, EventoZero.pointsConfig, EventoZero.bansConfig, EventoZero.updaterConfig })
 		{
@@ -299,15 +305,7 @@ public final class EventoZero extends JavaPlugin
 	 */
 	public static EventoZero getInstance()
 	{
-		try
-		{
-			final PluginDescriptionFile pluginDescriptionFile = new PluginDescriptionFile(EventoZero.class.getResourceAsStream("/plugin.yml"));
-			return (EventoZero) Bukkit.getPluginManager().getPlugin(pluginDescriptionFile.getName());
-		}
-		catch (final InvalidDescriptionException e)
-		{
-			return null;
-		}
+		return instance;
 	}
 
 }
