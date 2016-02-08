@@ -20,29 +20,28 @@
 package br.com.blackhubos.eventozero.factory;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class EventData
-{
+public class EventData {
 
 	private final Map<String, Object> data;
 
-	public EventData()
-	{
+	public EventData() {
 		this.data = new ConcurrentHashMap<>();
 	}
 
 	/**
-	 * @param key
-	 * @return Retorna {@link Object}.
+	 * @param key Chave na qual o dado está associado.
+	 * @return Retorna um dado salvo anteriormente.
+	 * @throws NoSuchElementException
+	 *             Caso não exista um dado salvo com a {@code key}
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T getData(final String key)
-	{
-		if (!this.data.containsKey(key))
-		{
-			throw new IllegalArgumentException("Key is not valid");
+	public <T> T getData(final String key) {
+		if (!this.data.containsKey(key)) {
+			throw new NoSuchElementException("No such element for " + key);
 		}
 		return (T) this.data.get(key);
 	}
@@ -51,8 +50,7 @@ public class EventData
 	 * @param key
 	 * @return Retorna {@link Boolean}
 	 */
-	public boolean containsKey(final String key)
-	{
+	public boolean containsKey(final String key) {
 		return this.data.containsKey(key);
 	}
 
@@ -61,8 +59,7 @@ public class EventData
 	 * @param data
 	 * @return
 	 */
-	public EventData updateData(final String key, final Object data)
-	{
+	public EventData updateData(final String key, final Object data) {
 		this.data.putIfAbsent(key, data);
 		return this;
 	}
@@ -72,16 +69,13 @@ public class EventData
 	 * @param name
 	 * @return
 	 */
-	public EventData removeKeyStartWith(final String name)
-	{
-		for (final ConcurrentMap.Entry<String, Object> entry : this.data.entrySet())
-		{
-			if (entry.getKey().startsWith(name))
-			{
+	public EventData removeKeyStartWith(final String name) {
+		for (final ConcurrentMap.Entry<String, Object> entry : this.data.entrySet()) {
+			if (entry.getKey().startsWith(name)) {
 				this.data.remove(entry.getKey());
 			}
 		}
 		return this;
 	}
-
+	
 }
