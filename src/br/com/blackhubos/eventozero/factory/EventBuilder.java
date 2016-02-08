@@ -1,7 +1,7 @@
 /**
  *
  * EventoZero - Advanced event factory and executor for Bukkit and Spigot.
- * Copyright � 2016 BlackHub OS and contributors.
+ * Copyright © 2016 BlackHub OS and contributors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
