@@ -24,13 +24,9 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class EventData {
+import com.google.common.collect.ForwardingMap;
 
-	private final Map<String, Object> data;
-
-	public EventData() {
-		this.data = new ConcurrentHashMap<>();
-	}
+public class EventData extends ForwardingMap<String, Object> {
 
 	/**
 	 * @param key Chave na qual o dado está associado.
@@ -40,10 +36,10 @@ public class EventData {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getData(final String key) {
-		if (!this.data.containsKey(key)) {
+		if (!containsKey(key)) {
 			throw new NoSuchElementException("No such element for " + key);
 		}
-		return (T) this.data.get(key);
+		return (T) get(key);
 	}
 
 	/**
@@ -51,7 +47,7 @@ public class EventData {
 	 * @return Retorna {@link Boolean}
 	 */
 	public boolean containsKey(final String key) {
-		return this.data.containsKey(key);
+		return containsKey(key);
 	}
 
 	/**
@@ -60,7 +56,7 @@ public class EventData {
 	 * @return
 	 */
 	public EventData updateData(final String key, final Object data) {
-		this.data.putIfAbsent(key, data);
+		putIfAbsent(key, data);
 		return this;
 	}
 
@@ -70,12 +66,17 @@ public class EventData {
 	 * @return
 	 */
 	public EventData removeKeyStartWith(final String name) {
-		for (final ConcurrentMap.Entry<String, Object> entry : this.data.entrySet()) {
+		for (final ConcurrentMap.Entry<String, Object> entry : entrySet()) {
 			if (entry.getKey().startsWith(name)) {
-				this.data.remove(entry.getKey());
+				remove(entry.getKey());
 			}
 		}
 		return this;
+	}
+
+	@Override
+	protected Map<String, Object> delegate() {
+		return new ConcurrentHashMap<>();
 	}
 	
 }
