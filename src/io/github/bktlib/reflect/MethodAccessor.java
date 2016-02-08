@@ -63,6 +63,6 @@ public interface MethodAccessor<T>
 		Preconditions.checkArgument( !Strings.isNullOrEmpty( methodName ),
 				"methodName cannot be null or empty" );
 
-		return new MethodAccessorImpl<>( obj, methodName );
+		return new MethodAccessorImpl<>( obj, methodName, params );
 	}
 }
