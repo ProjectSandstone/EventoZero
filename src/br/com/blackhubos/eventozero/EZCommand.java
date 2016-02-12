@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import br.com.blackhubos.eventozero.factory.Event;
+import br.com.blackhubos.eventozero.factory.EventFlags.Flag;
 import br.com.blackhubos.eventozero.factory.EventState;
 import br.com.blackhubos.eventozero.handlers.MessageHandler;
 import br.com.blackhubos.eventozero.util.Framework;
@@ -19,7 +20,7 @@ import io.github.bktlib.command.annotation.Command;
 import io.github.bktlib.command.annotation.SubCommand;
 import io.github.bktlib.command.args.CommandArgs;
 
-@Command ( name = "eventozero", aliases = "ez", description = "General Command of EventoZero", subCommands = "this::*" )
+@Command ( name = "eventozero", aliases = "ez", description = "Comando de Gerenciamento do EventoZero", subCommands = "this::*" )
 public final class EZCommand extends CommandBase
 {
 
@@ -306,15 +307,75 @@ public final class EZCommand extends CommandBase
 		}
 	}
 
-	@SubCommand ( name = "pvp", usage = "<evento> <allowdeny> ", description = "Define o status de pvp" )
+	@SubCommand ( name = "pvp", usage = "<evento> <allow|deny> ", description = "Define o status de pvp" )
 	private CommandResult pvp ( final CommandSource src, final CommandArgs args )
 	{
+		if ( args.size() == 2 )
+		{
+			final String name = Framework.normalize( args.get( 0 ).toLowerCase() );
+			final Optional< Event > event = EventoZero.getEventHandler().getEventByName( name );
+			if ( event.isPresent() )
+			{
+				final String set = args.get( 0 );
+				final boolean bool = Framework.tryBoolean( set );
+				if ( bool )
+				{
+					final boolean allows = Framework.getBoolean( set );
+					if ( ! allows )
+					{
+						event.get().getFlags().addFlag( Flag.DISABLE_PVP );
+						src.sendMessage( String.format( "§9PvP foi definido como bloqueado no evento %s", event.get().getName() ) );
+					}
+					else
+					{
+						src.sendMessage( String.format( "§9PvP foi definido como permitido no evento %s", event.get().getName() ) );
+						event.get().getFlags().removeFlag( Flag.DISABLE_PVP );
+					}
+				}
+				else
+				{
+					src.sendMessage( String.format( "§cSintaxe '%s' não é válida.", set ) );
+					src.sendMessage( "§cUtilize 'allow' ou 'deny'" );
+				}
+			}
+		}
+
 		return CommandResult.success();
 	}
 
-	@SubCommand ( name = "mc", usage = "<evento> <allowdeny> ", description = "Bloqueia ou permite MC" )
+	@SubCommand ( name = "mc", usage = "<evento> <allow|deny> ", description = "Bloqueia ou permite MC" )
 	private CommandResult mc ( final CommandSource src, final CommandArgs args )
 	{
+		if ( args.size() == 2 )
+		{
+			final String name = Framework.normalize( args.get( 0 ).toLowerCase() );
+			final Optional< Event > event = EventoZero.getEventHandler().getEventByName( name );
+			if ( event.isPresent() )
+			{
+				final String set = args.get( 0 );
+				final boolean bool = Framework.tryBoolean( set );
+				if ( bool )
+				{
+					final boolean allows = Framework.getBoolean( set );
+					if ( ! allows )
+					{
+						event.get().getFlags().addFlag( Flag.DISABLE_MC );
+						src.sendMessage( String.format( "§9Tapete Mágico foi definido como bloqueado no evento %s", event.get().getName() ) );
+					}
+					else
+					{
+						src.sendMessage( String.format( "§9Tapete Mágico foi definido como permitido no evento %s", event.get().getName() ) );
+						event.get().getFlags().removeFlag( Flag.DISABLE_MC );
+					}
+				}
+				else
+				{
+					src.sendMessage( String.format( "§cSintaxe '%s' não é válida.", set ) );
+					src.sendMessage( "§cUtilize 'allow' ou 'deny'" );
+				}
+			}
+		}
+
 		return CommandResult.success();
 	}
 
@@ -396,6 +457,15 @@ public final class EZCommand extends CommandBase
 		return CommandResult.success();
 	}
 
+	/**
+	 * Não pode haver reload enquanto algum evento estiver ocorrendo, aberto, etc.
+	 * O reload faz unload de todos os eventos, desregistra todos os listeners, schedulers e afins,
+	 * recarrega todas as configurações, e ativa novamente o plugin.
+	 *
+	 * @param src
+	 * @param args
+	 * @return
+	 */
 	@SubCommand ( name = "reload", usage = "", description = "Faz reload completo no plugin" )
 	private CommandResult reload ( final CommandSource src, final CommandArgs args )
 	{
@@ -405,6 +475,8 @@ public final class EZCommand extends CommandBase
 	@SubCommand ( name = "disable", usage = "", description = "Desativa o plugin completamente" )
 	private CommandResult disable ( final CommandSource src, final CommandArgs args )
 	{
+		Bukkit.getPluginManager().disablePlugin( EventoZero.getInstance() );
+		src.sendMessage( "§cPlugin desativado com êxito. :)" );
 		return CommandResult.success();
 	}
 }
