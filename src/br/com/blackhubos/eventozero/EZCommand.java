@@ -1,15 +1,17 @@
 package br.com.blackhubos.eventozero;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.Optional;
 
 import com.google.common.base.CharMatcher;
 
-import de.schlichtherle.io.File;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import br.com.blackhubos.eventozero.factory.Event;
+import br.com.blackhubos.eventozero.factory.EventState;
+import br.com.blackhubos.eventozero.handlers.MessageHandler;
+import br.com.blackhubos.eventozero.util.Framework;
 import io.github.bktlib.command.CommandBase;
 import io.github.bktlib.command.CommandResult;
 import io.github.bktlib.command.CommandSource;
@@ -17,248 +19,392 @@ import io.github.bktlib.command.annotation.Command;
 import io.github.bktlib.command.annotation.SubCommand;
 import io.github.bktlib.command.args.CommandArgs;
 
-@Command(
-	name = "eventozero",
-	aliases = "ez",
-	description = "...",
-	subCommands = "this::*"
-)
-public class EZCommand extends CommandBase {
-	
+@Command ( name = "eventozero", aliases = "ez", description = "General Command of EventoZero", subCommands = "this::*" )
+public final class EZCommand extends CommandBase
+{
+
+	/**
+	 * TODO: fazer sistema de paginação.
+	 */
 	@Override
-	public CommandResult onExecute(CommandSource src, CommandArgs args) {
-		
-		/*
-		 * TODO: adicionar sistema de paginas, pois sÃ£o muitos subcomandos
-		 */
-		
+	public CommandResult onExecute ( final CommandSource src, final CommandArgs args )
+	{
 		final boolean isConsole = src.isConsole();
-		
-		getSubCommands()
-			.stream()
-			.map( subCmd -> {
-				String st = String.format( "&2 &a/ez %s %s&2= %s",
-						subCmd.getName(), 
-						subCmd.getUsage().orElse(" "), 
-						subCmd.getDescription().orElse("Sem descriÃ§Ã£o")
-				);
-				
-				//if ( isConsole )
+		this.getSubCommands().stream().map( subCmd ->
+		{
+			String st = String.format( "§6• §9/ez %s %s §f= §6%s", subCmd.getName(), subCmd.getUsage().orElse( " " ), subCmd.getDescription().orElse( "Sem descrição" ) );
+			if ( isConsole )
+			{
+				st = CharMatcher.ASCII.negate().removeFrom( st );
+			}
+
+			return st;
+		} ).forEach( src::sendMessage );
+
+		return CommandResult.success();
+	}
+
+	@SubCommand ( name = "iniciar", aliases = { "start", "init", "começar", "play" }, usage = "<evento>", description = "Iniciar um evento manualmente" )
+	private CommandResult iniciar ( final CommandSource src, final CommandArgs args )
+	{
+		if ( args.size() == 1 )
+		{
+			final String name = Framework.normalize( args.get( 0 ).toLowerCase() );
+			final Optional< Event > event = EventoZero.getEventHandler().getEventByName( name );
+			if ( event.isPresent() )
+			{
+				if ( event.get().getState() == EventState.CLOSED ) // TODO: verificar se esse 'CLOSED' esta dentro da minha logica
 				{
-					st = CharMatcher.ASCII.negate().removeFrom(st);
+					event.get().start();
+					return CommandResult.success();
 				}
-				
-				return st;
-			})
-			.forEach(src::sendMessage);
-		
+				else
+				{
+					return CommandResult.success();
+				}
+			}
+			else
+			{
+				MessageHandler.EVENTO_NAO_ENCONTRADO.send( src.toCommandSender() );
+				return CommandResult.success();
+			}
+		}
+		else
+		{
+			final String s = String.format( "§9Utilize o comando §f/ez %s %s §9para §6%s§9.", "iniciar", "<evento>", "iniciar um evento manualmente" );
+			src.sendMessage( s );
+			return CommandResult.success();
+		}
+	}
+
+	@SubCommand ( name = "cancelar", aliases = { "cancel", "stop", "forcestop", "forcecancel" }, usage = "<evento>", description = "Cancela um evento ocorrendo" )
+	private CommandResult cancelar ( final CommandSource src, final CommandArgs args )
+	{
+		if ( args.size() == 1 )
+		{
+			final String name = Framework.normalize( args.get( 0 ).toLowerCase() );
+			final Optional< Event > event = EventoZero.getEventHandler().getEventByName( name );
+			if ( event.isPresent() )
+			{
+				if ( event.get().getState() != EventState.CLOSED ) // TODO: verificar se esse 'CLOSED' esta dentro da minha logica
+				{
+					event.get().stop();
+					return CommandResult.success();
+				}
+				else
+				{
+					return CommandResult.success();
+				}
+			}
+			else
+			{
+				MessageHandler.EVENTO_NAO_ENCONTRADO.send( src.toCommandSender() );
+				return CommandResult.success();
+			}
+		}
+		else
+		{
+			final String s = String.format( "§9Utilize o comando §f/ez %s %s §9para §6%s§9.", "cancelar", "<evento>", "cancelar um evento ocorrendo" );
+			src.sendMessage( s );
+			return CommandResult.success();
+		}
+	}
+
+	@SubCommand ( name = "addentrada", aliases = { "addentry", "nextentry", "nextentrada", "nexten", "putentry" }, description = "Adiciona uma nova entrada" )
+	private CommandResult addentrada ( final CommandSource src, final CommandArgs args )
+	{
+		if ( src.isConsole() )
+		{
+			src.sendMessage( "This command hasn't support at console." );
+			return CommandResult.success();
+		}
+
+		if ( args.size() == 1 )
+		{
+			final String name = Framework.normalize( args.get( 0 ).toLowerCase() );
+			final Optional< Event > event = EventoZero.getEventHandler().getEventByName( name );
+			if ( event.isPresent() )
+			{
+				if ( event.get().getState() == EventState.CLOSED ) // TODO: verificar se esse 'CLOSED' esta dentro da minha logica
+				{
+					final Location pos = ( ( Player ) src.toCommandSender() ).getLocation();
+					event.get().addEntrada( pos );
+					// TODO: entrada adicionada com ID!!!!
+					src.sendMessage( String.format( "§9%s: §f%s§9, %s: §f%s§9, %s: §f%s§9, %s: §f%s", "X", "World", pos.getWorld().getName(), pos.getBlockX(), "Y", pos.getBlockY(), "Z", pos.getBlockZ() ) );
+					return CommandResult.success();
+				}
+				else
+				{
+					// TODO: edições não são permitidas com o evento rodando
+					return CommandResult.success();
+				}
+			}
+			else
+			{
+				MessageHandler.EVENTO_NAO_ENCONTRADO.send( src.toCommandSender() );
+				return CommandResult.success();
+			}
+		}
+		else
+		{
+			final String s = String.format( "§9Utilize o comando §f/ez %s %s §9para §6%s§9.", "addentrada", "<evento>", "adicionar uma nova entrada" );
+			src.sendMessage( s );
+			return CommandResult.success();
+		}
+	}
+
+	@SubCommand ( name = "delentrada", aliases = { "deleteentrada", "rementrada", "removeentrada", "rementry", "deleteentry" }, usage = "entrada <evento> <id> ", description = "Remove uma entrada" )
+	private CommandResult del ( final CommandSource src, final CommandArgs args )
+	{
+		if ( args.size() == 2 )
+		{
+			final String name = Framework.normalize( args.get( 0 ).toLowerCase() );
+			final Optional< Event > event = EventoZero.getEventHandler().getEventByName( name );
+			if ( event.isPresent() )
+			{
+				try
+				{
+					final int id = Integer.parseInt( args.get( 1 ) );
+					final Event e = event.get();
+					if ( e.getEntradas().get( id ) != null )
+					{
+						e.getEntradas().remove( id );
+						src.sendMessage( "§9Entrada removida com sucesso." );
+						return CommandResult.success();
+					}
+					else
+					{
+						src.sendMessage( "§cNão existe nenhuma entrada com este ID. Considere listar as entradas usando /ez entradas <evento>." );
+						return CommandResult.success();
+					}
+				}
+				catch ( final NumberFormatException nfe )
+				{
+					src.sendMessage( "§cO ID precisa ser um número." );
+					return CommandResult.success();
+				}
+			}
+			else
+			{
+				MessageHandler.EVENTO_NAO_ENCONTRADO.send( src.toCommandSender() );
+				return CommandResult.success();
+			}
+		}
+		else
+		{
+			final String s = String.format( "§9Utilize o comando §f/ez %s %s §9para §6%s§9.", "delentrada", "<evento> <id>", "remover uma posição de entrada" );
+			src.sendMessage( s );
+			return CommandResult.success();
+		}
+	}
+
+	@SubCommand ( name = "entradas", aliases = { "entrys", "listentry", "getentradas", "getentrys", "startposes" }, usage = "<evento>", description = "Obtém as entradas e suas IDs" )
+	private CommandResult entradas ( final CommandSource src, final CommandArgs args )
+	{
+		if ( args.size() == 1 )
+		{
+			final String name = Framework.normalize( args.get( 0 ).toLowerCase() );
+			final Optional< Event > event = EventoZero.getEventHandler().getEventByName( name );
+			if ( event.isPresent() )
+			{
+				if ( event.get().getEntradas().size() != 0 )
+				{
+					src.sendMessage( "§9Entradas disponívels:" );
+					for ( int i = 0; i < event.get().getEntradas().size(); i ++ )
+					{
+						final Optional< Location > pos0 = Optional.of( event.get().getEntradas().get( i ) );
+						if ( pos0.isPresent() && ( pos0.get().getWorld() != null ) && ( Bukkit.getWorld( pos0.get().getWorld().getName() ) != null ) )
+						{
+							final Location pos = pos0.get();
+							src.sendMessage( String.format( "§9ID §f= §6%s §f» §9%s: §f%s§9, %s: §f%s§9, %s: §f%s§9, %s: §f%s", "X", "World", i, pos.getWorld().getName(), pos.getBlockX(), "Y", pos.getBlockY(), "Z", pos.getBlockZ() ) );
+							continue;
+						}
+						else
+						{
+							event.get().getEntradas().remove( i ); // remove caso a entrada esteja bugada (mundo nao existe mais, ou Location é nulo)
+							continue;
+						}
+					}
+
+					return CommandResult.success();
+				}
+				else
+				{
+					src.sendMessage( "§cNenhuma entrada definida para o evento." );
+					return CommandResult.success();
+				}
+			}
+			else
+			{
+				MessageHandler.EVENTO_NAO_ENCONTRADO.send( src.toCommandSender() );
+				return CommandResult.success();
+			}
+		}
+		else
+		{
+			final String s = String.format( "§9Utilize o comando §f/ez %s %s §9para §6%s§9.", "entradas", "<evento>", "listar entradas existentes" );
+			src.sendMessage( s );
+			return CommandResult.success();
+		}
+	}
+
+	@SubCommand ( name = "addcamarote", aliases = { "newcamarote", "ncam", "addcam", "setcamarote" }, usage = "<evento> ", description = "Adiciona um novo camarote" )
+	private CommandResult camarote ( final CommandSource src, final CommandArgs args )
+	{
+		if ( ( args.size() > 0 ) && ( args.size() < 3 ) )
+		{
+			final String name = Framework.normalize( args.get( 0 ).toLowerCase() );
+			final Optional< Event > event = EventoZero.getEventHandler().getEventByName( name );
+			if ( event.isPresent() )
+			{
+				String camarote = "{default}";
+				if ( args.size() == 2 )
+				{
+					camarote = Framework.normalize( args.get( 1 ).toLowerCase() );
+				}
+
+				final Event e = event.get();
+				e.getCamarotes().put( camarote, ( ( Player ) src.toCommandSender() ).getLocation() );
+				if ( e.getCamarotes().containsKey( camarote ) )
+				{
+					if ( camarote.equals( "{default}" ) )
+					{
+						src.sendMessage( "§9O camarote padrão foi atualizado." );
+					}
+					else
+					{
+						src.sendMessage( "§9O camarote §f" + camarote + "§9 foi atualizado." );
+					}
+
+					return CommandResult.success();
+				}
+				else
+				{
+					if ( camarote.equals( "{default}" ) )
+					{
+						src.sendMessage( "§9O camarote padrão foi definido." );
+					}
+					else
+					{
+						src.sendMessage( "§9O camarote §f" + camarote + "§9 foi definido." );
+					}
+
+					return CommandResult.success();
+				}
+			}
+			else
+			{
+				MessageHandler.EVENTO_NAO_ENCONTRADO.send( src.toCommandSender() );
+				return CommandResult.success();
+			}
+		}
+		else
+		{
+			final String s = String.format( "§9Utilize o comando §f/ez %s %s §9para §6%s§9.", "addcamarote", "<evento> <nome>", "listar entradas existentes" );
+			src.sendMessage( s );
+			return CommandResult.success();
+		}
+	}
+
+	@SubCommand ( name = "pvp", usage = "<evento> <allowdeny> ", description = "Define o status de pvp" )
+	private CommandResult pvp ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "iniciar", 
-		usage = "<evento> ", 
-		description = "Iniciar um evento manualmente"
-	)
-	private CommandResult iniciar(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "mc", usage = "<evento> <allowdeny> ", description = "Bloqueia ou permite MC" )
+	private CommandResult mc ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "cancelar", 
-		usage = "<evento> ", 
-		description = "Cancela um evento ocorrendo"
-	)
-	private CommandResult cancelar(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "tools", usage = "", description = "Abre a caixa de ferramentas do eventozero" )
+	private CommandResult tools ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "add", 
-		usage = "entrada <evento> ", 
-		description = "Adiciona uma nova entrada"
-	)
-	private CommandResult add(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "cmd", usage = "", description = "comandos" )
+	private CommandResult cmd ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "del", 
-		usage = "entrada <evento> <id> ", 
-		description = "Remove uma entrada"
-	)
-	private CommandResult del(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "potion", usage = "", description = "poções" )
+	private CommandResult potion ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "entradas", 
-		usage = "<evento> ", 
-		description = "ObtÃ©m as entradas e suas IDs"
-	)
-	private CommandResult entradas(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "kit", usage = "", description = "kits" )
+	private CommandResult kit ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "camarote", 
-		usage = "<evento> ", 
-		description = "Adiciona um novo camarote"
-	)
-	private CommandResult camarote(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "party", usage = "", description = "party" )
+	private CommandResult party ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "pvp", 
-		usage = "<evento> <allowdeny> ", 
-		description = "Define o status de pvp"
-	)
-	private CommandResult pvp(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "max", usage = "<evento> <quantia> ", description = "Define o número máximo de jogadores (autoinicia)" )
+	private CommandResult max ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "mc", 
-		usage = "<evento> <allowdeny> ", 
-		description = "Bloqueia ou permite MC"
-	)
-	private CommandResult mc(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "min", usage = "<evento> <quantia> ", description = "Define o número mínimo de jogadores para poder iniciar o evento" )
+	private CommandResult min ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "tools", 
-		usage = "", 
-		description = "Abre a caixa de ferramentas do eventozero"
-	)
-	private CommandResult tools(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "autostop", usage = "<evento> <tempo> ", description = "Define o tempo para terminar o evento se não houver ganhadores." )
+	private CommandResult autostop ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "cmd", 
-		usage = "", 
-		description = "comandos"
-	)
-	private CommandResult cmd(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "setengine", usage = "<evento> <arquivo.sc> ", description = "Definir uma engine para um evento" )
+	private CommandResult setengine ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "potion", 
-		usage = "", 
-		description = "poÃ§Ãµes"
-	)
-	private CommandResult potion(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "placements", usage = "<evento> <quantia> ", description = "Define o limite de colocações" )
+	private CommandResult placements ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "kit", 
-		usage = "", 
-		description = "kits"
-	)
-	private CommandResult kit(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "points", usage = "", description = "pontos" )
+	private CommandResult points ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "party", 
-		usage = "", 
-		description = "party"
-	)
-	private CommandResult party(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "updates", usage = "", description = "Apenas verifica se há novos updates" )
+	private CommandResult updates ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "max", 
-		usage = "<evento> <quantia> ", 
-		description = "Define o nÃºmero mÃ¡ximo de jogadores (autoinicia)"
-	)
-	private CommandResult max(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "upgrade", usage = "", description = "Verifica e aplica o update automaticamente se existir" )
+	private CommandResult upgrade ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "min", 
-		usage = "<evento> <quantia> ", 
-		description = "Define o nÃºmero mÃ­nimo de jogadores para poder iniciar o evento"
-	)
-	private CommandResult min(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "reload", usage = "", description = "Faz reload completo no plugin" )
+	private CommandResult reload ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 
-	@SubCommand(
-		name = "autostop", 
-		usage = "<evento> <tempo> ", 
-		description = "Define o tempo para terminar o evento se nÃ£o houver ganhadores."
-	)
-	private CommandResult autostop(final CommandSource src, final CommandArgs args) {
-		return CommandResult.success();
-	}
-
-	@SubCommand(
-		name = "setengine", 
-		usage = "<evento> <arquivo.sc> ", 
-		description = "Definir uma engine para um evento"
-	)
-	private CommandResult setengine(final CommandSource src, final CommandArgs args) {
-		return CommandResult.success();
-	}
-
-	@SubCommand(
-		name = "placements", 
-		usage = "<evento> <quantia> ", 
-		description = "Define o limite de colocaÃ§Ãµes"
-	)
-	private CommandResult placements(final CommandSource src, final CommandArgs args) {
-		return CommandResult.success();
-	}
-
-	@SubCommand(
-		name = "points", 
-		usage = "", 
-		description = "pontos"
-	)
-	private CommandResult points(final CommandSource src, final CommandArgs args) {
-		return CommandResult.success();
-	}
-
-	@SubCommand(
-		name = "updates", 
-		usage = "", 
-		description = "Apenas verifica se hÃ¡ novos updates"
-	)
-	private CommandResult updates(final CommandSource src, final CommandArgs args) {
-		return CommandResult.success();
-	}
-
-	@SubCommand(
-		name = "upgrade", 
-		usage = "", 
-		description = "Verifica e aplica o update automaticamente se existir"
-	)
-	private CommandResult upgrade(final CommandSource src, final CommandArgs args) {
-		return CommandResult.success();
-	}
-
-	@SubCommand(
-		name = "reload", 
-		usage = "", 
-		description = "Faz reload completo no plugin"
-	)
-	private CommandResult reload(final CommandSource src, final CommandArgs args) {
-		return CommandResult.success();
-	}
-
-	@SubCommand(
-		name = "disable", 
-		usage = "", 
-		description = "Desativa o plugin completamente"
-	)
-	private CommandResult disable(final CommandSource src, final CommandArgs args) {
+	@SubCommand ( name = "disable", usage = "", description = "Desativa o plugin completamente" )
+	private CommandResult disable ( final CommandSource src, final CommandArgs args )
+	{
 		return CommandResult.success();
 	}
 }

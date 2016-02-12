@@ -35,59 +35,59 @@ import br.com.blackhubos.eventozero.util.Framework.Configuration;
 public enum MessageHandler
 {
 
-	JA_PARTICIPANDO("JA_PARTICIPANDO", "§7Você já está participando de um evento."),
-	EVENTO_ESPECIAL("EVENTO_ESPECIAL", "§7Este é um evento especial, você não tem permissão para participar dele."),
-	SEM_PERMISSAO("SEM_PERMISSÃO", "&7Você não está autorizado a fazer isto."),
-	EVENTO_ENTROU("EVENTO_ENTROU", "§7Você entrou no eveto {evento}!"),
-	ANUNCIOS_ABERTO("ANUNCIOS_ABERTO", "&7Evento {evento} está aberto, participe!"),
-	ANUNCIOS_INICIADO("ANUNCIOS_INICIADO", "§7O evento {evento} está iniciando agora!"),
-	ANUNCIOS_FINALIZADO_COM_UM_VENCEDOR("ANUNCIOS_FINALIZADO_COM_UM_VENCEDOR", "&7Evento {player} terminou!"),
-	ANUNCIOS_VITORIA_POR_COLOCADO("ANUNCIOS_VITORIA_POR_COLOCADO", "&7O jogador {player} ganhou no evento {evento} e ficou no {posicao}° lugar."),
-	ANUNCIOS_FINALIZADO_COM_COLOCACAO("ANUNCIOS_FINALIZADO_COM_COLOCACAO", "&7O evento {evento} foi finalizado. Vencedores: {vencedores}"),
-	ANUNCIOS_CANCELADO_POR_ADMIN("ANUNCIOS_CANCELADO_POR_ADMIN", "&cEvento {player} cancelado por um admin!"),
-	ANUNCIOS_CANCELADO_SEM_PLAYERS("ANUNCIOS_CANCELADO_SEM_PLAYERS", "&cEvento {evento} cancelado devido a falta de jogadores!"),
-	EVENTO_NAO_ENCONTRADO("EVENTO_NÃO_ENCONTRADO", "§7O evento {evento} não existe!");
+	JA_PARTICIPANDO( "JA_PARTICIPANDO", "§7Voc� j� est� participando de um evento." ),
+	EVENTO_ESPECIAL( "EVENTO_ESPECIAL", "§7Este é um evento especial, voc� n�o tem permiss�o para participar dele." ),
+	SEM_PERMISSAO( "SEM_PERMISS�O", "&7Voc� n�o est� autorizado a fazer isto." ),
+	EVENTO_ENTROU( "EVENTO_ENTROU", "§7Voc� entrou no eveto {evento}!" ),
+	ANUNCIOS_ABERTO( "ANUNCIOS_ABERTO", "&7Evento {evento} est� aberto, participe!" ),
+	ANUNCIOS_INICIADO( "ANUNCIOS_INICIADO", "§7O evento {evento} est� iniciando agora!" ),
+	ANUNCIOS_FINALIZADO_COM_UM_VENCEDOR( "ANUNCIOS_FINALIZADO_COM_UM_VENCEDOR", "&7Evento {player} terminou!" ),
+	ANUNCIOS_VITORIA_POR_COLOCADO( "ANUNCIOS_VITORIA_POR_COLOCADO", "&7O jogador {player} ganhou no evento {evento} e ficou no {posicao}° lugar." ),
+	ANUNCIOS_FINALIZADO_COM_COLOCACAO( "ANUNCIOS_FINALIZADO_COM_COLOCACAO", "&7O evento {evento} foi finalizado. Vencedores: {vencedores}" ),
+	ANUNCIOS_CANCELADO_POR_ADMIN( "ANUNCIOS_CANCELADO_POR_ADMIN", "&cEvento {player} cancelado por um admin!" ),
+	ANUNCIOS_CANCELADO_SEM_PLAYERS( "ANUNCIOS_CANCELADO_SEM_PLAYERS", "&cEvento {evento} cancelado devido a falta de jogadores!" ),
+	EVENTO_NAO_ENCONTRADO( "EVENTO_N�O_ENCONTRADO", "�7O evento {evento} n�o existe!" );
 
 	private String key, padrao;
 
-	private MessageHandler(final String key, final String padrao)
+	private MessageHandler ( final String key, final String padrao )
 	{
 		this.key = key;
 		this.padrao = padrao;
 	}
 
-	public String getKey()
+	public String getKey ()
 	{
 
 		return this.key;
 	}
 
-	public String getDefault()
+	public String getDefault ()
 	{
 		return this.padrao;
 	}
 
-	public void send(final CommandSender player, final String... replacements)
+	public void send ( final CommandSender player, final String... replacements )
 	{
-		this.send(new CommandSender[] { player }, replacements);
+		this.send( new CommandSender [ ] { player }, replacements );
 	}
 
-	public void send(final CommandSender[] players, final String... replacements)
+	public void send ( final CommandSender [] players, final String... replacements )
 	{
-		final MessageRecipient msgRecip = new MessageRecipient(this.getKey());
+		final MessageRecipient msgRecip = new MessageRecipient( this.getKey() );
 
-		for (final CommandSender player : players)
+		for ( final CommandSender player : players )
 		{
-			msgRecip.sendMessage(player, replacements);
+			msgRecip.sendMessage( player, replacements );
 		}
 	}
 
-	public MessageRecipient getRecipient()
+	public MessageRecipient getRecipient ()
 	{
-		return new MessageRecipient(this.getKey());
+		return new MessageRecipient( this.getKey() );
 	}
 
-	public static void loadMessages(final Configuration file)
+	public static void loadMessages ( final Configuration file )
 	{
 		MessageRecipient.flatfile = file;
 	}
@@ -99,14 +99,14 @@ public enum MessageHandler
 		private static final long serialVersionUID = 2951277980455897571L;
 		private String key;
 		private String string;
-		private ConcurrentHashMap<String, String> replacements;
+		private ConcurrentHashMap< String, String > replacements;
 
 		/**
 		 * Constrói primariamente o recipiente da mensagem.
 		 *
-		 * @param key A key é a usada na config. Se não existe, coloque null.
+		 * @param key A key é a usada na config. Se n�o existe, coloque null.
 		 */
-		public MessageRecipient(final String key)
+		public MessageRecipient ( final String key )
 		{
 			this.key = key;
 			this.string = "";
@@ -116,42 +116,42 @@ public enum MessageHandler
 		 * Envia a mensagem para um jogador e/ou console. CommandSender é compatível com Console.
 		 *
 		 * @param player O jogador e/ou console para enviar a mensagem.
-		 * @param replacements Caso não tenha usado o método replacements(String...), poderá usar aqui. É opcional.
+		 * @param replacements Caso n�o tenha usado o método replacements(String...), poder� usar aqui. É opcional.
 		 */
-		public void sendMessage(final CommandSender player, final String... replacements)
+		public void sendMessage ( final CommandSender player, final String... replacements )
 		{
-			this.replacements(replacements);
-			final Vector<String> prepared = this.getText();
-			for (String line : prepared)
+			this.replacements( replacements );
+			final Vector< String > prepared = this.getText();
+			for ( String line : prepared )
 			{
-				if (!(player instanceof Player))
+				if ( ! ( player instanceof Player ) )
 				{
-					line = CharMatcher.ASCII.negate().removeFrom(line);
+					line = CharMatcher.ASCII.negate().removeFrom( line );
 				}
-				player.sendMessage(line);
+				player.sendMessage( line );
 			}
 		}
 
 		/**
-		 * Caso alguma variável esteja nula ou incorreta, este método corrige para evitar possíveis casos errôneos.
+		 * Caso alguma vari�vel esteja nula ou incorreta, este método corrige para evitar possíveis casos errôneos.
 		 *
 		 * @return Retorna o {@link MessageRecipient} preparado.
 		 */
-		public MessageRecipient build()
+		public MessageRecipient build ()
 		{
-			if ((this.string == null) || this.string.isEmpty())
+			if ( ( this.string == null ) || this.string.isEmpty() )
 			{
 				this.string = "Default message not defined";
 			}
 
-			if ((this.key == null) || this.key.isEmpty())
+			if ( ( this.key == null ) || this.key.isEmpty() )
 			{
 				this.key = "null";
 			}
 
-			if (this.replacements == null)
+			if ( this.replacements == null )
 			{
-				this.replacements = new ConcurrentHashMap<String, String>();
+				this.replacements = new ConcurrentHashMap< String, String >();
 			}
 
 			return this;
@@ -163,87 +163,87 @@ public enum MessageHandler
 		 *
 		 * @return Retorna uma {@link String} pronta para ser enviada.
 		 */
-		public Vector<String> getText()
+		public Vector< String > getText ()
 		{
-			final boolean exists = (((this.key != null) && !this.key.isEmpty() && (MessageRecipient.flatfile != null) && MessageRecipient.flatfile.contains(this.key)));
-			final Vector<String> messages = new Vector<String>();
-			if (exists)
+			final boolean exists = ( ( ( this.key != null ) && ! this.key.isEmpty() && ( MessageRecipient.flatfile != null ) && MessageRecipient.flatfile.contains( this.key ) ) );
+			final Vector< String > messages = new Vector< String >();
+			if ( exists )
 			{
-				if (MessageRecipient.flatfile.isList(this.key))
+				if ( MessageRecipient.flatfile.isList( this.key ) )
 				{
 					try
 					{
-						for (final String line : MessageRecipient.flatfile.getStringList(this.key))
+						for ( final String line : MessageRecipient.flatfile.getStringList( this.key ) )
 						{
-							messages.add(line);
+							messages.add( line );
 						}
 					}
-					catch (final Exception e)
+					catch ( final Exception e )
 					{
-						messages.add(MessageRecipient.flatfile.getString(this.key));
+						messages.add( MessageRecipient.flatfile.getString( this.key ) );
 					}
 				}
 				else
 				{
-					messages.add(MessageRecipient.flatfile.getString(this.key));
+					messages.add( MessageRecipient.flatfile.getString( this.key ) );
 				}
 			}
 			else
 			{
-				messages.add(this.string);
+				messages.add( this.string );
 			}
 
-			for (int i = 0; i < messages.size(); i++)
+			for ( int i = 0; i < messages.size(); i ++ )
 			{
-				String text = messages.get(i);
-				for (final Entry<String, String> kv : this.replacements.entrySet())
+				String text = messages.get( i );
+				for ( final Entry< String, String > kv : this.replacements.entrySet() )
 				{
-					text = text.replace(kv.getKey(), kv.getValue());
+					text = text.replace( kv.getKey(), kv.getValue() );
 				}
-				messages.set(i, ChatColor.translateAlternateColorCodes('&', text));
+				messages.set( i, ChatColor.translateAlternateColorCodes( '&', text ) );
 			}
 
 			return messages;
 		}
 
 		/**
-		 * Prepara a mensagem padrão definida pelo sistema para essa mensagem, caso não haja na config, essa geralmente é usada. Esse processo colore a mensagem.
+		 * Prepara a mensagem padr�o definida pelo sistema para essa mensagem, caso n�o haja na config, essa geralmente é usada. Esse processo colore a mensagem.
 		 *
-		 * @return Retorna uma {@link String} que representa uma mensagem padrão para a key.
+		 * @return Retorna uma {@link String} que representa uma mensagem padr�o para a key.
 		 */
-		public String defaultValue()
+		public String defaultValue ()
 		{
-			return ChatColor.translateAlternateColorCodes('&', this.string);
+			return ChatColor.translateAlternateColorCodes( '&', this.string );
 		}
 
 		/**
-		 * Este método serve para por os replacements PADRÕES da mensagem. O formato é <code>key:valor</code>, note que você pode e tem liberdade para usar : durante a
-		 * formatação. Nós apenas capturamos o PRIMEIRO :, os demais são ignorados.
+		 * Este método serve para por os replacements PADRÕES da mensagem. O formato é <code>key:valor</code>, note que voc� pode e tem liberdade para usar : durante a
+		 * formataç�o. Nós apenas capturamos o PRIMEIRO :, os demais s�o ignorados.
 		 *
 		 * @param replaces As {@link String}s para fazer o replace, no formato citado acima.
 		 * @return Retorna a {@link MessageRecipient} agora com os replaces escolhidos.
 		 */
-		public MessageRecipient replacements(final String... replaces)
+		public MessageRecipient replacements ( final String... replaces )
 		{
 			this.replacements.clear();
-			for (final String index : replaces)
+			for ( final String index : replaces )
 			{
-				final int i = index.indexOf(":");
-				final String key = index.substring(0, i - 1);
-				final String value = index.substring(i + 1, index.length());
-				this.replacements.put(key, value);
+				final int i = index.indexOf( ":" );
+				final String key = index.substring( 0, i - 1 );
+				final String value = index.substring( i + 1, index.length() );
+				this.replacements.put( key, value );
 			}
 
 			return this;
 		}
 
 		/**
-		 * Define o valor padrão para esta key. Caso haja um problema, este texto será usado.
+		 * Define o valor padr�o para esta key. Caso haja um problema, este texto ser� usado.
 		 *
-		 * @param texto Valor padrão
-		 * @return Retorna o {@link MessageRecipient} agora com o valor padrão definido.
+		 * @param texto Valor padr�o
+		 * @return Retorna o {@link MessageRecipient} agora com o valor padr�o definido.
 		 */
-		public MessageRecipient defaultValue(final String texto)
+		public MessageRecipient defaultValue ( final String texto )
 		{
 			this.string = texto;
 			return this;
