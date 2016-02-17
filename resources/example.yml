@@ -90,6 +90,7 @@ teleport:
 times:
   1: '1 13:00'
   # 2: 'segunda 13:00' <-- ISTO ESTÁ __ERRADO__, dia precisa ser um número!
+
 # Cuboids (quantos você quiser).
 cuboids:
   qualquerNome:
