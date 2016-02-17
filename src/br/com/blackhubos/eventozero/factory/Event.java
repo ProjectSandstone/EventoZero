@@ -38,13 +38,12 @@ import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.ability.Ability;
 import br.com.blackhubos.eventozero.kit.Kit;
 import br.com.blackhubos.eventozero.party.Party;
+import br.com.blackhubos.eventozero.rewards.ChestReward;
 import br.com.blackhubos.eventozero.storage.Storage;
 import br.com.blackhubos.eventozero.util.Framework;
-import br.com.blackhubos.eventozero.util.Framework.Configuration;
-import br.com.blackhubos.eventozero.util.Framework.Cuboid;
+import br.com.blackhubos.eventozero.util.Framework.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 /**
  * TODO: arrumar index do setSign (todos 0) TODO: adicionar logs
@@ -65,6 +64,7 @@ public class Event {
     private final List<Party> partys;
     private final List<Ability> abilitys;
     private final List<Cuboid> cuboids;
+    private final List<ChestReward> chestRewards;
     private final List<Location> locations;
     private final Map<String, Location> camarotes;
 
@@ -82,7 +82,8 @@ public class Event {
         this.partys = new Vector<>();
         this.abilitys = new Vector<>();
         this.data = new EventData();
-        this.cuboids = new Vector<Cuboid>();
+        this.cuboids = new Vector<>();
+        this.chestRewards = new Vector<>();
         this.locations = new Vector<>();
         this.camarotes = new HashMap<>();
     }
@@ -102,8 +103,12 @@ public class Event {
     }
 
     public EventFlags getFlags() {
-		return flags;
-	}
+	return this.flags;
+    }
+    
+    public List<ChestReward> getChestRewards() {
+        return this.chestRewards;
+    }
     
     /**
      *

@@ -30,8 +30,10 @@ import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.ability.Ability;
 import br.com.blackhubos.eventozero.exceptions.CuboidParsingException;
 import br.com.blackhubos.eventozero.handlers.AbilityHandler;
+import br.com.blackhubos.eventozero.rewards.ChestReward;
 import br.com.blackhubos.eventozero.util.Framework;
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 
 public final class EventFactory {
 
@@ -75,13 +77,23 @@ public final class EventFactory {
                         .updateData("teleport.lobby", EventFactory.parseList(configuration.getStringList("teleport.lobby")))
                         .updateData("teleport.spawn", EventFactory.parseList(configuration.getStringList("teleport.spawn")));
                 
-                for (final String key : configuration.getConfigurationSection("cuboids").getKeys(false)) {
-                    try {
-                        final String min = "cuboids." + key + ".min";
-                        final String max = "cuboids." + key + ".max";
-                        event.getData().updateData("cuboids." + key.toLowerCase() + ".min", min).updateData("cuboids." + key.toLowerCase() + ".max", max);
-                    } catch (final Exception e) {
-                        throw new CuboidParsingException(null, null, event, "failed to load event cuboid from method loadEvents(Plugin)", "processing and parsing min and max positions (maybe null or not defined correctly)");
+                ConfigurationSection sectionChest = configuration.getConfigurationSection("chests");
+                if(sectionChest != null) {
+                    for(final String key : sectionChest.getKeys(false)) {
+                        event.getChestRewards().add(new ChestReward(configuration.getString("chests." + key + ".location"), configuration.getStringList("chests." + key + ".inventory"), configuration.getBoolean("chests." + key + ".replaceOtherItems")));
+                    }
+                }
+                
+                ConfigurationSection sectionCuboids = configuration.getConfigurationSection("cuboids");
+                if(sectionCuboids != null) {
+                    for (final String key : sectionCuboids.getKeys(false)) {
+                        try {
+                            final String min = "cuboids." + key + ".min";
+                            final String max = "cuboids." + key + ".max";
+                            event.getData().updateData("cuboids." + key.toLowerCase() + ".min", min).updateData("cuboids." + key.toLowerCase() + ".max", max);
+                        } catch (final Exception e) {
+                            throw new CuboidParsingException(null, null, event, "failed to load event cuboid from method loadEvents(Plugin)", "processing and parsing min and max positions (maybe null or not defined correctly)");
+                        }
                     }
                 }
 
