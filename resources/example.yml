@@ -95,3 +95,18 @@ cuboids:
   qualquerNome:
     min: 'Mundo [world] X [1] Y [5] Z [-12]'
     max: 'Mundo [world] X [5] Y [5] Z [12]'
+
+chests:
+ #Aqui é nome do bau, pode por qualquer nome, não faz diferença.
+ example:
+  #Aqui será localização do bau
+  #World = Mundo
+  #10 10 10 = x, y, z
+  location: world 10 10 10
+  #Se colocar true ele irá resetar o bau e repor os item definido em "inventory" sendo assim se tiver items no bau eles desapareceram
+  #Se colocar false ele irá apenas adicionar os item definido em "inventory" sendo assim se tiver items no bau eles continuarão lá.
+  replaceOtherItems: false
+  #Aqui é os item que serão colocado no bau apos finalizar o evento
+  inventory:
+  - "item(311) amount(1) name('&5Armor') enchantments(sharpness,5 unbreaking,3) lore('linha 1', 'linha 2')"
+  - "item(311) amount(1) name('&5Armor') enchantments(sharpness,5 unbreaking,3) lore('linha 1', 'linha 2')"
