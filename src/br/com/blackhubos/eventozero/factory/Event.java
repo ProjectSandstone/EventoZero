@@ -539,6 +539,6 @@ public class Event {
     		return null;
     	}
     	
-    	return locations.get(random.nextInt(locations.size()));
+    	return locations.get(random.nextInt(locations.size() - 1));
     }
 }
