@@ -24,6 +24,7 @@ import br.com.blackhubos.eventozero.factory.Event;
 import br.com.blackhubos.eventozero.factory.EventFlags;
 import br.com.blackhubos.eventozero.factory.EventState;
 import java.util.Optional;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,6 +34,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -51,12 +53,6 @@ public final class EventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void whenPlayerLeft(final PlayerQuitEvent event) {
-        final Player sender = event.getPlayer();
-        quitPlayer(sender);
-    }
-    
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void whenPlayerKick(final PlayerKickEvent event) {
         final Player sender = event.getPlayer();
         quitPlayer(sender);
     }
@@ -132,7 +128,13 @@ public final class EventListener implements Listener {
             Optional<Event> optional = eventHandler.getEventByName(event.getLine(0));
             if(optional.isPresent()) {
                 Event eventz = optional.get();
-                eventz.get
+                eventz.getSignsLocation().add(event.getBlock().getLocation());
+                Bukkit.getScheduler().runTaskLater(EventoZero.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        eventz.updateSigns();
+                    }
+                }, 20);
             }
         }
     }
@@ -149,13 +151,24 @@ public final class EventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void whenDamaged(final EntityDamageByEntityEvent event) {
-        final Optional<Event> event1;
         final Entity damaged = event.getEntity();
         final Entity damager = event.getDamager();
-        if (damager instanceof Player) {
-            event1 = EventoZero.getEventHandler().getEventByPlayer((Player) damager);
-            if (event1.isPresent() && event1.get().hasPlayerJoined((Player) damaged)) {
-
+        if ((event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)) && (damager instanceof Player)) {
+            Optional<Event> optional = EventoZero.getEventHandler().getEventByPlayer((Player) damaged);
+            if (optional.isPresent() && optional.get().hasPlayerJoined((Player) damager)) {
+                Event eventz = optional.get();
+                if(eventz.getFlags().hasFlag(EventFlags.Flag.DISABLE_PVP)) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+        if(!(event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)) && !(damager instanceof Player)) {
+            Optional<Event> optional = EventoZero.getEventHandler().getEventByPlayer((Player) damaged);
+            if (optional.isPresent()) {
+                Event eventz = optional.get();
+                if(eventz.getFlags().hasFlag(EventFlags.Flag.DISABLE_DAMAGE)) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
@@ -192,8 +205,7 @@ public final class EventListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void whenKicked(final PlayerKickEvent event) {
         final Player sender = event.getPlayer();
-        final Optional<Event> event1 = EventoZero.getEventHandler().getEventByPlayer(sender);
-        event1.ifPresent(e -> e.playerQuit(sender));
+        quitPlayer(sender);
     }
     
     private void quitPlayer(Player sender) {
@@ -205,7 +217,7 @@ public final class EventListener implements Listener {
                 eventz.playerQuit(sender);
                 for (Player player : eventz.getPlayersRemaining()) {
 
-                    // PREMIAR, porém saber qual será o premio, por causa das colocações..
+                    // CRAZY: PREMIAR, porém saber qual será o premio, por causa das colocações.. ESTOU CONFUSO
                     eventz.playerQuit(player);
                 }
             } else {
