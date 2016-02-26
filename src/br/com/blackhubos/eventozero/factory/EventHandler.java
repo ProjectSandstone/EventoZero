@@ -25,46 +25,72 @@ import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.entity.Player;
 
-public class EventHandler
-{
-	private final Set<Event> events;
+public class EventHandler {
 
-	public EventHandler()
-	{
-		this.events = new HashSet<>();
-	}
+    private final Set<Event> events;
 
-	public Optional<Event> getEventByName(final String name)
-	{
-		Preconditions.checkArgument(!Strings.isNullOrEmpty(name), 
-				"name cannot be null or empty");
-		
-		return getEvents()
-				.parallelStream()
-				.filter(e -> e.getName().equals(name))
-				.findAny();
-	}
+    public EventHandler() {
+        this.events = new HashSet<>();
+    }
 
-	public Optional<Event> getEventByPlayer(final Player player)
-	{
-		return getEvents()
-				.parallelStream()
-				.filter(e -> e.hasPlayerJoined(player))
-				.findAny();
-	}
+    public Optional<Event> getEventByName(final String name) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(name),
+                "name cannot be null or empty");
 
-	public Set<Event> getEvents()
-	{
-		return this.events;
+        return getEvents()
+                .parallelStream()
+                .filter(e -> e.getName().equals(name))
+                .findAny();
+    }
 
-	}
+    public Optional<Event> getEventByPlayer(final Player player) {
+        return getEvents()
+                .parallelStream()
+                .filter(e -> e.hasPlayerJoined(player))
+                .findAny();
+    }
 
-	public void loadEvent(final Event event)
-	{
-		Preconditions.checkNotNull(event, "Event is null");
-		this.events.add(event);
-	}
+    public Set<Event> getEvents() {
+        return this.events;
+
+    }
+
+    public List<Event> getEventsByState(EventState state) {
+        List<Event> a = new ArrayList<>();
+        for (Event e : events) {
+            if (e.getState().equals(state))
+                a.add(e);
+        }
+        return a;
+    }
+
+    public int getEventsSizeOpening() {
+        return getEventsByState(EventState.OPENED).size();
+    }
+
+    public int getEventsSizeClosed() {
+        return getEventsByState(EventState.CLOSED).size();
+    }
+
+    public int getEventsSizeOccuring() {
+        return getEventsByState(EventState.OCCURRING).size();
+    }
+
+    public int getEventsSizeEnding() {
+        return getEventsByState(EventState.ENDING).size();
+    }
+
+    public int getEventsSizePreStarted() {
+        return getEventsByState(EventState.PRESTARTED).size();
+    }
+
+    public void loadEvent(final Event event) {
+        Preconditions.checkNotNull(event, "Event is null");
+        this.events.add(event);
+    }
 }

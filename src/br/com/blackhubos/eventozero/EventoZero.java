@@ -36,6 +36,7 @@ import br.com.blackhubos.eventozero.exceptions.CuboidParsingException;
 import br.com.blackhubos.eventozero.factory.EventFactory;
 import br.com.blackhubos.eventozero.factory.EventHandler;
 import br.com.blackhubos.eventozero.factory.EventState;
+import br.com.blackhubos.eventozero.handlers.AnnouncementHandler;
 import br.com.blackhubos.eventozero.handlers.KitHandler;
 import br.com.blackhubos.eventozero.handlers.MessageHandler;
 import br.com.blackhubos.eventozero.handlers.ShopHandler;
@@ -68,6 +69,7 @@ public final class EventoZero extends JavaPlugin
 	private static ShopHandler shopHandler;
 	private static KitHandler kitHandler;
 	private static EventHandler eventHandler;
+        private static AnnouncementHandler announcementHandler;
 	private static EventoZero instance;
 	private static CommandManager commandManager;
 
@@ -307,5 +309,22 @@ public final class EventoZero extends JavaPlugin
 	{
 		return instance;
 	}
+        
+        public static boolean startAnnouncementHandler() {
+            if(announcementHandler == null) {
+                announcementHandler = new AnnouncementHandler();
+                return true;
+            }
+            return false;
+        }
+        
+        public static boolean closeAnnouncementHandler() {
+            if(announcementHandler != null) {
+                announcementHandler.destroy();
+                announcementHandler = null;
+                return true;
+            }
+            return false;
+        }
 
 }

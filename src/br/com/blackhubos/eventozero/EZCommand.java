@@ -25,7 +25,7 @@ public final class EZCommand extends CommandBase
 {
 
 	/**
-	 * TODO: fazer sistema de paginação.
+	 * TODO: fazer sistema de paginaï¿½ï¿½o.
 	 */
 	@Override
 	public CommandResult onExecute ( final CommandSource src, final CommandArgs args )
@@ -33,7 +33,7 @@ public final class EZCommand extends CommandBase
 		final boolean isConsole = src.isConsole();
 		this.getSubCommands().stream().map( subCmd ->
 		{
-			String st = String.format( "§6• §9/ez %s %s §f= §6%s", subCmd.getName(), subCmd.getUsage().orElse( " " ), subCmd.getDescription().orElse( "Sem descrição" ) );
+			String st = String.format( "ï¿½6ï¿½ ï¿½9/ez %s %s ï¿½f= ï¿½6%s", subCmd.getName(), subCmd.getUsage().orElse( " " ), subCmd.getDescription().orElse( "Sem descriï¿½ï¿½o" ) );
 			if ( isConsole )
 			{
 				st = CharMatcher.ASCII.negate().removeFrom( st );
@@ -45,7 +45,7 @@ public final class EZCommand extends CommandBase
 		return CommandResult.success();
 	}
 
-	@SubCommand ( name = "iniciar", aliases = { "start", "init", "começar", "play" }, usage = "<evento>", description = "Iniciar um evento manualmente" )
+	@SubCommand ( name = "iniciar", aliases = { "start", "init", "comeï¿½ar", "play" }, usage = "<evento>", description = "Iniciar um evento manualmente" )
 	private CommandResult iniciar ( final CommandSource src, final CommandArgs args )
 	{
 		if ( args.size() == 1 )
@@ -72,7 +72,7 @@ public final class EZCommand extends CommandBase
 		}
 		else
 		{
-			final String s = String.format( "§9Utilize o comando §f/ez %s %s §9para §6%s§9.", "iniciar", "<evento>", "iniciar um evento manualmente" );
+			final String s = String.format( "ï¿½9Utilize o comando ï¿½f/ez %s %s ï¿½9para ï¿½6%sï¿½9.", "iniciar", "<evento>", "iniciar um evento manualmente" );
 			src.sendMessage( s );
 			return CommandResult.success();
 		}
@@ -87,7 +87,7 @@ public final class EZCommand extends CommandBase
 			final Optional< Event > event = EventoZero.getEventHandler().getEventByName( name );
 			if ( event.isPresent() )
 			{
-				if ( event.get().getState() != EventState.CLOSED ) // TODO: verificar se esse 'CLOSED' esta dentro da minha logica
+				if ( event.get().getState() != EventState.CLOSED ) // TODO: verificar se esse 'CLOSED' esta dentro da minha logica #Crazy: CLOSED seria que jÃ¡ estÃ¡ terminado, foi finalizado ou NÃƒO ESTÃ ABERTO. OPEN estÃ¡ aberto
 				{
 					event.get().stop();
 					return CommandResult.success();
@@ -105,7 +105,7 @@ public final class EZCommand extends CommandBase
 		}
 		else
 		{
-			final String s = String.format( "§9Utilize o comando §f/ez %s %s §9para §6%s§9.", "cancelar", "<evento>", "cancelar um evento ocorrendo" );
+			final String s = String.format( "ï¿½9Utilize o comando ï¿½f/ez %s %s ï¿½9para ï¿½6%sï¿½9.", "cancelar", "<evento>", "cancelar um evento ocorrendo" );
 			src.sendMessage( s );
 			return CommandResult.success();
 		}
@@ -131,12 +131,12 @@ public final class EZCommand extends CommandBase
 					final Location pos = ( ( Player ) src.toCommandSender() ).getLocation();
 					event.get().addEntrada( pos );
 					// TODO: entrada adicionada com ID!!!!
-					src.sendMessage( String.format( "§9%s: §f%s§9, %s: §f%s§9, %s: §f%s§9, %s: §f%s", "X", "World", pos.getWorld().getName(), pos.getBlockX(), "Y", pos.getBlockY(), "Z", pos.getBlockZ() ) );
+					src.sendMessage( String.format( "ï¿½9%s: ï¿½f%sï¿½9, %s: ï¿½f%sï¿½9, %s: ï¿½f%sï¿½9, %s: ï¿½f%s", "X", "World", pos.getWorld().getName(), pos.getBlockX(), "Y", pos.getBlockY(), "Z", pos.getBlockZ() ) );
 					return CommandResult.success();
 				}
 				else
 				{
-					// TODO: edições não são permitidas com o evento rodando
+					// TODO: ediï¿½ï¿½es nï¿½o sï¿½o permitidas com o evento rodando
 					return CommandResult.success();
 				}
 			}
@@ -148,7 +148,7 @@ public final class EZCommand extends CommandBase
 		}
 		else
 		{
-			final String s = String.format( "§9Utilize o comando §f/ez %s %s §9para §6%s§9.", "addentrada", "<evento>", "adicionar uma nova entrada" );
+			final String s = String.format( "ï¿½9Utilize o comando ï¿½f/ez %s %s ï¿½9para ï¿½6%sï¿½9.", "addentrada", "<evento>", "adicionar uma nova entrada" );
 			src.sendMessage( s );
 			return CommandResult.success();
 		}
@@ -170,18 +170,18 @@ public final class EZCommand extends CommandBase
 					if ( e.getEntradas().get( id ) != null )
 					{
 						e.getEntradas().remove( id );
-						src.sendMessage( "§9Entrada removida com sucesso." );
+						src.sendMessage( "ï¿½9Entrada removida com sucesso." );
 						return CommandResult.success();
 					}
 					else
 					{
-						src.sendMessage( "§cNão existe nenhuma entrada com este ID. Considere listar as entradas usando /ez entradas <evento>." );
+						src.sendMessage( "ï¿½cNï¿½o existe nenhuma entrada com este ID. Considere listar as entradas usando /ez entradas <evento>." );
 						return CommandResult.success();
 					}
 				}
 				catch ( final NumberFormatException nfe )
 				{
-					src.sendMessage( "§cO ID precisa ser um número." );
+					src.sendMessage( "ï¿½cO ID precisa ser um nï¿½mero." );
 					return CommandResult.success();
 				}
 			}
@@ -193,13 +193,13 @@ public final class EZCommand extends CommandBase
 		}
 		else
 		{
-			final String s = String.format( "§9Utilize o comando §f/ez %s %s §9para §6%s§9.", "delentrada", "<evento> <id>", "remover uma posição de entrada" );
+			final String s = String.format( "ï¿½9Utilize o comando ï¿½f/ez %s %s ï¿½9para ï¿½6%sï¿½9.", "delentrada", "<evento> <id>", "remover uma posiï¿½ï¿½o de entrada" );
 			src.sendMessage( s );
 			return CommandResult.success();
 		}
 	}
 
-	@SubCommand ( name = "entradas", aliases = { "entrys", "listentry", "getentradas", "getentrys", "startposes" }, usage = "<evento>", description = "Obtém as entradas e suas IDs" )
+	@SubCommand ( name = "entradas", aliases = { "entrys", "listentry", "getentradas", "getentrys", "startposes" }, usage = "<evento>", description = "Obtï¿½m as entradas e suas IDs" )
 	private CommandResult entradas ( final CommandSource src, final CommandArgs args )
 	{
 		if ( args.size() == 1 )
@@ -210,19 +210,19 @@ public final class EZCommand extends CommandBase
 			{
 				if ( event.get().getEntradas().size() != 0 )
 				{
-					src.sendMessage( "§9Entradas disponívels:" );
+					src.sendMessage( "ï¿½9Entradas disponï¿½vels:" );
 					for ( int i = 0; i < event.get().getEntradas().size(); i ++ )
 					{
 						final Optional< Location > pos0 = Optional.of( event.get().getEntradas().get( i ) );
 						if ( pos0.isPresent() && ( pos0.get().getWorld() != null ) && ( Bukkit.getWorld( pos0.get().getWorld().getName() ) != null ) )
 						{
 							final Location pos = pos0.get();
-							src.sendMessage( String.format( "§9ID §f= §6%s §f» §9%s: §f%s§9, %s: §f%s§9, %s: §f%s§9, %s: §f%s", "X", "World", i, pos.getWorld().getName(), pos.getBlockX(), "Y", pos.getBlockY(), "Z", pos.getBlockZ() ) );
+							src.sendMessage( String.format( "ï¿½9ID ï¿½f= ï¿½6%s ï¿½fï¿½ ï¿½9%s: ï¿½f%sï¿½9, %s: ï¿½f%sï¿½9, %s: ï¿½f%sï¿½9, %s: ï¿½f%s", "X", "World", i, pos.getWorld().getName(), pos.getBlockX(), "Y", pos.getBlockY(), "Z", pos.getBlockZ() ) );
 							continue;
 						}
 						else
 						{
-							event.get().getEntradas().remove( i ); // remove caso a entrada esteja bugada (mundo nao existe mais, ou Location é nulo)
+							event.get().getEntradas().remove( i ); // remove caso a entrada esteja bugada (mundo nao existe mais, ou Location ï¿½ nulo)
 							continue;
 						}
 					}
@@ -231,7 +231,7 @@ public final class EZCommand extends CommandBase
 				}
 				else
 				{
-					src.sendMessage( "§cNenhuma entrada definida para o evento." );
+					src.sendMessage( "ï¿½cNenhuma entrada definida para o evento." );
 					return CommandResult.success();
 				}
 			}
@@ -243,7 +243,7 @@ public final class EZCommand extends CommandBase
 		}
 		else
 		{
-			final String s = String.format( "§9Utilize o comando §f/ez %s %s §9para §6%s§9.", "entradas", "<evento>", "listar entradas existentes" );
+			final String s = String.format( "ï¿½9Utilize o comando ï¿½f/ez %s %s ï¿½9para ï¿½6%sï¿½9.", "entradas", "<evento>", "listar entradas existentes" );
 			src.sendMessage( s );
 			return CommandResult.success();
 		}
@@ -270,11 +270,11 @@ public final class EZCommand extends CommandBase
 				{
 					if ( camarote.equals( "{default}" ) )
 					{
-						src.sendMessage( "§9O camarote padrão foi atualizado." );
+						src.sendMessage( "ï¿½9O camarote padrï¿½o foi atualizado." );
 					}
 					else
 					{
-						src.sendMessage( "§9O camarote §f" + camarote + "§9 foi atualizado." );
+						src.sendMessage( "ï¿½9O camarote ï¿½f" + camarote + "ï¿½9 foi atualizado." );
 					}
 
 					return CommandResult.success();
@@ -283,11 +283,11 @@ public final class EZCommand extends CommandBase
 				{
 					if ( camarote.equals( "{default}" ) )
 					{
-						src.sendMessage( "§9O camarote padrão foi definido." );
+						src.sendMessage( "ï¿½9O camarote padrï¿½o foi definido." );
 					}
 					else
 					{
-						src.sendMessage( "§9O camarote §f" + camarote + "§9 foi definido." );
+						src.sendMessage( "ï¿½9O camarote ï¿½f" + camarote + "ï¿½9 foi definido." );
 					}
 
 					return CommandResult.success();
@@ -301,7 +301,7 @@ public final class EZCommand extends CommandBase
 		}
 		else
 		{
-			final String s = String.format( "§9Utilize o comando §f/ez %s %s §9para §6%s§9.", "addcamarote", "<evento> <nome>", "listar entradas existentes" );
+			final String s = String.format( "ï¿½9Utilize o comando ï¿½f/ez %s %s ï¿½9para ï¿½6%sï¿½9.", "addcamarote", "<evento> <nome>", "listar entradas existentes" );
 			src.sendMessage( s );
 			return CommandResult.success();
 		}
@@ -324,18 +324,18 @@ public final class EZCommand extends CommandBase
 					if ( ! allows )
 					{
 						event.get().getFlags().addFlag( Flag.DISABLE_PVP );
-						src.sendMessage( String.format( "§9PvP foi definido como bloqueado no evento %s", event.get().getName() ) );
+						src.sendMessage( String.format( "ï¿½9PvP foi definido como bloqueado no evento %s", event.get().getName() ) );
 					}
 					else
 					{
-						src.sendMessage( String.format( "§9PvP foi definido como permitido no evento %s", event.get().getName() ) );
+						src.sendMessage( String.format( "ï¿½9PvP foi definido como permitido no evento %s", event.get().getName() ) );
 						event.get().getFlags().removeFlag( Flag.DISABLE_PVP );
 					}
 				}
 				else
 				{
-					src.sendMessage( String.format( "§cSintaxe '%s' não é válida.", set ) );
-					src.sendMessage( "§cUtilize 'allow' ou 'deny'" );
+					src.sendMessage( String.format( "ï¿½cSintaxe '%s' nï¿½o ï¿½ vï¿½lida.", set ) );
+					src.sendMessage( "ï¿½cUtilize 'allow' ou 'deny'" );
 				}
 			}
 		}
@@ -360,18 +360,18 @@ public final class EZCommand extends CommandBase
 					if ( ! allows )
 					{
 						event.get().getFlags().addFlag( Flag.DISABLE_MC );
-						src.sendMessage( String.format( "§9Tapete Mágico foi definido como bloqueado no evento %s", event.get().getName() ) );
+						src.sendMessage( String.format( "ï¿½9Tapete Mï¿½gico foi definido como bloqueado no evento %s", event.get().getName() ) );
 					}
 					else
 					{
-						src.sendMessage( String.format( "§9Tapete Mágico foi definido como permitido no evento %s", event.get().getName() ) );
+						src.sendMessage( String.format( "ï¿½9Tapete Mï¿½gico foi definido como permitido no evento %s", event.get().getName() ) );
 						event.get().getFlags().removeFlag( Flag.DISABLE_MC );
 					}
 				}
 				else
 				{
-					src.sendMessage( String.format( "§cSintaxe '%s' não é válida.", set ) );
-					src.sendMessage( "§cUtilize 'allow' ou 'deny'" );
+					src.sendMessage( String.format( "ï¿½cSintaxe '%s' nï¿½o ï¿½ vï¿½lida.", set ) );
+					src.sendMessage( "ï¿½cUtilize 'allow' ou 'deny'" );
 				}
 			}
 		}
@@ -391,7 +391,7 @@ public final class EZCommand extends CommandBase
 		return CommandResult.success();
 	}
 
-	@SubCommand ( name = "potion", usage = "", description = "poções" )
+	@SubCommand ( name = "potion", usage = "", description = "poï¿½ï¿½es" )
 	private CommandResult potion ( final CommandSource src, final CommandArgs args )
 	{
 		return CommandResult.success();
@@ -409,19 +409,19 @@ public final class EZCommand extends CommandBase
 		return CommandResult.success();
 	}
 
-	@SubCommand ( name = "max", usage = "<evento> <quantia> ", description = "Define o número máximo de jogadores (autoinicia)" )
+	@SubCommand ( name = "max", usage = "<evento> <quantia> ", description = "Define o nï¿½mero mï¿½ximo de jogadores (autoinicia)" )
 	private CommandResult max ( final CommandSource src, final CommandArgs args )
 	{
 		return CommandResult.success();
 	}
 
-	@SubCommand ( name = "min", usage = "<evento> <quantia> ", description = "Define o número mínimo de jogadores para poder iniciar o evento" )
+	@SubCommand ( name = "min", usage = "<evento> <quantia> ", description = "Define o nï¿½mero mï¿½nimo de jogadores para poder iniciar o evento" )
 	private CommandResult min ( final CommandSource src, final CommandArgs args )
 	{
 		return CommandResult.success();
 	}
 
-	@SubCommand ( name = "autostop", usage = "<evento> <tempo> ", description = "Define o tempo para terminar o evento se não houver ganhadores." )
+	@SubCommand ( name = "autostop", usage = "<evento> <tempo> ", description = "Define o tempo para terminar o evento se nï¿½o houver ganhadores." )
 	private CommandResult autostop ( final CommandSource src, final CommandArgs args )
 	{
 		return CommandResult.success();
@@ -433,7 +433,7 @@ public final class EZCommand extends CommandBase
 		return CommandResult.success();
 	}
 
-	@SubCommand ( name = "placements", usage = "<evento> <quantia> ", description = "Define o limite de colocações" )
+	@SubCommand ( name = "placements", usage = "<evento> <quantia> ", description = "Define o limite de colocaï¿½ï¿½es" )
 	private CommandResult placements ( final CommandSource src, final CommandArgs args )
 	{
 		return CommandResult.success();
@@ -445,7 +445,7 @@ public final class EZCommand extends CommandBase
 		return CommandResult.success();
 	}
 
-	@SubCommand ( name = "updates", usage = "", description = "Apenas verifica se há novos updates" )
+	@SubCommand ( name = "updates", usage = "", description = "Apenas verifica se hï¿½ novos updates" )
 	private CommandResult updates ( final CommandSource src, final CommandArgs args )
 	{
 		return CommandResult.success();
@@ -458,9 +458,9 @@ public final class EZCommand extends CommandBase
 	}
 
 	/**
-	 * Não pode haver reload enquanto algum evento estiver ocorrendo, aberto, etc.
+	 * Nï¿½o pode haver reload enquanto algum evento estiver ocorrendo, aberto, etc.
 	 * O reload faz unload de todos os eventos, desregistra todos os listeners, schedulers e afins,
-	 * recarrega todas as configurações, e ativa novamente o plugin.
+	 * recarrega todas as configuraï¿½ï¿½es, e ativa novamente o plugin.
 	 *
 	 * @param src
 	 * @param args
@@ -476,7 +476,7 @@ public final class EZCommand extends CommandBase
 	private CommandResult disable ( final CommandSource src, final CommandArgs args )
 	{
 		Bukkit.getPluginManager().disablePlugin( EventoZero.getInstance() );
-		src.sendMessage( "§cPlugin desativado com êxito. :)" );
+		src.sendMessage( "ï¿½cPlugin desativado com ï¿½xito. :)" );
 		return CommandResult.success();
 	}
 }

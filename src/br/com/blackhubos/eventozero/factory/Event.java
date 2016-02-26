@@ -72,6 +72,7 @@ public class Event {
     private String description;
     private EventState state;
     private EventFlags flags;
+    private EventAnnouncement announcement;
     private Configuration config;
 
     public Event(final String name) {
@@ -86,6 +87,7 @@ public class Event {
         this.chestRewards = new Vector<>();
         this.locations = new Vector<>();
         this.camarotes = new HashMap<>();
+        this.announcement = new EventAnnouncement(this, 10, 10);
     }
 
     public Event(final String name, final Configuration config) {
@@ -151,6 +153,10 @@ public class Event {
      */
     public EventState getState() {
         return this.state;
+    }
+    
+    public EventAnnouncement getAnnouncement() {
+        return this.announcement;
     }
 
     /**
@@ -397,11 +403,9 @@ public class Event {
     }
 
     public void start() {
-        // TODO: START THE COUNTDOWN
-        if (this.getState() == EventState.OPENED) {
-            // ERRADO FALTA TERMINAR
-            new EventAnnouncement(this, (Integer) this.getData().getData("options.countdown.seconds"));
+        if (this.getState() == EventState.CLOSED) {
             this.updateSigns();
+            EventoZero.startAnnouncementHandler();
         }
     }
 
@@ -411,6 +415,10 @@ public class Event {
             this.playerQuit(player);
         }
         this.updateSigns();
+        
+        if(EventoZero.getEventHandler().getEventsSizeClosed() == 0) {
+            EventoZero.closeAnnouncementHandler();
+        }
     }
 
     public void forceStart() {

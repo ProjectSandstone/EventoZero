@@ -19,33 +19,64 @@
  */
 package br.com.blackhubos.eventozero.factory;
 
+import br.com.blackhubos.eventozero.handlers.MessageHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 public class EventAnnouncement {
 
     private final Event event;
+    private int quantity;
     private int seconds;
+    private int step;
     private long time;
 
-    public EventAnnouncement(final Event event, final int seconds) {
+    public EventAnnouncement(final Event event, final int quantity, final int seconds) {
         this.event = event;
         this.seconds = seconds;
+        this.quantity = quantity;
+        this.step = 0;
         this.time = 0;
     }
 
     public EventAnnouncement tryAnnouncement() {
-        if (event.getState() == EventState.OPENED && (time + (seconds * 1000) < System.currentTimeMillis())) {
+        if (event.getState() == EventState.OPENED && step <= quantity && (time + (seconds * 1000) < System.currentTimeMillis())) {
             forceAnnouncement();
             updateTime();
+            updateStep();
         }
         return this;
     }
 
     public EventAnnouncement forceAnnouncement() {
-        
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            MessageHandler.ANUNCIOS_ABERTO.send(player); // COLOCAR OS REPLACEMENTS
+        }
+        if(step >= quantity) {
+            event.forceStart();
+            step = 0;
+            // INICIAR OU APENAS FAZER UMA CONTAGEM ANTES DE INICIAR
+        }
         return this;
     }
 
     public EventAnnouncement updateTime() {
         this.time = System.currentTimeMillis();
+        return this;
+    }
+
+    public EventAnnouncement updateStep() {
+        step = (step >= quantity ? 0 : step++);
+        return this;
+    }
+
+    public EventAnnouncement setQuantity(int quantity) {
+        this.quantity = quantity;
+        return this;
+    }
+
+    public EventAnnouncement setSeconds(int seconds) {
+        this.seconds = seconds;
         return this;
     }
 

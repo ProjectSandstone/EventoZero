@@ -35,18 +35,18 @@ import br.com.blackhubos.eventozero.util.Framework.Configuration;
 public enum MessageHandler
 {
 
-	JA_PARTICIPANDO( "JA_PARTICIPANDO", "Â§7Você já está participando de um evento." ),
-	EVENTO_ESPECIAL( "EVENTO_ESPECIAL", "Â§7Este Ã© um evento especial, você não tem permissão para participar dele." ),
-	SEM_PERMISSAO( "SEM_PERMISSÃO", "&7Você não está autorizado a fazer isto." ),
-	EVENTO_ENTROU( "EVENTO_ENTROU", "Â§7Você entrou no eveto {evento}!" ),
-	ANUNCIOS_ABERTO( "ANUNCIOS_ABERTO", "&7Evento {evento} está aberto, participe!" ),
-	ANUNCIOS_INICIADO( "ANUNCIOS_INICIADO", "Â§7O evento {evento} está iniciando agora!" ),
+	JA_PARTICIPANDO( "JA_PARTICIPANDO", "Â§7Vocï¿½ jï¿½ estï¿½ participando de um evento." ),
+	EVENTO_ESPECIAL( "EVENTO_ESPECIAL", "Â§7Este Ã© um evento especial, vocï¿½ nï¿½o tem permissï¿½o para participar dele." ),
+	SEM_PERMISSAO( "SEM_PERMISSï¿½O", "&7Vocï¿½ nï¿½o estï¿½ autorizado a fazer isto." ),
+	EVENTO_ENTROU( "EVENTO_ENTROU", "Â§7Vocï¿½ entrou no eveto {evento}!" ),
+	ANUNCIOS_ABERTO( "ANUNCIOS_ABERTO", "&7Evento {evento} estï¿½ aberto, participe!" ),
+	ANUNCIOS_INICIADO( "ANUNCIOS_INICIADO", "Â§7O evento {evento} estï¿½ iniciando agora!" ),
 	ANUNCIOS_FINALIZADO_COM_UM_VENCEDOR( "ANUNCIOS_FINALIZADO_COM_UM_VENCEDOR", "&7Evento {player} terminou!" ),
 	ANUNCIOS_VITORIA_POR_COLOCADO( "ANUNCIOS_VITORIA_POR_COLOCADO", "&7O jogador {player} ganhou no evento {evento} e ficou no {posicao}Â° lugar." ),
 	ANUNCIOS_FINALIZADO_COM_COLOCACAO( "ANUNCIOS_FINALIZADO_COM_COLOCACAO", "&7O evento {evento} foi finalizado. Vencedores: {vencedores}" ),
 	ANUNCIOS_CANCELADO_POR_ADMIN( "ANUNCIOS_CANCELADO_POR_ADMIN", "&cEvento {player} cancelado por um admin!" ),
 	ANUNCIOS_CANCELADO_SEM_PLAYERS( "ANUNCIOS_CANCELADO_SEM_PLAYERS", "&cEvento {evento} cancelado devido a falta de jogadores!" ),
-	EVENTO_NAO_ENCONTRADO( "EVENTO_NÃO_ENCONTRADO", "§7O evento {evento} não existe!" );
+	EVENTO_NAO_ENCONTRADO( "EVENTO_Nï¿½O_ENCONTRADO", "ï¿½7O evento {evento} nï¿½o existe!" );
 
 	private String key, padrao;
 
@@ -104,7 +104,7 @@ public enum MessageHandler
 		/**
 		 * ConstrÃ³i primariamente o recipiente da mensagem.
 		 *
-		 * @param key A key Ã© a usada na config. Se não existe, coloque null.
+		 * @param key A key Ã© a usada na config. Se nï¿½o existe, coloque null.
 		 */
 		public MessageRecipient ( final String key )
 		{
@@ -116,7 +116,7 @@ public enum MessageHandler
 		 * Envia a mensagem para um jogador e/ou console. CommandSender Ã© compatÃ­vel com Console.
 		 *
 		 * @param player O jogador e/ou console para enviar a mensagem.
-		 * @param replacements Caso não tenha usado o mÃ©todo replacements(String...), poderá usar aqui. Ã‰ opcional.
+		 * @param replacements Caso nï¿½o tenha usado o mÃ©todo replacements(String...), poderï¿½ usar aqui. Ã‰ opcional.
 		 */
 		public void sendMessage ( final CommandSender player, final String... replacements )
 		{
@@ -133,7 +133,7 @@ public enum MessageHandler
 		}
 
 		/**
-		 * Caso alguma variável esteja nula ou incorreta, este mÃ©todo corrige para evitar possÃ­veis casos errÃ´neos.
+		 * Caso alguma variï¿½vel esteja nula ou incorreta, este mÃ©todo corrige para evitar possÃ­veis casos errÃ´neos.
 		 *
 		 * @return Retorna o {@link MessageRecipient} preparado.
 		 */
@@ -207,9 +207,9 @@ public enum MessageHandler
 		}
 
 		/**
-		 * Prepara a mensagem padrão definida pelo sistema para essa mensagem, caso não haja na config, essa geralmente Ã© usada. Esse processo colore a mensagem.
+		 * Prepara a mensagem padrï¿½o definida pelo sistema para essa mensagem, caso nï¿½o haja na config, essa geralmente Ã© usada. Esse processo colore a mensagem.
 		 *
-		 * @return Retorna uma {@link String} que representa uma mensagem padrão para a key.
+		 * @return Retorna uma {@link String} que representa uma mensagem padrï¿½o para a key.
 		 */
 		public String defaultValue ()
 		{
@@ -217,8 +217,8 @@ public enum MessageHandler
 		}
 
 		/**
-		 * Este mÃ©todo serve para por os replacements PADRÃ•ES da mensagem. O formato Ã© <code>key:valor</code>, note que você pode e tem liberdade para usar : durante a
-		 * formataÃ§ão. NÃ³s apenas capturamos o PRIMEIRO :, os demais são ignorados.
+		 * Este mÃ©todo serve para por os replacements PADRÃ•ES da mensagem. O formato Ã© <code>key:valor</code>, note que vocï¿½ pode e tem liberdade para usar : durante a
+		 * formataÃ§ï¿½o. NÃ³s apenas capturamos o PRIMEIRO :, os demais sï¿½o ignorados.
 		 *
 		 * @param replaces As {@link String}s para fazer o replace, no formato citado acima.
 		 * @return Retorna a {@link MessageRecipient} agora com os replaces escolhidos.
@@ -238,10 +238,10 @@ public enum MessageHandler
 		}
 
 		/**
-		 * Define o valor padrão para esta key. Caso haja um problema, este texto será usado.
+		 * Define o valor padrï¿½o para esta key. Caso haja um problema, este texto serï¿½ usado.
 		 *
-		 * @param texto Valor padrão
-		 * @return Retorna o {@link MessageRecipient} agora com o valor padrão definido.
+		 * @param texto Valor padrï¿½o
+		 * @return Retorna o {@link MessageRecipient} agora com o valor padrï¿½o definido.
 		 */
 		public MessageRecipient defaultValue ( final String texto )
 		{
