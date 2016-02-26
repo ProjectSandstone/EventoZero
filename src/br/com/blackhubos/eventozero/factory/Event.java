@@ -235,6 +235,10 @@ public class Event {
     public List<Ability> getAbilitys() {
         return this.abilitys;
     }
+    
+    public List<Location> getSignsLocation() {
+        return this.getData().getData("options.signs.locations");
+    }
 
     /**
      *
@@ -509,7 +513,7 @@ public class Event {
      */
     public void updateSigns() {
         if (this.getData().containsKey("options.signs.locations") && (this.getData().getData("options.signs.locations") != null)) {
-            final Vector<Location> signs = this.getData().getData("options.signs.locations");
+            final Vector<Location> signs = (Vector<Location>) getSignsLocation();
             for (final Location location : signs) {
                 final Block block = location.getWorld().getBlockAt(location);
                 if ((block.getType() == Material.SIGN_POST) || (block.getType() == Material.WALL_SIGN)) {
@@ -520,6 +524,9 @@ public class Event {
                     sign.setLine(2, String.valueOf(this.getData().getData("options.signs.line.3")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(this.getData().getData("options.player_max"))).replace("{name}", this.getName()).replaceAll("&", "§"));
                     sign.setLine(3, String.valueOf(this.getData().getData("options.signs.line.4")).replace("{state]", string).replace("{playersize}", String.valueOf(this.getPlayers().size())).replace("{playermax}", String.valueOf(this.getData().getData("options.player_max"))).replace("{name}", this.getName()).replaceAll("&", "§"));
                     sign.update();
+                } else {
+                    // remove a locaiton da sign
+                    signs.remove(location);
                 }
             }
         }

@@ -21,6 +21,8 @@ package br.com.blackhubos.eventozero.listeners;
 
 import br.com.blackhubos.eventozero.EventoZero;
 import br.com.blackhubos.eventozero.factory.Event;
+import br.com.blackhubos.eventozero.factory.EventFlags;
+import br.com.blackhubos.eventozero.factory.EventState;
 import java.util.Optional;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -50,6 +52,13 @@ public final class EventListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void whenPlayerLeft(final PlayerQuitEvent event) {
         final Player sender = event.getPlayer();
+        quitPlayer(sender);
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void whenPlayerKick(final PlayerKickEvent event) {
+        final Player sender = event.getPlayer();
+        quitPlayer(sender);
     }
 
     /**
@@ -59,8 +68,11 @@ public final class EventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void whenPlayerJoin(final PlayerJoinEvent event) {
-
         final Player sender = event.getPlayer();
+        final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
+        for(Event e : eventHandler.getEventsByState(EventState.OPENED)) {
+            // COLOCAR NO MESSAGEHANDLER A MENSAGEM DE AVISAR O EVENTO
+        }
     }
 
     /**
@@ -74,6 +86,14 @@ public final class EventListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void whenBlockBreaked(final BlockBreakEvent event) {
         final Player sender = event.getPlayer();
+        final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
+        final Optional<Event> optional = eventHandler.getEventByPlayer(sender);
+        if(optional.isPresent()) {
+            Event eventz = optional.get();
+            if(eventz.getFlags().hasFlag(EventFlags.Flag.DISABLE_BLOCK_BREAK)) {
+                event.setCancelled(true);
+            }
+        }
     }
 
     /**
@@ -87,6 +107,14 @@ public final class EventListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void whenBlockPlaced(final BlockPlaceEvent event) {
         final Player sender = event.getPlayer();
+        final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
+        final Optional<Event> optional = eventHandler.getEventByPlayer(sender);
+        if(optional.isPresent()) {
+            Event eventz = optional.get();
+            if(eventz.getFlags().hasFlag(EventFlags.Flag.DISABLE_BLOCK_PLACE)) {
+                event.setCancelled(true);
+            }
+        }
     }
 
     /**
@@ -99,6 +127,14 @@ public final class EventListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void whenSignPlaced(final SignChangeEvent event) {
         final Player sender = event.getPlayer();
+        final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
+        if(sender.isOp()) {
+            Optional<Event> optional = eventHandler.getEventByName(event.getLine(0));
+            if(optional.isPresent()) {
+                Event eventz = optional.get();
+                eventz.get
+            }
+        }
     }
 
     /**
@@ -158,6 +194,24 @@ public final class EventListener implements Listener {
         final Player sender = event.getPlayer();
         final Optional<Event> event1 = EventoZero.getEventHandler().getEventByPlayer(sender);
         event1.ifPresent(e -> e.playerQuit(sender));
+    }
+    
+    private void quitPlayer(Player sender) {
+        final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
+        final Optional<Event> optional = eventHandler.getEventByPlayer(sender);
+        if (optional.isPresent()) {
+            final Event eventz = optional.get();
+            if (eventz.getPlayersRemaining().size() > 2) {
+                eventz.playerQuit(sender);
+                for (Player player : eventz.getPlayersRemaining()) {
+
+                    // PREMIAR, porém saber qual será o premio, por causa das colocações..
+                    eventz.playerQuit(player);
+                }
+            } else {
+                eventz.playerQuit(sender);
+            }
+        }
     }
 
 }

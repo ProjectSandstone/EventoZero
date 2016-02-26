@@ -38,7 +38,7 @@ public enum MessageHandler
 	JA_PARTICIPANDO( "JA_PARTICIPANDO", "§7Voc� j� est� participando de um evento." ),
 	EVENTO_ESPECIAL( "EVENTO_ESPECIAL", "§7Este é um evento especial, voc� n�o tem permiss�o para participar dele." ),
 	SEM_PERMISSAO( "SEM_PERMISS�O", "&7Voc� n�o est� autorizado a fazer isto." ),
-	EVENTO_ENTROU( "EVENTO_ENTROU", "§7Voc� entrou no eveto {evento}!" ),
+	EVENTO_ENTROU( "EVENTO_ENTROU", "§7Voc� entrou no evento {evento}!" ),
 	ANUNCIOS_ABERTO( "ANUNCIOS_ABERTO", "&7Evento {evento} est� aberto, participe!" ),
 	ANUNCIOS_INICIADO( "ANUNCIOS_INICIADO", "§7O evento {evento} est� iniciando agora!" ),
 	ANUNCIOS_FINALIZADO_COM_UM_VENCEDOR( "ANUNCIOS_FINALIZADO_COM_UM_VENCEDOR", "&7Evento {player} terminou!" ),

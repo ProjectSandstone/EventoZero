@@ -61,6 +61,8 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.Validate;
 
@@ -146,6 +148,14 @@ public final class Framework
 	{
 		return String.format( "World [%s] X [%s] Y [%s] Z [%s] Yaw [%s] Pitch [%s]", pos.getWorld().getName(), pos.getBlockX(), pos.getBlockY(), pos.getBlockZ(), pos.getYaw(), pos.getPitch() );
 	}
+        
+        public static List<String> fromLocation(final List<Location> list) {
+            List<String> a = new ArrayList<>();
+            for(Location l : list) {
+                a.add(fromLocation(l));
+            }
+            return a;
+        }
 
 	/**
 	 * Converte a String feita do fromLocation(Location) devolta para uma localização.

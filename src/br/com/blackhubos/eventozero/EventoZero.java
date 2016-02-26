@@ -33,6 +33,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.blackhubos.eventozero.chat.interpreter.game.register.InterpreterRegister;
 import br.com.blackhubos.eventozero.exceptions.CuboidParsingException;
+import br.com.blackhubos.eventozero.factory.Event;
 import br.com.blackhubos.eventozero.factory.EventFactory;
 import br.com.blackhubos.eventozero.factory.EventHandler;
 import br.com.blackhubos.eventozero.factory.EventState;
@@ -51,6 +52,9 @@ import br.com.blackhubos.eventozero.util.Framework.Configuration;
 import br.com.blackhubos.eventozero.util.Framework.LoggerManager;
 import br.com.blackhubos.eventozero.util.ThreadUtils;
 import io.github.bktlib.command.CommandManager;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class EventoZero extends JavaPlugin
 {
@@ -167,6 +171,17 @@ public final class EventoZero extends JavaPlugin
 	@Override
 	public void onDisable()
 	{
+            for(Event e :eventHandler.getEvents()) {
+                if(e.getState().equals(EventState.OCCURRING) || e.getState().equals(EventState.PRESTARTED)) {
+                    e.forceStop();
+                }
+                e.getConfig().set("signs.location", Framework.fromLocation(e.getSignsLocation()));
+                try {
+                    e.getConfig().save(e.getConfig().getFile());
+                } catch (IOException ex) {
+                    Logger.getLogger(EventoZero.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
 		// TODO: cancelar eventos ocorrendo
 		// TODO: salvar scores se em flatfile; pois é necessário fazer flush do(s) arquivo(s)
 		// Remove os listeners do plugin para ter melhor funcionamento com PluginManagers.

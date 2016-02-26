@@ -44,6 +44,7 @@ public final class EventFactory {
     public static void loadEvents(final Plugin plugin) throws CuboidParsingException {
         final File folder = new File(plugin.getDataFolder() + File.separator + "eventos" + File.separator);
         final File[] fileArray = folder.listFiles();
+        // TODO: COLOCAR QUANTIDADE DOS ANUNCIO E OS SEGUNDOS NA CONFIG.YML OU NA CONFIG DO EVENTO
         // TODO fazer algo menos artifical caso listFiles retorne nulo, esta é a solução por enquanto!
         // TODO: Não sei qual o retorno caso não tenha nenhum arquivo, mas caso for 0 deixa o código, mas caso for null remover
         if (fileArray == null || (fileArray.length == 0)) {
