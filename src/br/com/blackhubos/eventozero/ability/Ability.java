@@ -29,12 +29,14 @@ import br.com.blackhubos.eventozero.handlers.AbilityHandler;
 public abstract class Ability {
 
     private final String name;
+    private final String SEPARATOR;
     private final long cooldown;
 
     private final Map<String, Long> cooldowns;
 
     public Ability(final String name, final long cooldown) {
         this.name = name;
+        this.SEPARATOR = ".";
         this.cooldown = cooldown;
         this.cooldowns = new ConcurrentHashMap<>();
         
@@ -71,8 +73,8 @@ public abstract class Ability {
         return this;
     }
 
-    public Ability updateTime(final String name, final long lastTime) {
-        cooldowns.put(name, lastTime);
+    public Ability updateTime(final String username, final long lastTime) {
+        cooldowns.put(this.name + this.SEPARATOR + username , lastTime);
         return this;
     }
 
