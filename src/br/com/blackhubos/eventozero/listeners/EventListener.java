@@ -25,6 +25,7 @@ import br.com.blackhubos.eventozero.factory.EventFlags;
 import br.com.blackhubos.eventozero.factory.EventState;
 import java.util.Optional;
 import org.bukkit.Bukkit;
+impirt org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -40,6 +41,8 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.block.Action;
 
 public final class EventListener implements Listener {
 
@@ -68,6 +71,28 @@ public final class EventListener implements Listener {
         final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
         for(Event e : eventHandler.getEventsByState(EventState.OPENED)) {
             // COLOCAR NO MESSAGEHANDLER A MENSAGEM DE AVISAR O EVENTO
+        }
+    }
+    
+    /**
+     * Evento chamado quando alguem interage com uma placa do evento.
+     *
+     * TODO: Envia description do evento ao clicar na placa com botão esquerdo
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void whenInteract(final PlayerInteractEvent event) {
+        final Player sender = event.getPlayer();
+        final Action action = event.getAction();
+        final Block block = event.getClickedBlock();
+        if(action.equals(Action.LEFT_CLICK_BLOCK) && (block.getType().equals(Material.SIGN) || block.getType().equals(Material.SIGN_POST) block.getType().equals(Material.WALL_SIGN))) {
+            final Sign sign = (Sign) block.getState();
+            final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
+            
+            Optional<Event> optional = eventHander.getEventByName(sign.getLine(0));
+            if(optional.isPresent()) {
+                Event e = optional.get();
+                player.sendMessage(e.getDescription());
+            }
         }
     }
 
