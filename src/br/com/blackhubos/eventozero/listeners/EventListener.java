@@ -84,7 +84,7 @@ public final class EventListener implements Listener {
         final Player sender = event.getPlayer();
         final Action action = event.getAction();
         final Block block = event.getClickedBlock();
-        if(action.equals(Action.LEFT_CLICK_BLOCK) && (block.getType().equals(Material.SIGN) || block.getType().equals(Material.SIGN_POST) block.getType().equals(Material.WALL_SIGN))) {
+        if(action.equals(Action.LEFT_CLICK_BLOCK) && (block.getType().equals(Material.SIGN) || block.getType().equals(Material.SIGN_POST) || block.getType().equals(Material.WALL_SIGN))) {
             final Sign sign = (Sign) block.getState();
             final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
             
