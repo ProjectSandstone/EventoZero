@@ -26,6 +26,8 @@ import br.com.blackhubos.eventozero.factory.EventState;
 import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -88,10 +90,10 @@ public final class EventListener implements Listener {
             final Sign sign = (Sign) block.getState();
             final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
             
-            Optional<Event> optional = eventHander.getEventByName(sign.getLine(0));
+            Optional<Event> optional = eventHandler.getEventByName(sign.getLine(0));
             if(optional.isPresent()) {
                 Event e = optional.get();
-                player.sendMessage(e.getDescription());
+                sender.sendMessage(e.getDescription());
             }
         }
     }
