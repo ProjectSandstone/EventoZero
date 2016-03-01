@@ -49,6 +49,7 @@ import br.com.blackhubos.eventozero.updater.formater.BooleanFormatter;
 import br.com.blackhubos.eventozero.updater.formater.MultiTypeFormatter;
 import br.com.blackhubos.eventozero.updater.github.formatter.GitHubDateFormatter;
 import br.com.blackhubos.eventozero.updater.searcher.Searcher;
+import br.com.blackhubos.eventozero.util.ThreadUtils;
 
 public class GitHubSearcher implements Searcher {
 
@@ -57,14 +58,6 @@ public class GitHubSearcher implements Searcher {
     private static final String RELEASES_PATH = "releases";
     private static final String LATEST_PATH = "/latest";
     private static final String TAG_PATH = "/tags";
-
-    /**
-     * Test METHOD
-     **/
-    public static void main(String[] args) {
-        GitHubSearcher gitHubSearcher = new GitHubSearcher();
-        System.out.println(gitHubSearcher.getLatestVersion().get().toString());
-    }
 
     @Override
     public Optional<Version> getLatestVersion() {

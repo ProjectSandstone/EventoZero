@@ -1,21 +1,17 @@
 /**
+ * EventoZero - Advanced event factory and executor for Bukkit and Spigot. Copyright © 2016 BlackHub
+ * OS and contributors.
  *
- * EventoZero - Advanced event factory and executor for Bukkit and Spigot.
- * Copyright © 2016 BlackHub OS and contributors.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
+ * You should have received a copy of the GNU General Public License along with this program. If
+ * not, see <http://www.gnu.org/licenses/>.
  */
 package br.com.blackhubos.eventozero.util;
 
@@ -24,12 +20,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
  * Simples gerenciador de threads
  */
-public class ThreadUtils {
+public final class ThreadUtils {
     // Mapa dos threads e instancias que são as donas do threads
     private static final Map<Object, Set<ThreadId>> threads = new HashMap<>();
 
@@ -62,7 +60,7 @@ public class ThreadUtils {
         } else {
             thread = new Thread(runnable);
         }
-        add(instanceRunner, new ThreadId(id, thread));
+        add(instanceRunner, new ThreadId(instanceRunner, id, thread, runnable));
         return thread;
     }
 
@@ -70,9 +68,7 @@ public class ThreadUtils {
      * Para todos threads registrados
      */
     public synchronized static void stopAllThreads() {
-        for (Object instance : threads.keySet()) {
-            stopAllThreads(instance);
-        }
+        threads.keySet().forEach(ThreadUtils::stopAllThreads);
     }
 
     /**
@@ -81,7 +77,7 @@ public class ThreadUtils {
      * @param instanceRunner Instancia que registrou o Thread
      */
     public synchronized static void stopAllThreads(Object instanceRunner) {
-        stopThread(instanceRunner, null);
+        stopThread(instanceRunner, (String) null);
     }
 
     /**
@@ -91,17 +87,42 @@ public class ThreadUtils {
      * @param threadId       Id (Identificação) do Thread
      * @return Thread correspondente
      */
-    public synchronized static Thread getThread(Object instanceRunner, String threadId) {
+    public synchronized static Optional<Thread> getThread(Object instanceRunner, String threadId) {
         Objects.requireNonNull(instanceRunner);
         Objects.requireNonNull(threadId);
-        if (threads.containsKey(instanceRunner)) {
-            for (ThreadId thread : threads.get(instanceRunner)) {
-                if (threadId.equals(thread.getId())) {
-                    return thread.getThread();
+        synchronized (threads) {
+            if (threads.containsKey(instanceRunner)) {
+                for (ThreadId thread : threads.get(instanceRunner)) {
+                    if (threadId.equals(thread.getId())) {
+                        return Optional.of(thread.getThread());
+                    }
                 }
             }
         }
-        return null;
+        return Optional.empty();
+    }
+
+    /**
+     * Obtém um Thread a partir de seu Runnable
+     *
+     * @param instanceRunner Instancia que registrou o Thread
+     * @param runnable       Runnable do thread
+     * @since 01/03/2016
+     * @return Thread correspondente ou um {@link Optional#empty()}
+     */
+    public synchronized static Optional<Thread> getThread(Object instanceRunner, Runnable runnable) {
+        Objects.requireNonNull(instanceRunner);
+        Objects.requireNonNull(runnable);
+
+        synchronized (threads) {
+            if (threads.containsKey(instanceRunner)) {
+                Optional<ThreadId> threadIdOptional = threads.get(instanceRunner).stream().filter(threadId -> threadId != null && threadId.getRunnable() != null && threadId.getRunnable() == runnable).findFirst();
+                if (threadIdOptional.isPresent())
+                    return Optional.of(threadIdOptional.get().getThread());
+            }
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -113,16 +134,30 @@ public class ThreadUtils {
     public synchronized static void stopThread(Object instanceRunner, String threadId) {
         Objects.requireNonNull(instanceRunner);
         if (threads.containsKey(instanceRunner)) {
-            for (ThreadId thread : threads.get(instanceRunner)) {
-                if (threadId == null || threadId.equals(thread.getId())) {
-                    if (!thread.getThread().isInterrupted() || thread.getThread().isAlive()) {
-                        thread.getThread().interrupt();
-                    }
-                }
-            }
-            synchronized (threads) {
-                cleanUp();
-            }
+            threads.get(instanceRunner)
+                    .stream()
+                    .filter(thread -> threadId == null || threadId.equals(thread.getId()))
+                    .filter(thread -> !thread.getThread().isInterrupted() || thread.getThread().isAlive())
+                    .forEach(thread -> thread.getThread().interrupt());
+            cleanUp();
+        }
+    }
+
+    /**
+     * Para um Thread baseado em seu Runnable
+     * @param instanceRunner Instancia que registrou o Thread
+     * @param threadRunnable Runnable do thread
+     * @since 01/03/2016
+     */
+    public synchronized static void stopThread(Object instanceRunner, Runnable threadRunnable) {
+        Objects.requireNonNull(instanceRunner);
+        if (threads.containsKey(instanceRunner)) {
+            threads.get(instanceRunner)
+                    .stream()
+                    .filter(thread -> threadRunnable == null || thread.getRunnable() == threadRunnable)
+                    .filter(thread -> !thread.getThread().isInterrupted() || thread.getThread().isAlive())
+                    .forEach(thread -> thread.getThread().interrupt());
+            cleanUp();
         }
     }
 
@@ -134,7 +169,9 @@ public class ThreadUtils {
      */
     private synchronized static void add(Object instanceRunner, ThreadId thread) {
         setEmpty(instanceRunner);
-        threads.get(instanceRunner).add(thread);
+        synchronized (threads) {
+            threads.get(instanceRunner).add(thread);
+        }
     }
 
     /**
@@ -143,9 +180,11 @@ public class ThreadUtils {
      * @param instanceRunner Instancia que registrou o Thread
      */
     private synchronized static void setEmpty(Object instanceRunner) {
-        Objects.requireNonNull(instanceRunner);
-        if (!threads.containsKey(instanceRunner))
-            threads.put(instanceRunner, new HashSet<ThreadId>());
+        synchronized (threads) {
+            Objects.requireNonNull(instanceRunner);
+            if (!threads.containsKey(instanceRunner))
+                threads.put(instanceRunner, new HashSet<>());
+        }
     }
 
     /**
@@ -155,8 +194,10 @@ public class ThreadUtils {
      */
     public synchronized static int countAllThreads() {
         int count = 0;
-        for (Map.Entry<Object, Set<ThreadId>> entry : threads.entrySet()) {
-            count += entry.getValue().size();
+        synchronized (threads) {
+            for (Map.Entry<Object, Set<ThreadId>> entry : threads.entrySet()) {
+                count += entry.getValue().size();
+            }
         }
         return count;
     }
@@ -165,20 +206,22 @@ public class ThreadUtils {
      * Limpa todos threads que já foram parados
      */
     private synchronized static void cleanUp() {
-        Set<Map.Entry<Object, Set<ThreadId>>> entries = threads.entrySet();
-        Iterator<Map.Entry<Object, Set<ThreadId>>> entriesIterator = entries.iterator();
-        while (entriesIterator.hasNext()) {
-            Map.Entry<Object, Set<ThreadId>> entry = entriesIterator.next();
-            Iterator<ThreadId> threadIds = entry.getValue().iterator();
+        synchronized (threads) {
+            Iterator<Map.Entry<Object, Set<ThreadId>>> entriesIterator = threads.entrySet().iterator();
 
-            while (threadIds.hasNext()) {
-                ThreadId current = threadIds.next();
-                if (current.canCleanUp()) {
-                    threadIds.remove();
+            while (entriesIterator.hasNext()) {
+                Map.Entry<Object, Set<ThreadId>> entry = entriesIterator.next();
+                Iterator<ThreadId> threadIds = entry.getValue().iterator();
+
+                while (threadIds.hasNext()) {
+                    ThreadId current = threadIds.next();
+                    if (current.canCleanUp()) {
+                        threadIds.remove();
+                    }
                 }
-            }
-            if (entry.getValue().isEmpty()) {
-                entriesIterator.remove();
+                if (entry.getValue().isEmpty()) {
+                    entriesIterator.remove();
+                }
             }
         }
     }
@@ -187,17 +230,25 @@ public class ThreadUtils {
      * Classe de informação do Thread
      */
     private static final class ThreadId {
+        private final Object holder;
         private final String id;
         private final Thread thread;
+        private final Runnable runnable;
 
         /**
-         * @param id     Id (Identificação) do Thread
-         * @param thread Thread correspondente ao Id
+         * @param id       Id (Identificação) do Thread
+         * @param thread   Thread correspondente ao Id
+         * @param runnable Runnable do Thread
          */
-        private ThreadId(String id, Thread thread) {
+        private ThreadId(Object holder, String id, Thread thread, Runnable runnable) {
             Objects.requireNonNull(thread);
             this.id = id;
             this.thread = thread;
+            if (runnable != null)
+                this.runnable = runnable;
+            else
+                this.runnable = thread;
+            this.holder = holder;
         }
 
         /**
@@ -216,6 +267,24 @@ public class ThreadUtils {
          */
         public Thread getThread() {
             return thread;
+        }
+
+        /**
+         * Retorna o "Runnable" do Thread
+         *
+         * @return Runnable do Thread
+         */
+        public Runnable getRunnable() {
+            return runnable;
+        }
+
+        /**
+         * Obtem a instancia que registrou o thread
+         *
+         * @return Instancia que registrou o thread
+         */
+        public Object getHolder() {
+            return holder;
         }
 
         /**
