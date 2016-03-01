@@ -72,6 +72,7 @@ public class Event {
     private String description;
     private EventState state;
     private EventFlags flags;
+    private EventPlacements placements;
     private EventAnnouncement announcement;
     private Configuration config;
 
@@ -291,6 +292,14 @@ public class Event {
      */
     public Map<String, Location> getCamarotes() {
         return this.camarotes;
+    }
+    
+    /**
+     * 
+     * @return {@link EventPlacements}
+     */
+    public EventPlacements getEventPlacements() {
+        return this.placements;
     }
 
     /**
@@ -539,6 +548,11 @@ public class Event {
      */
     public Event updateState(EventState state) {
         this.state = state;
+        return this;
+    }
+    
+    public Event updateEventPlacements(EventPlacements eventPlacements) {
+        this.placements = placements;
         return this;
     }
 

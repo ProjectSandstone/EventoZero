@@ -56,6 +56,7 @@ public final class EventFactory {
             if (file.getName().endsWith(".yml")) {
                 final Configuration configuration = new Configuration(file); // Já carrega automaticamente
                 final Event event = new Event(configuration.getString("name"), configuration).updateDescription(configuration.getString("description")).updateDisplayName(configuration.getString("display_name"));
+                final EventPlacements placements = new EventPlacements(configuration.getInt("options.placements"));
                 event.getAbilitys().addAll(EventFactory.parseAbilitys(configuration.getStringList("options.ability.abilitys")));
                 event.getData()
                         .updateData("options.signs.line.1", configuration.getString("signs.lines.1"))
@@ -80,8 +81,11 @@ public final class EventFactory {
                 
                 ConfigurationSection sectionChest = configuration.getConfigurationSection("chests");
                 if(sectionChest != null) {
+                    int count = 0;
                     for(final String key : sectionChest.getKeys(false)) {
-                        event.getChestRewards().add(new ChestReward(configuration.getString("chests." + key + ".location"), configuration.getStringList("chests." + key + ".inventory"), configuration.getBoolean("chests." + key + ".replaceOtherItems")));
+                        if(count > placements.getPlacements())
+                            placements.setChestReward(0, new ChestReward(configuration.getString("chests." + key + ".location"), configuration.getStringList("chests." + key + ".inventory"), configuration.getBoolean("chests." + key + ".replaceOtherItems")));
+                        count++;   
                     }
                 }
                 

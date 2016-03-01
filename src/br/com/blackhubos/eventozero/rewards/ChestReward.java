@@ -36,32 +36,29 @@ public class ChestReward {
     }
 
     public ChestReward updateChest() {
-        World world = location.getWorld();
-        Block block = world.getBlockAt(location);
+        Block block = location.getWorld().getBlockAt(location);
         setChest(block);
-        Chest chest = (Chest) block;
-        Inventory inventory = chest.getBlockInventory();
-        if (replaceOtherItems) {
+
+        Inventory inventory = ((Chest) block).getBlockInventory();
+        if (replaceOtherItems)
             inventory.setContents(stacks);
-        } else {
+        else
             inventory.addItem(stacks);
-        }
         return this;
     }
-    
+
     public ChestReward clearChest() {
-        World world = location.getWorld();
-        Block block = world.getBlockAt(location);
+        Block block = location.getWorld().getBlockAt(location);
         setChest(block);
+
         Chest chest = (Chest) block;
         chest.getBlockInventory().clear();
         return this;
     }
-    
+
     public ChestReward setChest(Block block) {
-        if (block.getType() != Material.CHEST && !(block instanceof ChestReward)) {
+        if (block.getType() != Material.CHEST && !(block instanceof ChestReward))
             block.setType(Material.CHEST);
-        }
         return this;
     }
 
