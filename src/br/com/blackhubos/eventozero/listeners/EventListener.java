@@ -25,7 +25,7 @@ import br.com.blackhubos.eventozero.factory.EventFlags;
 import br.com.blackhubos.eventozero.factory.EventState;
 import java.util.Optional;
 import org.bukkit.Bukkit;
-impirt org.bukkit.Material;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
