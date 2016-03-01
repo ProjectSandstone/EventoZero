@@ -257,10 +257,10 @@ public class Updater implements IUpdater {
             // Verifica se o resultado é mais recente que o atual
             if (cache.compareTo(updaterCache.get()) > 0) {
                 logger.info(String.format("%sNova versão detectada!", updaterNamespace));
-                Thread currentUpdate = ThreadUtils.getThread(Updater.this, "updater");
-                if (currentUpdate != null && currentUpdate.isAlive() && !currentUpdate.isInterrupted()) {
+                Optional<Thread> currentUpdate = ThreadUtils.getThread(Updater.this, "updater");
+                if (currentUpdate.isPresent() && currentUpdate.get().isAlive() && !currentUpdate.get().isInterrupted()) {
                     logger.info(String.format("%sParando atualização atual...", updaterNamespace));
-                    currentUpdate.interrupt();
+                    currentUpdate.get().interrupt();
                     // Tenta apagar o arquivo antigo
                     if (downloadedFile != null && downloadedFile.exists()) {
                         downloadedFile.delete();
