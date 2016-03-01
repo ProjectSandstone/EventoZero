@@ -23,9 +23,10 @@ public class AnnouncementHandler implements Runnable {
 
     private boolean destroy;
 
-    public AnnouncementHandler() {
-        ThreadUtils.createNewThread(this, this);
+    public AnnouncementHandler() { 
         this.handler = EventoZero.getEventHandler();
+        Thread thread = ThreadUtils.createNewThread(this, this);
+        thread.start();
     }
 
     @Override
