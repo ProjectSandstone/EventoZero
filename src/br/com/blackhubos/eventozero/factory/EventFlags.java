@@ -44,12 +44,12 @@ public class EventFlags {
 	}
 
 	public static enum Flag {
-		NONE					(1 << 0), 
-		DISABLE_PVP				(1 << 1), 
-		DISABLE_DAMAGE			(1 << 2), 
-		DISABLE_MC				(1 << 3),
-		DISABLE_BLOCK_BREAK		(1 << 4),
-		DISABLE_BLOCK_PLACE		(1 << 5);
+		NONE			(0 << 0), 
+		DISABLE_PVP		(1 << 1), 
+		DISABLE_DAMAGE		(1 << 2), 
+		DISABLE_MC		(1 << 3),
+		DISABLE_BLOCK_BREAK	(1 << 4),
+		DISABLE_BLOCK_PLACE	(1 << 5);
 
 		private int val;
 
