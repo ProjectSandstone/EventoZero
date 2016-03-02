@@ -71,11 +71,11 @@ public final class EventListener implements Listener {
     public void whenPlayerJoin(final PlayerJoinEvent event) {
         final Player sender = event.getPlayer();
         final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
-        for(Event e : eventHandler.getEventsByState(EventState.OPENED)) {
+        for (Event e : eventHandler.getEventsByState(EventState.OPENED)) {
             // COLOCAR NO MESSAGEHANDLER A MENSAGEM DE AVISAR O EVENTO
         }
     }
-    
+
     /**
      * Evento chamado quando alguem interage com uma placa do evento.
      *
@@ -86,14 +86,33 @@ public final class EventListener implements Listener {
         final Player sender = event.getPlayer();
         final Action action = event.getAction();
         final Block block = event.getClickedBlock();
-        if(action.equals(Action.LEFT_CLICK_BLOCK) && (block.getType().equals(Material.SIGN) || block.getType().equals(Material.SIGN_POST) || block.getType().equals(Material.WALL_SIGN))) {
+        if (action.equals(Action.LEFT_CLICK_BLOCK) && (block.getType().equals(Material.SIGN) || block.getType().equals(Material.SIGN_POST) || block.getType().equals(Material.WALL_SIGN))) {
             final Sign sign = (Sign) block.getState();
             final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
-            
-            Optional<Event> optional = eventHandler.getEventByName(sign.getLine(0));
-            if(optional.isPresent()) {
+            final Optional<Event> optional = eventHandler.getEventByName(sign.getLine(0));
+            final Optional<Event> optional1 = eventHandler.getEventByPlayer(sender);
+            if (optional.isPresent() && optional1.isPresent() && (optional.get().equals(optional1.get()))) {
                 Event e = optional.get();
                 sender.sendMessage(e.getDescription());
+            }
+        }
+
+        if (action.equals(Action.LEFT_CLICK_BLOCK) || action.equals(Action.RIGHT_CLICK_BLOCK)) {
+            final Sign sign = (Sign) block.getState();
+            final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
+            final Optional<Event> optional = eventHandler.getEventByName(sign.getLine(0));
+            final Optional<Event> optional1 = eventHandler.getEventByPlayer(sender);
+            if (optional.isPresent() && optional1.isPresent() && (optional.get().equals(optional1.get()))) {
+                Event e = optional.get();
+                if (e.getPlacements().hasPlacementSlotFree()) {
+                    e.getPlacements().setPlayer(e.getPlacements().getPlacemetFirstSlot(), sender);
+                    e.getPlacements().giveReward(sender);
+                    e.playerQuit(sender);
+
+                }
+                if (e.getPlacements().hasPlacementSlotFree()) {
+                    e.stop();
+                }
             }
         }
     }
@@ -111,11 +130,10 @@ public final class EventListener implements Listener {
         final Player sender = event.getPlayer();
         final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
         final Optional<Event> optional = eventHandler.getEventByPlayer(sender);
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             Event eventz = optional.get();
-            if(eventz.getFlags().hasFlag(EventFlags.Flag.DISABLE_BLOCK_BREAK)) {
+            if (eventz.getFlags().hasFlag(EventFlags.Flag.DISABLE_BLOCK_BREAK))
                 event.setCancelled(true);
-            }
         }
     }
 
@@ -132,11 +150,10 @@ public final class EventListener implements Listener {
         final Player sender = event.getPlayer();
         final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
         final Optional<Event> optional = eventHandler.getEventByPlayer(sender);
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             Event eventz = optional.get();
-            if(eventz.getFlags().hasFlag(EventFlags.Flag.DISABLE_BLOCK_PLACE)) {
+            if (eventz.getFlags().hasFlag(EventFlags.Flag.DISABLE_BLOCK_PLACE))
                 event.setCancelled(true);
-            }
         }
     }
 
@@ -151,9 +168,9 @@ public final class EventListener implements Listener {
     public void whenSignPlaced(final SignChangeEvent event) {
         final Player sender = event.getPlayer();
         final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
-        if(sender.isOp()) {
+        if (sender.isOp()) {
             Optional<Event> optional = eventHandler.getEventByName(event.getLine(0));
-            if(optional.isPresent()) {
+            if (optional.isPresent()) {
                 Event eventz = optional.get();
                 eventz.getSignsLocation().add(event.getBlock().getLocation());
                 Bukkit.getScheduler().runTaskLater(EventoZero.getInstance(), new Runnable() {
@@ -184,18 +201,16 @@ public final class EventListener implements Listener {
             Optional<Event> optional = EventoZero.getEventHandler().getEventByPlayer((Player) damaged);
             if (optional.isPresent() && optional.get().hasPlayerJoined((Player) damager)) {
                 Event eventz = optional.get();
-                if(eventz.getFlags().hasFlag(EventFlags.Flag.DISABLE_PVP)) {
+                if (eventz.getFlags().hasFlag(EventFlags.Flag.DISABLE_PVP))
                     event.setCancelled(true);
-                }
             }
         }
-        if(!(event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)) && !(damager instanceof Player)) {
+        if (!(event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)) && !(damager instanceof Player)) {
             Optional<Event> optional = EventoZero.getEventHandler().getEventByPlayer((Player) damaged);
             if (optional.isPresent()) {
                 Event eventz = optional.get();
-                if(eventz.getFlags().hasFlag(EventFlags.Flag.DISABLE_DAMAGE)) {
+                if (eventz.getFlags().hasFlag(EventFlags.Flag.DISABLE_DAMAGE))
                     event.setCancelled(true);
-                }
             }
         }
     }
@@ -234,7 +249,7 @@ public final class EventListener implements Listener {
         final Player sender = event.getPlayer();
         quitPlayer(sender);
     }
-    
+
     private void quitPlayer(Player sender) {
         final br.com.blackhubos.eventozero.factory.EventHandler eventHandler = EventoZero.getEventHandler();
         final Optional<Event> optional = eventHandler.getEventByPlayer(sender);
@@ -247,9 +262,8 @@ public final class EventListener implements Listener {
                     // CRAZY: PREMIAR, porém saber qual será o premio, por causa das colocações.. ESTOU CONFUSO
                     eventz.playerQuit(player);
                 }
-            } else {
+            } else
                 eventz.playerQuit(sender);
-            }
         }
     }
 
