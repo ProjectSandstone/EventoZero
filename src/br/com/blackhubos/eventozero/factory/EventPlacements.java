@@ -118,5 +118,26 @@ public class EventPlacements {
         clearPlayers();
         return this;
     }
+    
+    /**
+     * 
+     * @return {@code true} caso tenha slot vazio. false caso não
+     */
+    public boolean hasPlacementSlotFree() {
+        return getPlacemetFirstSlot() != -1;
+    }
+    
+    /**
+     * 
+     * @return Retorna slot livre, caso esteja todos ocupado retorna -1
+     */
+    public int getPlacemetFirstSlot() {
+        for(int i = 0; i < players.length; i++) {
+            if(players[i] == null) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
 }
