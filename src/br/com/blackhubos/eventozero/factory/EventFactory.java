@@ -31,6 +31,8 @@ import br.com.blackhubos.eventozero.ability.Ability;
 import br.com.blackhubos.eventozero.exceptions.CuboidParsingException;
 import br.com.blackhubos.eventozero.handlers.AbilityHandler;
 import br.com.blackhubos.eventozero.rewards.ChestReward;
+import br.com.blackhubos.eventozero.rewards.MoneyReward;
+import br.com.blackhubos.eventozero.rewards.PointReward;
 import br.com.blackhubos.eventozero.util.Framework;
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -78,19 +80,39 @@ public final class EventFactory {
                         .updateData("options.shop.shops", configuration.getStringList("options..shop.shops"))
                         .updateData("teleport.lobby", EventFactory.parseList(configuration.getStringList("teleport.lobby")))
                         .updateData("teleport.spawn", EventFactory.parseList(configuration.getStringList("teleport.spawn")));
-                
+
                 ConfigurationSection sectionChest = configuration.getConfigurationSection("chests");
-                if(sectionChest != null) {
+                ConfigurationSection sectionMoney = configuration.getConfigurationSection("options.money.for");
+                ConfigurationSection sectionPoints = configuration.getConfigurationSection("options.points.for");
+                if (sectionChest != null) {
                     int count = 0;
-                    for(final String key : sectionChest.getKeys(false)) {
-                        if(count > placements.getPlacements())
-                            placements.setChestReward(0, new ChestReward(configuration.getString("chests." + key + ".location"), configuration.getStringList("chests." + key + ".inventory"), configuration.getBoolean("chests." + key + ".replaceOtherItems")));
-                        count++;   
+                    for (final String key : sectionChest.getKeys(false)) {
+                        if (count < placements.getPlacements())
+                            placements.setChestReward(count, new ChestReward(configuration.getString("chests." + key + ".location"), configuration.getStringList("chests." + key + ".inventory"), configuration.getBoolean("chests." + key + ".replaceOtherItems")));
+                        count++;
                     }
                 }
-                
+
+                if (sectionMoney != null) {
+                    int count = 0;
+                    for (final String key : sectionMoney.getKeys(false)) {
+                        if (count < placements.getPlacements())
+                            placements.setMoney(count, new MoneyReward(configuration.getInt("options.money.for" + key)));
+                        count++;
+                    }
+                }
+
+                if (sectionPoints != null) {
+                    int count = 0;
+                    for (final String key : sectionPoints.getKeys(false)) {
+                        if (count < placements.getPlacements())
+                            placements.setPoints(count, new PointReward(configuration.getInt("options.points.for" + key)));
+                        count++;
+                    }
+                }
+
                 ConfigurationSection sectionCuboids = configuration.getConfigurationSection("cuboids");
-                if(sectionCuboids != null) {
+                if (sectionCuboids != null)
                     for (final String key : sectionCuboids.getKeys(false)) {
                         try {
                             final String min = "cuboids." + key + ".min";
@@ -100,7 +122,6 @@ public final class EventFactory {
                             throw new CuboidParsingException(null, null, event, "failed to load event cuboid from method loadEvents(Plugin)", "processing and parsing min and max positions (maybe null or not defined correctly)");
                         }
                     }
-                }
 
                 EventoZero.getEventHandler().loadEvent(event);
             }

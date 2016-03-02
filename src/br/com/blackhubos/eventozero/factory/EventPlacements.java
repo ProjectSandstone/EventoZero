@@ -1,11 +1,27 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ *
+ * EventoZero - Advanced event factory and executor for Bukkit and Spigot.
+ * Copyright © 2016 BlackHub OS and contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 package br.com.blackhubos.eventozero.factory;
 
 import br.com.blackhubos.eventozero.rewards.ChestReward;
+import br.com.blackhubos.eventozero.rewards.MoneyReward;
+import br.com.blackhubos.eventozero.rewards.PointReward;
 import org.bukkit.entity.Player;
 
 /**
@@ -17,15 +33,15 @@ public class EventPlacements {
     private Player[] players;
 
     private int placements;
-    private int[] money;
-    private int[] points;
+    private MoneyReward[] moneyRewards;
+    private PointReward[] pointRewards;
     private ChestReward[] chestRewards;
 
     public EventPlacements(int placements) {
         this.placements = placements;
         this.players = new Player[placements];
-        this.money = new int[placements];
-        this.points = new int[placements];
+        this.moneyRewards = new MoneyReward[placements];
+        this.pointRewards = new PointReward[placements];
         this.chestRewards = new ChestReward[placements];
 
     }
@@ -33,17 +49,17 @@ public class EventPlacements {
     public Player[] getPlaced() {
         return this.players;
     }
-    
+
     public int getPlacements() {
         return this.placements;
     }
 
-    public int[] getPoints() {
-        return this.points;
+    public PointReward[] getPoints() {
+        return this.pointRewards;
     }
 
-    public int[] getMoney() {
-        return this.points;
+    public MoneyReward[] getMoney() {
+        return this.moneyRewards;
     }
 
     public ChestReward[] getChestReward() {
@@ -55,13 +71,13 @@ public class EventPlacements {
         return this;
     }
 
-    public EventPlacements setPoints(int index, int point) {
-        this.points[index] = point;
+    public EventPlacements setPoints(int index, PointReward point) {
+        this.pointRewards[index] = point;
         return this;
     }
 
-    public EventPlacements setMoney(int index, int money) {
-        this.money[index] = money;
+    public EventPlacements setMoney(int index, MoneyReward money) {
+        this.moneyRewards[index] = money;
         return this;
     }
 
@@ -70,8 +86,36 @@ public class EventPlacements {
         return this;
     }
 
+    public EventPlacements clearPlayers() {
+        this.players = new Player[placements];
+        return this;
+    }
+
+    public EventPlacements giveReward(Player player) {
+        for (int i = 0; i < players.length; i++) {
+            Player plac = players[i];
+            if ((plac != null) && plac.equals(player))
+                giveReward(i, plac);
+        }
+        return this;
+    }
+
+    public EventPlacements giveReward(int i, Player plac) {
+        if (plac != null) {
+            pointRewards[i].giveTo(plac);
+            moneyRewards[i].giveTo(plac);
+            chestRewards[i].giveTo(plac);
+        }
+        return this;
+    }
+
     public EventPlacements giveRewards() {
-        
+        for (int i = 0; i < players.length; i++) {
+            Player plac = players[i];
+            if (plac != null)
+                giveReward(i, plac);
+        }
+        clearPlayers();
         return this;
     }
 
