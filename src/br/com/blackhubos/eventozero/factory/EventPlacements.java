@@ -50,7 +50,7 @@ public class EventPlacements {
         return this.players;
     }
 
-    public int getPlacements() {
+    public int getSize() {
         return this.placements;
     }
 

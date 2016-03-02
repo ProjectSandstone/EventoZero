@@ -240,7 +240,7 @@ public final class EventListener implements Listener {
         final Optional<Event> optional = eventHandler.getEventByPlayer(sender);
         if (optional.isPresent()) {
             final Event eventz = optional.get();
-            if (eventz.getPlayersRemaining().size() > 2) {
+            if (eventz.getPlayersRemaining().size() <= eventz.getPlacements().getSize()) {
                 eventz.playerQuit(sender);
                 for (Player player : eventz.getPlayersRemaining()) {
 

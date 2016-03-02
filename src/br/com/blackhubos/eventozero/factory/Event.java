@@ -64,7 +64,6 @@ public class Event {
     private final List<Party> partys;
     private final List<Ability> abilitys;
     private final List<Cuboid> cuboids;
-    private final List<ChestReward> chestRewards;
     private final List<Location> locations;
     private final Map<String, Location> camarotes;
 
@@ -85,7 +84,6 @@ public class Event {
         this.abilitys = new Vector<>();
         this.data = new EventData();
         this.cuboids = new Vector<>();
-        this.chestRewards = new Vector<>();
         this.locations = new Vector<>();
         this.camarotes = new HashMap<>();
         this.announcement = new EventAnnouncement(this, 10, 10);
@@ -107,10 +105,6 @@ public class Event {
 
     public EventFlags getFlags() {
         return this.flags;
-    }
-
-    public List<ChestReward> getChestRewards() {
-        return this.chestRewards;
     }
 
     /**
@@ -298,7 +292,7 @@ public class Event {
      * 
      * @return {@link EventPlacements}
      */
-    public EventPlacements getEventPlacements() {
+    public EventPlacements getPlacements() {
         return this.placements;
     }
 

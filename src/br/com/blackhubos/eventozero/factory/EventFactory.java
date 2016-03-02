@@ -36,6 +36,7 @@ import br.com.blackhubos.eventozero.rewards.PointReward;
 import br.com.blackhubos.eventozero.util.Framework;
 import br.com.blackhubos.eventozero.util.Framework.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public final class EventFactory {
 
@@ -59,35 +60,18 @@ public final class EventFactory {
                 final Configuration configuration = new Configuration(file); // Já carrega automaticamente
                 final Event event = new Event(configuration.getString("name"), configuration).updateDescription(configuration.getString("description")).updateDisplayName(configuration.getString("display_name"));
                 final EventPlacements placements = new EventPlacements(configuration.getInt("options.placements"));
-                event.getAbilitys().addAll(EventFactory.parseAbilitys(configuration.getStringList("options.ability.abilitys")));
-                event.getData()
-                        .updateData("options.signs.line.1", configuration.getString("signs.lines.1"))
-                        .updateData("options.signs.line.2", configuration.getString("signs.lines.2"))
-                        .updateData("options.signs.line.3", configuration.getString("signs.lines.3"))
-                        .updateData("options.signs.line.4", configuration.getString("signs.lines.4"))
-                        .updateData("options.message.opened", configuration.getString("options.message.opened"))
-                        .updateData("options.message.prestarted", configuration.getString("options.message.prestarted"))
-                        .updateData("options.message.occurring", configuration.getString("options.message.occurring"))
-                        .updateData("options.message.ending", configuration.getString("options.message.ending"))
-                        .updateData("options.message.closed", configuration.getString("options.message.closed"))
-                        .updateData("options.player_max", configuration.getInt("options.player_max"))
-                        .updateData("options.player_min", configuration.getInt("options.player_min"))
-                        .updateData("options.party_size", configuration.getInt("options.party_size"))
-                        .updateData("options.enables.party", configuration.getBoolean("options.enables.party"))
-                        .updateData("options.enables.safe_inventory", configuration.getBoolean("options.enables.safe_inventory"))
-                        .updateData("options.seconds_to_stop", configuration.getInt("options.seconds_to_stop"))
-                        .updateData("options.ability.fixed_ability", AbilityHandler.getAbilityByName(configuration.getString("options.ability.fixed_ability")))
-                        .updateData("options.shop.shops", configuration.getStringList("options..shop.shops"))
-                        .updateData("teleport.lobby", EventFactory.parseList(configuration.getStringList("teleport.lobby")))
-                        .updateData("teleport.spawn", EventFactory.parseList(configuration.getStringList("teleport.spawn")));
 
+                Vector<Ability> abilitys = EventFactory.parseAbilitys(configuration.getStringList("options.ability.abilitys"));
+                event.getAbilitys().addAll(abilitys);
+
+                loadData(event, configuration);
                 ConfigurationSection sectionChest = configuration.getConfigurationSection("chests");
                 ConfigurationSection sectionMoney = configuration.getConfigurationSection("options.money.for");
                 ConfigurationSection sectionPoints = configuration.getConfigurationSection("options.points.for");
                 if (sectionChest != null) {
                     int count = 0;
                     for (final String key : sectionChest.getKeys(false)) {
-                        if (count < placements.getPlacements())
+                        if (count < placements.getSize())
                             placements.setChestReward(count, new ChestReward(configuration.getString("chests." + key + ".location"), configuration.getStringList("chests." + key + ".inventory"), configuration.getBoolean("chests." + key + ".replaceOtherItems")));
                         count++;
                     }
@@ -96,7 +80,7 @@ public final class EventFactory {
                 if (sectionMoney != null) {
                     int count = 0;
                     for (final String key : sectionMoney.getKeys(false)) {
-                        if (count < placements.getPlacements())
+                        if (count < placements.getSize())
                             placements.setMoney(count, new MoneyReward(configuration.getInt("options.money.for" + key)));
                         count++;
                     }
@@ -105,7 +89,7 @@ public final class EventFactory {
                 if (sectionPoints != null) {
                     int count = 0;
                     for (final String key : sectionPoints.getKeys(false)) {
-                        if (count < placements.getPlacements())
+                        if (count < placements.getSize())
                             placements.setPoints(count, new PointReward(configuration.getInt("options.points.for" + key)));
                         count++;
                     }
@@ -146,6 +130,28 @@ public final class EventFactory {
                 vector.add(Framework.toLocation(loop));
         }
         return vector;
+    }
+
+    private static void loadData(Event event, FileConfiguration configuration) {
+        event.getData().updateData("options.signs.line.1", configuration.getString("signs.lines.1"))
+                .updateData("options.signs.line.2", configuration.getString("signs.lines.2"))
+                .updateData("options.signs.line.3", configuration.getString("signs.lines.3"))
+                .updateData("options.signs.line.4", configuration.getString("signs.lines.4"))
+                .updateData("options.message.opened", configuration.getString("options.message.opened"))
+                .updateData("options.message.prestarted", configuration.getString("options.message.prestarted"))
+                .updateData("options.message.occurring", configuration.getString("options.message.occurring"))
+                .updateData("options.message.ending", configuration.getString("options.message.ending"))
+                .updateData("options.message.closed", configuration.getString("options.message.closed"))
+                .updateData("options.player_max", configuration.getInt("options.player_max"))
+                .updateData("options.player_min", configuration.getInt("options.player_min"))
+                .updateData("options.party_size", configuration.getInt("options.party_size"))
+                .updateData("options.enables.party", configuration.getBoolean("options.enables.party"))
+                .updateData("options.enables.safe_inventory", configuration.getBoolean("options.enables.safe_inventory"))
+                .updateData("options.seconds_to_stop", configuration.getInt("options.seconds_to_stop"))
+                .updateData("options.ability.fixed_ability", AbilityHandler.getAbilityByName(configuration.getString("options.ability.fixed_ability")))
+                .updateData("options.shop.shops", configuration.getStringList("options..shop.shops"))
+                .updateData("teleport.lobby", EventFactory.parseList(configuration.getStringList("teleport.lobby")))
+                .updateData("teleport.spawn", EventFactory.parseList(configuration.getStringList("teleport.spawn")));
     }
 
     public static EventBuilder newBuilder() {
